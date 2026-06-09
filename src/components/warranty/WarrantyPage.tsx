@@ -39,7 +39,7 @@ export function WarrantyPage() {
 
       <section className="pb-12 md:pb-16">
         <div className="mx-auto max-w-7xl px-4 md:px-6 lg:px-10">
-          <div className="grid lg:grid-cols-2 gap-10 lg:gap-16 items-start">
+          <div className="grid lg:grid-cols-2 gap-10 lg:gap-16 lg:items-stretch">
             <div className="space-y-5">
               {WARRANTY_POINTS.map((point) => (
                 <div
@@ -54,23 +54,25 @@ export function WarrantyPage() {
               ))}
             </div>
 
-            <div>
-              <div className="relative aspect-[3/4] w-full max-w-lg mx-auto lg:max-w-none">
-                <div className="absolute -inset-3 rounded-2xl bg-brand-olive/10 blur-xl" />
-                <Image
-                  src="/images/warranty-certificate.png"
-                  alt="Аттестат партии ювелирных изделий Синоним"
-                  fill
-                  className="object-contain rounded-2xl shadow-lg bg-white"
-                  sizes="(max-width: 1024px) 100vw, 45vw"
-                />
-              </div>
-              <p className="text-brand-muted text-sm text-center mt-4 leading-relaxed">
-                Пример аттестата партии ювелирных изделий с указанием
-                характеристик лабораторных бриллиантов
-              </p>
+            <div className="relative w-full max-w-lg mx-auto lg:max-w-none aspect-[3/4] lg:aspect-auto lg:h-full lg:min-h-0">
+              <div className="absolute -inset-3 rounded-2xl bg-brand-olive/10 blur-xl" />
+              <Image
+                src="/images/warranty-certificate.png"
+                alt="Аттестат партии ювелирных изделий Синоним"
+                fill
+                className="object-contain object-top rounded-2xl shadow-lg bg-white"
+                sizes="(max-width: 1024px) 100vw, 45vw"
+              />
             </div>
           </div>
+
+          <p className="text-brand-muted text-sm text-center lg:text-left mt-4 leading-relaxed lg:grid lg:grid-cols-2 lg:gap-16">
+            <span className="hidden lg:block" aria-hidden />
+            <span>
+              Пример аттестата партии ювелирных изделий с указанием
+              характеристик лабораторных бриллиантов
+            </span>
+          </p>
         </div>
       </section>
 
