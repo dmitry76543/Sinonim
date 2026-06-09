@@ -317,7 +317,7 @@ export function getProductDetails(slug: string): ProductDetails | undefined {
     color: product.color ?? "F (бесцветный)",
     clarity: product.clarity ?? "VS1",
     metal: product.metal ?? "Серебро 925, родиевое покрытие",
-    sizes: product.sizes ?? (hasSizes ? DEFAULT_SIZES : []),
+    sizes: product.sizes ?? (hasSizes ? [...DEFAULT_SIZES] : []),
     stoneVariants,
   };
 }
