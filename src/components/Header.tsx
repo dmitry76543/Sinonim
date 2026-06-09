@@ -40,10 +40,10 @@ export function Header() {
         </Link>
       </div>
 
-      <div className="flex items-center justify-between px-4 md:px-6 lg:px-10 py-4 gap-4">
+      <div className="relative flex items-center justify-between px-4 md:px-6 lg:px-10 py-4 gap-4">
         <button
           type="button"
-          className="md:hidden p-2 text-brand-olive-dark"
+          className="md:hidden p-2 text-brand-olive-dark shrink-0 z-10"
           aria-label="Меню"
         >
           <svg width="22" height="22" viewBox="0 0 24 24" fill="none" aria-hidden>
@@ -51,13 +51,17 @@ export function Header() {
           </svg>
         </button>
 
-        <Link href="/" className="flex flex-col items-center md:items-start group mx-auto md:mx-0">
+        <Link
+          href="/"
+          className="absolute left-1/2 top-1/2 flex -translate-x-1/2 -translate-y-1/2 flex-col items-center md:static md:translate-x-0 md:translate-y-0 md:items-start group shrink-0"
+        >
           <Image
             src="/images/logo_20260527190756.png"
             alt="Синоним"
-            width={180}
-            height={40}
-            className="h-7 md:h-8 w-auto brightness-0"
+            width={1000}
+            height={150}
+            className="h-7 md:h-8 w-auto max-w-none object-contain brightness-0"
+            style={{ width: "auto" }}
             priority
           />
           <span className="hidden sm:block text-[10px] md:text-xs text-brand-muted tracking-wide mt-1">
@@ -77,7 +81,7 @@ export function Header() {
           ))}
         </nav>
 
-        <div className="flex items-center gap-1 md:gap-2">
+        <div className="flex items-center gap-1 md:gap-2 shrink-0 z-10 ml-auto">
           <button
             type="button"
             className="p-2.5 text-brand-olive-dark hover:text-brand-olive transition-colors"
