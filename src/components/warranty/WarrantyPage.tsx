@@ -1,5 +1,6 @@
 import Image from "next/image";
 import Link from "next/link";
+import { WarrantyFaq } from "@/components/warranty/WarrantyFaq";
 
 const WARRANTY_POINTS = [
   {
@@ -72,6 +73,8 @@ export function WarrantyPage() {
           </div>
         </div>
       </section>
+
+      <WarrantyFaq />
 
       <section className="bg-brand-olive-dark text-white py-12 md:py-16">
         <div className="mx-auto max-w-3xl px-4 md:px-6 lg:px-10 text-center">
