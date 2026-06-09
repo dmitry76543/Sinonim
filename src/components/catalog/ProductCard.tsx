@@ -1,7 +1,6 @@
-import Image from "next/image";
+import { ProductImage } from "@/components/catalog/ProductImage";
 import Link from "next/link";
-import { CompareButton } from "@/components/compare/CompareButton";
-import { FavoriteButton } from "@/components/favorites/FavoriteButton";
+import { CompareButton } from "@/components/compare/CompareButton";import { FavoriteButton } from "@/components/favorites/FavoriteButton";
 import { formatPrice, type Product } from "@/lib/products";
 
 type ProductCardProps = {
@@ -13,12 +12,12 @@ export function ProductCard({ product }: ProductCardProps) {
     <article className="group bg-brand-surface rounded-xl overflow-hidden shadow-sm hover:shadow-md transition-shadow">
       <div className="aspect-square relative overflow-hidden bg-brand-sand/30">
         <Link href={`/products/${product.slug}`} className="absolute inset-0">
-          <Image
+          <ProductImage
             src={product.image}
             alt={product.name}
             fill
             className="object-cover group-hover:scale-105 transition-transform duration-500"
-            sizes="(max-width: 640px) 50vw, (max-width: 1024px) 33vw, 25vw"
+            sizes="(max-width: 768px) 50vw, 25vw"
           />
         </Link>
         {product.badge && (

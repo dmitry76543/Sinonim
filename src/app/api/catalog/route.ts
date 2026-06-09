@@ -15,9 +15,10 @@ export async function GET(request: Request) {
     return NextResponse.json({ products });
   } catch (error) {
     console.error("Catalog API error:", error);
-    return NextResponse.json(
-      { error: "Не удалось загрузить каталог" },
-      { status: 500 }
-    );
+    const message =
+      error instanceof Error
+        ? error.message
+        : "Не удалось загрузить каталог";
+    return NextResponse.json({ products: [], error: message }, { status: 502 });
   }
 }

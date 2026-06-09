@@ -19,14 +19,27 @@ function CatalogFallback() {
 }
 
 export default async function ShopPage() {
-  const initialProducts = await getCatalogProducts();
+  let initialProducts: Awaited<ReturnType<typeof getCatalogProducts>> = [];
+  let catalogError: string | undefined;
+
+  try {
+    initialProducts = await getCatalogProducts();
+  } catch (error) {
+    catalogError =
+      error instanceof Error
+        ? error.message
+        : "Не удалось загрузить каталог из AdvantShop";
+  }
 
   return (
     <>
       <Header />
       <main>
         <Suspense fallback={<CatalogFallback />}>
-          <CatalogView initialProducts={initialProducts} />
+          <CatalogView
+            initialProducts={initialProducts}
+            catalogError={catalogError}
+          />
         </Suspense>
       </main>
       <Footer />

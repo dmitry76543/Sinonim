@@ -19,12 +19,7 @@ export async function getCatalogProducts(options?: {
   sort?: string;
 }): Promise<Product[]> {
   if (isAdvantShopConfigured()) {
-    try {
-      const products = await fetchAdvantShopProducts(options);
-      if (products.length) return products;
-    } catch (error) {
-      console.error("AdvantShop catalog fetch failed:", error);
-    }
+    return fetchAdvantShopProducts(options);
   }
 
   let products = [...PRODUCTS];
@@ -46,13 +41,8 @@ export async function getCatalogProducts(options?: {
 
 export async function getProductBySlug(slug: string): Promise<Product | undefined> {
   if (isAdvantShopConfigured()) {
-    try {
-      const products = await fetchAdvantShopProducts();
-      const product = products.find((item) => item.slug === slug);
-      if (product) return product;
-    } catch (error) {
-      console.error("AdvantShop product lookup failed:", error);
-    }
+    const products = await fetchAdvantShopProducts();
+    return products.find((item) => item.slug === slug);
   }
 
   return getStaticProductBySlug(slug);
@@ -62,12 +52,7 @@ export async function getProductDetails(
   slug: string
 ): Promise<ProductDetails | undefined> {
   if (isAdvantShopConfigured()) {
-    try {
-      const product = await fetchAdvantShopProductDetails(slug);
-      if (product) return product;
-    } catch (error) {
-      console.error("AdvantShop product details fetch failed:", error);
-    }
+    return fetchAdvantShopProductDetails(slug);
   }
 
   return getStaticProductDetails(slug);
@@ -83,17 +68,11 @@ export async function getRelatedProducts(
 
 export async function getProductsBySlugs(slugs: string[]): Promise<Product[]> {
   if (isAdvantShopConfigured()) {
-    try {
-      const products = await fetchAdvantShopProductsBySlugs(slugs);
-      if (products.length) {
-        const order = new Map(slugs.map((slug, index) => [slug, index]));
-        return products.sort(
-          (a, b) => (order.get(a.slug) ?? 0) - (order.get(b.slug) ?? 0)
-        );
-      }
-    } catch (error) {
-      console.error("AdvantShop products by slugs fetch failed:", error);
-    }
+    const products = await fetchAdvantShopProductsBySlugs(slugs);
+    const order = new Map(slugs.map((slug, index) => [slug, index]));
+    return products.sort(
+      (a, b) => (order.get(a.slug) ?? 0) - (order.get(b.slug) ?? 0)
+    );
   }
 
   return slugs

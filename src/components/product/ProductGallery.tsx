@@ -1,7 +1,7 @@
 "use client";
 
-import Image from "next/image";
 import { useState } from "react";
+import { ProductImage } from "@/components/catalog/ProductImage";
 
 type ProductGalleryProps = {
   images: string[];
@@ -15,15 +15,14 @@ export function ProductGallery({ images, name }: ProductGalleryProps) {
   return (
     <div className="space-y-4">
       <div className="aspect-square relative overflow-hidden rounded-xl bg-brand-surface shadow-sm">
-        <Image
+        <ProductImage
           src={uniqueImages[activeIndex]}
           alt={name}
           fill
           className="object-cover"
           sizes="(max-width: 1024px) 100vw, 50vw"
           priority
-        />
-      </div>
+        />      </div>
 
       {uniqueImages.length > 1 && (
         <div className="flex gap-3">
@@ -38,8 +37,7 @@ export function ProductGallery({ images, name }: ProductGalleryProps) {
                   : "border-transparent opacity-70 hover:opacity-100"
               }`}
             >
-              <Image src={src} alt="" fill className="object-cover" sizes="80px" />
-            </button>
+              <ProductImage src={src} alt="" fill className="object-cover" sizes="80px" />            </button>
           ))}
         </div>
       )}

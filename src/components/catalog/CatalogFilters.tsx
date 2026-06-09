@@ -4,16 +4,16 @@ import Link from "next/link";
 import {
   CATEGORIES,
   PRICE_RANGES,
+  RING_BRACELET_SIZES,
   SORT_OPTIONS,
-  STONE_WEIGHTS,
   type CategorySlug,
 } from "@/lib/products";
 import {
   buildFilterQuery,
   countActiveFilters,
+  shouldShowSizeFilter,
   type CatalogFilters as Filters,
 } from "@/lib/catalog-utils";
-
 type CatalogFiltersProps = {
   filters: Filters;
   basePath: string;
@@ -85,8 +85,13 @@ function CheckboxItem({
   );
 }
 
+function formatSizeLabel(size: number): string {
+  return Number.isInteger(size) ? String(size) : size.toFixed(1).replace(".", ",");
+}
+
 export function CatalogFilters({ filters, basePath, onClose }: CatalogFiltersProps) {
   const activeCount = countActiveFilters(filters);
+  const showSizeFilter = shouldShowSizeFilter(filters.category);
 
   const togglePrice = (id: string) => {
     const next = filters.priceRanges.includes(id)
@@ -95,11 +100,11 @@ export function CatalogFilters({ filters, basePath, onClose }: CatalogFiltersPro
     return buildFilterQuery(filters, { priceRanges: next });
   };
 
-  const toggleStone = (id: string) => {
-    const next = filters.stoneWeights.includes(id)
-      ? filters.stoneWeights.filter((s) => s !== id)
-      : [...filters.stoneWeights, id];
-    return buildFilterQuery(filters, { stoneWeights: next });
+  const toggleSize = (id: string) => {
+    const next = filters.sizes.includes(id)
+      ? filters.sizes.filter((size) => size !== id)
+      : [...filters.sizes, id];
+    return buildFilterQuery(filters, { sizes: next });
   };
 
   const categoryHref = (slug: CategorySlug | null) => {
@@ -119,7 +124,7 @@ export function CatalogFilters({ filters, basePath, onClose }: CatalogFiltersPro
           <button
             type="button"
             onClick={onClose}
-            className="lg:hidden p-2 text-brand-muted hover:text-brand-olive"
+            className="p-2 text-brand-muted transition-colors hover:text-brand-olive"
             aria-label="Закрыть фильтры"
           >
             <svg width="20" height="20" viewBox="0 0 24 24" fill="none" aria-hidden>
@@ -163,19 +168,36 @@ export function CatalogFilters({ filters, basePath, onClose }: CatalogFiltersPro
         </div>
       </FilterSection>
 
-      <FilterSection title="Вес камня">
-        <div className="space-y-1">
-          {STONE_WEIGHTS.map((stone) => (
-            <CheckboxItem
-              key={stone.id}
-              id={stone.id}
-              label={stone.label}
-              checked={filters.stoneWeights.includes(stone.id)}
-              href={`${basePath}${toggleStone(stone.id)}`}
-            />
-          ))}
-        </div>
-      </FilterSection>
+      {showSizeFilter && (
+        <FilterSection title="Размер">
+          <div className="grid grid-cols-4 gap-2">
+            {RING_BRACELET_SIZES.map((size) => {
+              const id = String(size);
+              return (
+                <Link
+                  key={id}
+                  href={`${basePath}${toggleSize(id)}`}
+                  scroll={false}
+                  onClick={(e) => e.stopPropagation()}
+                  className={`rounded-lg border px-2 py-2 text-center text-sm transition-colors ${
+                    filters.sizes.includes(id)
+                      ? "border-brand-olive bg-brand-olive/10 text-brand-olive-dark font-medium"
+                      : "border-brand-olive/20 bg-brand-surface text-brand-text hover:border-brand-olive"
+                  }`}
+                >
+                  {formatSizeLabel(size)}
+                </Link>
+              );
+            })}
+          </div>
+          <p className="mt-3 text-xs text-brand-muted leading-relaxed">
+            Для колец и браслетов.{" "}
+            <Link href="/how-size-ring" className="text-brand-olive hover:underline">
+              Как определить размер →
+            </Link>
+          </p>
+        </FilterSection>
+      )}
 
       {activeCount > 0 && (
         <Link

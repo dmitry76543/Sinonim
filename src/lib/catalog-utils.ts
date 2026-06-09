@@ -1,6 +1,5 @@
 import {
   PRICE_RANGES,
-  STONE_WEIGHTS,
   type CategorySlug,
   type Product,
 } from "./products";
@@ -8,9 +7,26 @@ import {
 export type CatalogFilters = {
   category?: CategorySlug;
   priceRanges: string[];
-  stoneWeights: string[];
+  sizes: string[];
   sort: string;
 };
+
+function getProductSizes(product: Product): number[] {
+  if (product.sizes?.length) return product.sizes;
+  return [];
+}
+
+function productMatchesSize(product: Product, sizeParam: string): boolean {
+  if (product.category !== "rings" && product.category !== "bracelets") {
+    return false;
+  }
+
+  const target = Number.parseFloat(sizeParam.replace(",", "."));
+  if (Number.isNaN(target)) return false;
+
+  const sizes = getProductSizes(product);
+  return sizes.some((size) => Math.abs(size - target) < 0.01);
+}
 
 export function filterProducts(
   filters: CatalogFilters,
@@ -29,13 +45,9 @@ export function filterProducts(
     );
   }
 
-  if (filters.stoneWeights.length > 0) {
-    const weights = STONE_WEIGHTS.filter((w) => filters.stoneWeights.includes(w.id));
+  if (filters.sizes.length > 0) {
     result = result.filter((p) =>
-      weights.some((w) => {
-        if (w.id === "1+") return p.stoneWeight >= 1;
-        return p.stoneWeight === w.value;
-      })
+      filters.sizes.some((size) => productMatchesSize(p, size))
     );
   }
 
@@ -63,7 +75,7 @@ export function parseFiltersFromSearchParams(
   return {
     category,
     priceRanges: params.getAll("price"),
-    stoneWeights: params.getAll("stone"),
+    sizes: params.getAll("size"),
     sort: params.get("sort") ?? "default",
   };
 }
@@ -76,7 +88,7 @@ export function buildFilterQuery(
   const query = new URLSearchParams();
 
   next.priceRanges.forEach((p) => query.append("price", p));
-  next.stoneWeights.forEach((s) => query.append("stone", s));
+  next.sizes.forEach((size) => query.append("size", size));
   if (next.sort && next.sort !== "default") {
     query.set("sort", next.sort);
   }
@@ -86,5 +98,9 @@ export function buildFilterQuery(
 }
 
 export function countActiveFilters(filters: CatalogFilters): number {
-  return filters.priceRanges.length + filters.stoneWeights.length;
+  return filters.priceRanges.length + filters.sizes.length;
+}
+
+export function shouldShowSizeFilter(category?: CategorySlug): boolean {
+  return !category || category === "rings" || category === "bracelets";
 }

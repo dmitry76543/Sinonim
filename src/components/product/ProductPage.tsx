@@ -86,6 +86,10 @@ export function ProductPage({ product, relatedProducts }: ProductPageProps) {
                 <dd className="text-brand-text text-right">Круглая (57 граней)</dd>
               </div>
               <div className="flex justify-between gap-4 border-b border-brand-sand pb-3">
+                <dt className="text-brand-muted">Вес бриллианта</dt>
+                <dd className="text-brand-text text-right">{product.stoneWeight} карат</dd>
+              </div>
+              <div className="flex justify-between gap-4 border-b border-brand-sand pb-3">
                 <dt className="text-brand-muted">Цвет</dt>
                 <dd className="text-brand-text text-right">{product.color}</dd>
               </div>

@@ -1,10 +1,29 @@
 import type { CategorySlug, Product, ProductDetails, StoneVariant } from "@/lib/products";
+import { resolveProductImageUrl, resolveProductImages } from "./images";
 import type {
   AdvantShopCatalogProduct,
   AdvantShopPhoto,
   AdvantShopProductDetails,
   AdvantShopProperty,
 } from "./types";
+
+export function extractProductSizes(
+  item: Pick<AdvantShopProductDetails, "sizeColorPicker">,
+  category: CategorySlug
+): number[] {
+  const sizes =
+    item.sizeColorPicker?.sizes
+      ?.map((size) => Number.parseFloat(size.name.replace(",", ".")))
+      .filter((size) => !Number.isNaN(size)) ?? [];
+
+  if (sizes.length) return sizes;
+
+  if (category === "rings" || category === "bracelets") {
+    return [];
+  }
+
+  return [];
+}
 
 const DEFAULT_IMAGE = "/images/product-ring.webp";
 
@@ -85,6 +104,9 @@ export function mapCatalogProduct(
   category: CategorySlug
 ): Product {
   const price = Math.round(item.priceWithDiscount ?? item.price);
+  const sizes = extractProductSizes(item, category);
+  const hasSizes =
+    category === "rings" || category === "bracelets" || sizes.length > 0;
 
   return {
     id: String(item.productId),
@@ -92,12 +114,13 @@ export function mapCatalogProduct(
     name: item.name,
     category,
     price,
-    image: pickImage(item),
+    image: resolveProductImageUrl(pickImage(item)),
     stoneWeight: 0.2,
     badge: mapBadge(item),
     isNew: Boolean(item.newProduct),
     description: item.briefDescription || undefined,
-    images: collectImages(item.photos),
+    images: resolveProductImages(collectImages(item.photos)),
+    sizes: hasSizes ? sizes : undefined,
   };
 }
 
@@ -113,7 +136,8 @@ export function mapProductDetails(
   );
 
   const stoneWeight = parseStoneWeight(properties);
-  const images = collectImages(item.photos);
+  const rawImages = collectImages(item.photos);
+  const images = resolveProductImages(rawImages);
   const fallbackImage = images[0] ?? DEFAULT_IMAGE;
 
   const stoneVariants: StoneVariant[] = STONE_VARIANT_WEIGHTS.map((weight) => ({
@@ -122,11 +146,7 @@ export function mapProductDetails(
     price: Math.round(basePrice * (weight / Math.max(stoneWeight, 0.1))),
   }));
 
-  const sizes =
-    item.sizeColorPicker?.sizes
-      ?.map((size) => Number.parseFloat(size.name.replace(",", ".")))
-      .filter((size) => !Number.isNaN(size)) ?? [];
-
+  const sizes = extractProductSizes(item, category);
   const hasSizes =
     category === "rings" || category === "bracelets" || sizes.length > 0;
 

@@ -1,7 +1,7 @@
 import type { CategorySlug, Product, ProductDetails } from "@/lib/products";
-import { advantshopFetch } from "./client";
+import { advantshopClientFetch, advantshopFetch } from "./client";
 import { getCategoryUrlMap } from "./config";
-import { mapCatalogProduct, mapProductDetails } from "./mapper";
+import { mapCatalogProduct, mapProductDetails, extractProductSizes } from "./mapper";
 import type {
   AdvantShopCatalogResponse,
   AdvantShopCategoriesResponse,
@@ -30,7 +30,7 @@ function getCategorySlugByUrl(url: string): CategorySlug | undefined {
 }
 
 async function fetchCatalogPage(body: Record<string, unknown>) {
-  return advantshopFetch<AdvantShopCatalogResponse>("/api/catalog", {
+  return advantshopClientFetch<AdvantShopCatalogResponse>("/api/catalog", {
     method: "POST",
     body,
   });
@@ -57,6 +57,44 @@ export async function fetchAdvantShopCategories() {
   });
 }
 
+async function enrichProductsWithSizes(products: Product[]): Promise<Product[]> {
+  const targets = products.filter(
+    (product) =>
+      (product.category === "rings" || product.category === "bracelets") &&
+      !product.sizes?.length
+  );
+
+  if (!targets.length) return products;
+
+  const sizeEntries = await Promise.all(
+    targets.map(async (product) => {
+      try {
+        const details = await advantshopClientFetch<AdvantShopProductDetails>(
+          `/api/products/${product.id}`
+        );
+        const sizes = extractProductSizes(details, product.category);
+        return sizes.length ? ([product.id, sizes] as const) : null;
+      } catch {
+        return null;
+      }
+    })
+  );
+
+  const sizesByProductId = new Map(
+    sizeEntries.filter(
+      (entry): entry is readonly [string, number[]] => entry !== null
+    )
+  );
+
+  if (!sizesByProductId.size) return products;
+
+  return products.map((product) =>
+    sizesByProductId.has(product.id)
+      ? { ...product, sizes: sizesByProductId.get(product.id) }
+      : product
+  );
+}
+
 export async function fetchAdvantShopProducts(options?: {
   category?: CategorySlug;
   sort?: string;
@@ -69,7 +107,8 @@ export async function fetchAdvantShopProducts(options?: {
     if (!categoryUrl) return [];
 
     const items = await fetchAllCatalogProducts({ url: categoryUrl, sorting: sort });
-    return items.map((item) => mapCatalogProduct(item, options.category!));
+    const products = items.map((item) => mapCatalogProduct(item, options.category!));
+    return enrichProductsWithSizes(products);
   }
 
   const slugs = Object.keys(categoryMap) as CategorySlug[];
@@ -92,7 +131,7 @@ export async function fetchAdvantShopProducts(options?: {
     }
   }
 
-  return Array.from(merged.values());
+  return enrichProductsWithSizes(Array.from(merged.values()));
 }
 
 export async function fetchAdvantShopProductDetails(
@@ -104,8 +143,10 @@ export async function fetchAdvantShopProductDetails(
   if (!summary) return undefined;
 
   const [details, propertiesResponse] = await Promise.all([
-    advantshopFetch<AdvantShopProductDetails>(`/api/products/${summary.id}`),
-    advantshopFetch<AdvantShopPropertiesResponse>(
+    advantshopClientFetch<AdvantShopProductDetails>(
+      `/api/products/${summary.id}`
+    ),
+    advantshopClientFetch<AdvantShopPropertiesResponse>(
       `/api/products/${summary.id}/properties`,
       { searchParams: { type: "inDetails" } }
     ).catch(() => ({ properties: [] })),

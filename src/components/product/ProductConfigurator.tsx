@@ -16,7 +16,6 @@ export function ProductConfigurator({ product }: ProductConfiguratorProps) {
     (v) => v.weight === product.stoneWeight
   ) ?? product.stoneVariants[0];
 
-  const [selectedStone, setSelectedStone] = useState(defaultVariant);
   const [selectedSize, setSelectedSize] = useState(
     product.sizes.length > 0 ? product.sizes[3] ?? product.sizes[0] : null
   );
@@ -28,9 +27,9 @@ export function ProductConfigurator({ product }: ProductConfiguratorProps) {
       productSlug: product.slug,
       name: product.name,
       image: product.image,
-      price: selectedStone.price,
-      stoneWeight: selectedStone.weight,
-      stoneLabel: selectedStone.label,
+      price: defaultVariant.price,
+      stoneWeight: defaultVariant.weight,
+      stoneLabel: defaultVariant.label,
       size: selectedSize,
     });
     setAdded(true);
@@ -42,7 +41,7 @@ export function ProductConfigurator({ product }: ProductConfiguratorProps) {
       <div>
         <div className="flex flex-wrap items-center gap-3 mb-2">
           <p className="font-heading text-3xl md:text-4xl text-brand-olive-dark">
-            {formatPrice(selectedStone.price)}
+            {formatPrice(defaultVariant.price)}
           </p>
           {product.badge && (
             <span className="px-2.5 py-1 bg-brand-terracotta text-white text-[10px] tracking-widest uppercase">
@@ -56,28 +55,6 @@ export function ProductConfigurator({ product }: ProductConfiguratorProps) {
       </div>
 
       <div className="space-y-4">
-        <div>
-          <label className="block text-xs tracking-[0.15em] uppercase text-brand-muted mb-2">
-            Вес бриллианта
-          </label>
-          <div className="flex flex-wrap gap-2">
-            {product.stoneVariants.map((variant) => (
-              <button
-                key={variant.weight}
-                type="button"
-                onClick={() => setSelectedStone(variant)}
-                className={`px-4 py-2.5 text-sm rounded-lg border transition-colors ${
-                  selectedStone.weight === variant.weight
-                    ? "border-brand-olive bg-brand-olive/10 text-brand-olive-dark"
-                    : "border-brand-olive/20 bg-brand-surface text-brand-text hover:border-brand-olive"
-                }`}
-              >
-                {variant.label}
-              </button>
-            ))}
-          </div>
-        </div>
-
         {product.sizes.length > 0 && (
           <div>
             <label
@@ -122,21 +99,6 @@ export function ProductConfigurator({ product }: ProductConfiguratorProps) {
             </p>
           </div>
         )}
-
-        <dl className="grid grid-cols-2 gap-3 text-sm">
-          <div className="bg-brand-surface rounded-lg p-3">
-            <dt className="text-brand-muted text-xs mb-1">Цвет</dt>
-            <dd className="text-brand-text">{product.color}</dd>
-          </div>
-          <div className="bg-brand-surface rounded-lg p-3">
-            <dt className="text-brand-muted text-xs mb-1">Чистота</dt>
-            <dd className="text-brand-text">{product.clarity}</dd>
-          </div>
-          <div className="bg-brand-surface rounded-lg p-3 col-span-2">
-            <dt className="text-brand-muted text-xs mb-1">Металл</dt>
-            <dd className="text-brand-text">{product.metal}</dd>
-          </div>
-        </dl>
       </div>
 
       <div className="flex flex-col sm:flex-row gap-3">

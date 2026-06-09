@@ -21,6 +21,11 @@ export type AdvantShopCatalogProduct = {
   photoMiddle?: string | null;
   photoSmall?: string | null;
   photos?: AdvantShopPhoto[] | null;
+  sizeId?: number | null;
+  sizeColorPicker?: {
+    sizes?: { id: number; name: string }[];
+  };
+  offers?: AdvantShopOffer[] | null;
 };
 
 export type AdvantShopCatalogResponse = {

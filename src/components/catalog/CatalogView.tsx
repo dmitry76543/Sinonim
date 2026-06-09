@@ -7,22 +7,34 @@ import { CATEGORIES, type CategorySlug, type Product } from "@/lib/products";
 import {
   filterProducts,
   parseFiltersFromSearchParams,
+  countActiveFilters,
 } from "@/lib/catalog-utils";
 import { CatalogFilters, SortSelect } from "./CatalogFilters";
 import { ProductCard } from "./ProductCard";
 
+const CATALOG_GRID =
+  "grid grid-cols-2 md:grid-cols-4 gap-4 md:gap-5 lg:gap-6";
+
 type CatalogViewProps = {
   category?: CategorySlug;
   initialProducts?: Product[];
+  catalogError?: string;
 };
 
-export function CatalogView({ category, initialProducts }: CatalogViewProps) {
+export function CatalogView({
+  category,
+  initialProducts,
+  catalogError: initialError,
+}: CatalogViewProps) {
   const searchParams = useSearchParams();
-  const [mobileFiltersOpen, setMobileFiltersOpen] = useState(false);
+  const [filtersOpen, setFiltersOpen] = useState(false);
   const [catalogProducts, setCatalogProducts] = useState<Product[]>(
     initialProducts ?? []
   );
-  const [loading, setLoading] = useState(!initialProducts?.length);
+  const [catalogError, setCatalogError] = useState<string | undefined>(
+    initialError
+  );
+  const [loading, setLoading] = useState(!initialProducts?.length && !initialError);
 
   const basePath = category ? `/shop/${category}` : "/shop";
   const filters = parseFiltersFromSearchParams(
@@ -39,14 +51,26 @@ export function CatalogView({ category, initialProducts }: CatalogViewProps) {
     setLoading(true);
 
     fetch(`/api/catalog?${params.toString()}`)
-      .then((response) => response.json())
-      .then((data: { products?: Product[] }) => {
+      .then(async (response) => {
+        const data = (await response.json()) as {
+          products?: Product[];
+          error?: string;
+        };
         if (!cancelled) {
+          if (!response.ok || data.error) {
+            setCatalogError(
+              data.error ?? "Не удалось загрузить каталог из AdvantShop"
+            );
+            setCatalogProducts([]);
+            return;
+          }
+          setCatalogError(undefined);
           setCatalogProducts(data.products ?? []);
         }
       })
       .catch(() => {
         if (!cancelled) {
+          setCatalogError("Не удалось загрузить каталог из AdvantShop");
           setCatalogProducts([]);
         }
       })
@@ -62,6 +86,7 @@ export function CatalogView({ category, initialProducts }: CatalogViewProps) {
   }, [category, filters.sort]);
 
   const products = filterProducts(filters, catalogProducts);
+  const activeFilterCount = countActiveFilters(filters);
 
   const pageTitle = category
     ? CATEGORIES[category].titlePlural
@@ -113,32 +138,45 @@ export function CatalogView({ category, initialProducts }: CatalogViewProps) {
           </p>
         </div>
 
-        <div className="flex flex-col lg:flex-row gap-8 lg:gap-10">
-          <aside className="hidden lg:block w-64 shrink-0">
-            <div className="sticky top-28 bg-brand-surface rounded-xl p-6 shadow-sm">
-              <CatalogFilters filters={filters} basePath={basePath} />
+        <div className={`relative flex transition-[gap] duration-300 ${filtersOpen ? "lg:gap-6" : "gap-0"}`}>
+          {filtersOpen && (
+            <button
+              type="button"
+              className="fixed inset-0 z-40 bg-black/30 backdrop-blur-[1px] transition-opacity duration-300 lg:hidden"
+              aria-label="Закрыть фильтры"
+              onClick={() => setFiltersOpen(false)}
+            />
+          )}
+
+          <aside
+            id="catalog-filters"
+            aria-hidden={!filtersOpen}
+            className={`shrink-0 overflow-hidden transition-[width,transform,opacity] duration-300 ease-in-out will-change-[width,transform]
+              fixed inset-y-0 left-0 z-50 h-full lg:relative lg:inset-auto lg:z-10 lg:h-auto
+              ${
+                filtersOpen
+                  ? "w-[min(100%,18rem)] translate-x-0 opacity-100"
+                  : "w-0 -translate-x-full opacity-0 pointer-events-none lg:translate-x-0 lg:w-0"
+              }`}
+          >
+            <div className="h-full w-72 max-w-[85vw] overflow-y-auto border-r border-brand-olive/10 bg-brand-surface p-6 shadow-xl lg:sticky lg:top-28 lg:max-h-[calc(100vh-8rem)] lg:w-64 lg:rounded-xl lg:border lg:border-r lg:shadow-sm">
+              <CatalogFilters
+                filters={filters}
+                basePath={basePath}
+                onClose={() => setFiltersOpen(false)}
+              />
             </div>
           </aside>
 
-          <div className="flex-1 min-w-0">
-            <div className="flex flex-wrap items-center justify-between gap-4 mb-6">
-              <p className="text-sm text-brand-muted">
-                {loading
-                  ? "Загрузка каталога…"
-                  : `${products.length} ${
-                      products.length === 1
-                        ? "изделие"
-                        : products.length < 5
-                          ? "изделия"
-                          : "изделий"
-                    }`}
-              </p>
-
-              <div className="flex items-center gap-3">
+          <div className="min-w-0 flex-1">
+            <div className="mb-6 flex flex-wrap items-center justify-between gap-4">
+              <div className="flex flex-wrap items-center gap-3">
                 <button
                   type="button"
-                  onClick={() => setMobileFiltersOpen(true)}
-                  className="lg:hidden flex items-center gap-2 px-4 py-2.5 bg-brand-surface border border-brand-olive/20 rounded-lg text-sm text-brand-text hover:border-brand-olive transition-colors"
+                  aria-expanded={filtersOpen}
+                  aria-controls="catalog-filters"
+                  onClick={() => setFiltersOpen((open) => !open)}
+                  className="inline-flex items-center gap-2 rounded-lg border border-brand-olive/20 bg-brand-surface px-4 py-2.5 text-sm text-brand-text transition-colors hover:border-brand-olive"
                 >
                   <svg width="18" height="18" viewBox="0 0 24 24" fill="none" aria-hidden>
                     <path
@@ -149,37 +187,68 @@ export function CatalogView({ category, initialProducts }: CatalogViewProps) {
                     />
                   </svg>
                   Фильтры
+                  {activeFilterCount > 0 && (
+                    <span className="inline-flex h-5 min-w-5 items-center justify-center rounded-full bg-brand-olive px-1.5 text-[10px] font-medium text-white">
+                      {activeFilterCount}
+                    </span>
+                  )}
                 </button>
-                <SortSelect filters={filters} basePath={basePath} />
+
+                <p className="text-sm text-brand-muted">
+                  {loading
+                    ? "Загрузка каталога…"
+                    : `${products.length} ${
+                        products.length === 1
+                          ? "изделие"
+                          : products.length < 5
+                            ? "изделия"
+                            : "изделий"
+                      }`}
+                </p>
               </div>
+
+              <SortSelect filters={filters} basePath={basePath} />
             </div>
 
             {loading ? (
-              <div className="grid grid-cols-2 md:grid-cols-3 gap-4 md:gap-6">
-                {Array.from({ length: 6 }).map((_, index) => (
+              <div className={CATALOG_GRID}>
+                {Array.from({ length: 8 }).map((_, index) => (
                   <div
                     key={index}
                     className="aspect-square rounded-xl bg-brand-sand/40 animate-pulse"
                   />
                 ))}
               </div>
+            ) : catalogError ? (
+              <div className="rounded-xl bg-brand-surface p-10 text-center md:p-16">
+                <p className="mb-2 font-heading text-xl text-brand-olive-dark">
+                  Каталог временно недоступен
+                </p>
+                <p className="mx-auto mb-2 max-w-xl text-sm text-brand-muted">
+                  {catalogError}
+                </p>
+                <p className="mx-auto max-w-xl text-xs text-brand-muted">
+                  Проверьте ключ Client API в `.env.local` (вкладка «API с
+                  авторизацией» в AdvantShop) и перезапустите сервер.
+                </p>
+              </div>
             ) : products.length > 0 ? (
-              <div className="grid grid-cols-2 md:grid-cols-3 gap-4 md:gap-6">
+              <div className={CATALOG_GRID}>
                 {products.map((product) => (
                   <ProductCard key={product.id} product={product} />
                 ))}
               </div>
             ) : (
-              <div className="bg-brand-surface rounded-xl p-10 md:p-16 text-center">
-                <p className="font-heading text-xl text-brand-olive-dark mb-2">
+              <div className="rounded-xl bg-brand-surface p-10 text-center md:p-16">
+                <p className="mb-2 font-heading text-xl text-brand-olive-dark">
                   Ничего не найдено
                 </p>
-                <p className="text-brand-muted text-sm mb-6">
+                <p className="mb-6 text-sm text-brand-muted">
                   Попробуйте изменить фильтры или выберите другую категорию
                 </p>
                 <Link
                   href={basePath}
-                  className="inline-flex px-6 py-3 bg-brand-olive text-white text-sm tracking-widest uppercase hover:bg-brand-olive-dark transition-colors"
+                  className="inline-flex bg-brand-olive px-6 py-3 text-sm tracking-widest uppercase text-white transition-colors hover:bg-brand-olive-dark"
                 >
                   Сбросить фильтры
                 </Link>
@@ -188,26 +257,6 @@ export function CatalogView({ category, initialProducts }: CatalogViewProps) {
           </div>
         </div>
       </div>
-
-      {mobileFiltersOpen && (
-        <div className="fixed inset-0 z-50 lg:hidden">
-          <button
-            type="button"
-            className="absolute inset-0 bg-black/40"
-            aria-label="Закрыть фильтры"
-            onClick={() => setMobileFiltersOpen(false)}
-          />
-          <div className="absolute inset-y-0 left-0 w-full max-w-sm bg-brand-surface shadow-xl overflow-y-auto">
-            <div className="p-6">
-              <CatalogFilters
-                filters={filters}
-                basePath={basePath}
-                onClose={() => setMobileFiltersOpen(false)}
-              />
-            </div>
-          </div>
-        </div>
-      )}
     </section>
   );
 }

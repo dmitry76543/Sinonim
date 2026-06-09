@@ -1,6 +1,6 @@
 "use client";
 
-import Image from "next/image";
+import { ProductImage } from "@/components/catalog/ProductImage";
 import Link from "next/link";
 import { useEffect, useState } from "react";
 import { useCompare } from "@/context/CompareContext";
@@ -185,7 +185,7 @@ export function CompareView() {
                   >
                     <div className="space-y-3">
                       <div className="relative aspect-square rounded-lg overflow-hidden bg-brand-sand/30">
-                        <Image
+                        <ProductImage
                           src={product.image}
                           alt={product.name}
                           fill

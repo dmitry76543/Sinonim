@@ -36,9 +36,19 @@ export default async function CategoryPage({ params }: PageProps) {
     notFound();
   }
 
-  const initialProducts = await getCatalogProducts({
-    category: category as CategorySlug,
-  });
+  let initialProducts: Awaited<ReturnType<typeof getCatalogProducts>> = [];
+  let catalogError: string | undefined;
+
+  try {
+    initialProducts = await getCatalogProducts({
+      category: category as CategorySlug,
+    });
+  } catch (error) {
+    catalogError =
+      error instanceof Error
+        ? error.message
+        : "Не удалось загрузить каталог из AdvantShop";
+  }
 
   return (
     <>
@@ -48,6 +58,7 @@ export default async function CategoryPage({ params }: PageProps) {
           <CatalogView
             category={category as CategorySlug}
             initialProducts={initialProducts}
+            catalogError={catalogError}
           />
         </Suspense>
       </main>

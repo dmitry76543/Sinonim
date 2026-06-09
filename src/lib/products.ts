@@ -270,7 +270,11 @@ export function isValidCategory(slug: string): slug is CategorySlug {
 
 const STONE_VARIANT_WEIGHTS = [0.1, 0.2, 0.3, 0.5, 1] as const;
 
-const DEFAULT_SIZES = [15, 15.5, 16, 16.5, 17, 17.5, 18, 18.5, 19];
+export const RING_BRACELET_SIZES = [
+  15, 15.5, 16, 16.5, 17, 17.5, 18, 18.5, 19, 19.5, 20, 20.5, 21,
+] as const;
+
+const DEFAULT_SIZES = RING_BRACELET_SIZES;
 
 const CATEGORY_IMAGES: Record<CategorySlug, string[]> = {
   rings: ["/images/product-bracelet.webp", "/images/product-ring.webp"],

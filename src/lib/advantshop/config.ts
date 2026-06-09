@@ -1,31 +1,58 @@
 import type { CategorySlug } from "@/lib/products";
 
+function readEnv(name: string): string | undefined {
+  const value = process.env[name]?.trim();
+  return value || undefined;
+}
+
 export function isAdvantShopConfigured(): boolean {
-  return Boolean(
-    process.env.ADVANTSHOP_BASE_URL?.trim() &&
-      process.env.ADVANTSHOP_API_KEY?.trim()
-  );
+  return Boolean(readEnv("ADVANTSHOP_BASE_URL") && readEnv("ADVANTSHOP_CATEGORY_MAP"));
 }
 
 export function getAdvantShopBaseUrl(): string {
-  const base = process.env.ADVANTSHOP_BASE_URL?.trim();
+  const base = readEnv("ADVANTSHOP_BASE_URL");
   if (!base) {
     throw new Error("ADVANTSHOP_BASE_URL is not configured");
   }
   return base.replace(/\/$/, "");
 }
 
-export function getAdvantShopApiKey(): string {
-  const key = process.env.ADVANTSHOP_API_KEY?.trim();
+/** Server API key — categories, orders, customers */
+export function getAdvantShopServerApiKey(): string {
+  const key =
+    readEnv("ADVANTSHOP_SERVER_API_KEY") ?? readEnv("ADVANTSHOP_API_KEY");
   if (!key) {
-    throw new Error("ADVANTSHOP_API_KEY is not configured");
+    throw new Error("ADVANTSHOP_SERVER_API_KEY is not configured");
   }
   return key;
 }
 
+/**
+ * Client API key from «API с авторизацией» tab.
+ * Required for catalog and product endpoints.
+ */
+export function getAdvantShopClientApiKey(): string {
+  const key = getAdvantShopClientApiKeyOptional();
+  if (!key) {
+    throw new Error(
+      "ADVANTSHOP_CLIENT_API_KEY is not configured. Generate it in AdvantShop admin: Settings → API → «API с авторизацией»."
+    );
+  }
+  return key;
+}
+
+function getAdvantShopClientApiKeyOptional(): string | undefined {
+  return readEnv("ADVANTSHOP_CLIENT_API_KEY") ?? readEnv("ADVANTSHOP_API_KEY");
+}
+
+/** @deprecated Use getAdvantShopServerApiKey or getAdvantShopClientApiKey */
+export function getAdvantShopApiKey(): string {
+  return getAdvantShopServerApiKey();
+}
+
 /** Map site category slugs to AdvantShop category URL paths */
 export function getCategoryUrlMap(): Partial<Record<CategorySlug, string>> {
-  const raw = process.env.ADVANTSHOP_CATEGORY_MAP?.trim();
+  const raw = readEnv("ADVANTSHOP_CATEGORY_MAP");
   if (!raw) return {};
 
   try {
