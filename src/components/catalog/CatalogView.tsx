@@ -1,9 +1,9 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import Link from "next/link";
 import { useSearchParams } from "next/navigation";
-import { CATEGORIES, type CategorySlug } from "@/lib/products";
+import { CATEGORIES, type CategorySlug, type Product } from "@/lib/products";
 import {
   filterProducts,
   parseFiltersFromSearchParams,
@@ -13,18 +13,55 @@ import { ProductCard } from "./ProductCard";
 
 type CatalogViewProps = {
   category?: CategorySlug;
+  initialProducts?: Product[];
 };
 
-export function CatalogView({ category }: CatalogViewProps) {
+export function CatalogView({ category, initialProducts }: CatalogViewProps) {
   const searchParams = useSearchParams();
   const [mobileFiltersOpen, setMobileFiltersOpen] = useState(false);
+  const [catalogProducts, setCatalogProducts] = useState<Product[]>(
+    initialProducts ?? []
+  );
+  const [loading, setLoading] = useState(!initialProducts?.length);
 
   const basePath = category ? `/shop/${category}` : "/shop";
   const filters = parseFiltersFromSearchParams(
     new URLSearchParams(searchParams.toString()),
     category
   );
-  const products = filterProducts(filters);
+
+  useEffect(() => {
+    const params = new URLSearchParams();
+    if (category) params.set("category", category);
+    if (filters.sort !== "default") params.set("sort", filters.sort);
+
+    let cancelled = false;
+    setLoading(true);
+
+    fetch(`/api/catalog?${params.toString()}`)
+      .then((response) => response.json())
+      .then((data: { products?: Product[] }) => {
+        if (!cancelled) {
+          setCatalogProducts(data.products ?? []);
+        }
+      })
+      .catch(() => {
+        if (!cancelled) {
+          setCatalogProducts([]);
+        }
+      })
+      .finally(() => {
+        if (!cancelled) {
+          setLoading(false);
+        }
+      });
+
+    return () => {
+      cancelled = true;
+    };
+  }, [category, filters.sort]);
+
+  const products = filterProducts(filters, catalogProducts);
 
   const pageTitle = category
     ? CATEGORIES[category].titlePlural
@@ -86,12 +123,15 @@ export function CatalogView({ category }: CatalogViewProps) {
           <div className="flex-1 min-w-0">
             <div className="flex flex-wrap items-center justify-between gap-4 mb-6">
               <p className="text-sm text-brand-muted">
-                {products.length}{" "}
-                {products.length === 1
-                  ? "изделие"
-                  : products.length < 5
-                    ? "изделия"
-                    : "изделий"}
+                {loading
+                  ? "Загрузка каталога…"
+                  : `${products.length} ${
+                      products.length === 1
+                        ? "изделие"
+                        : products.length < 5
+                          ? "изделия"
+                          : "изделий"
+                    }`}
               </p>
 
               <div className="flex items-center gap-3">
@@ -114,7 +154,16 @@ export function CatalogView({ category }: CatalogViewProps) {
               </div>
             </div>
 
-            {products.length > 0 ? (
+            {loading ? (
+              <div className="grid grid-cols-2 md:grid-cols-3 gap-4 md:gap-6">
+                {Array.from({ length: 6 }).map((_, index) => (
+                  <div
+                    key={index}
+                    className="aspect-square rounded-xl bg-brand-sand/40 animate-pulse"
+                  />
+                ))}
+              </div>
+            ) : products.length > 0 ? (
               <div className="grid grid-cols-2 md:grid-cols-3 gap-4 md:gap-6">
                 {products.map((product) => (
                   <ProductCard key={product.id} product={product} />

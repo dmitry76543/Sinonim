@@ -1,6 +1,5 @@
 import {
   PRICE_RANGES,
-  PRODUCTS,
   STONE_WEIGHTS,
   type CategorySlug,
   type Product,
@@ -13,8 +12,11 @@ export type CatalogFilters = {
   sort: string;
 };
 
-export function filterProducts(filters: CatalogFilters): Product[] {
-  let result = [...PRODUCTS];
+export function filterProducts(
+  filters: CatalogFilters,
+  products: Product[]
+): Product[] {
+  let result = [...products];
 
   if (filters.category) {
     result = result.filter((p) => p.category === filters.category);

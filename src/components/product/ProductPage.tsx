@@ -1,20 +1,17 @@
 import Link from "next/link";
-import {
-  CATEGORIES,
-  getProductDetails,
-  getRelatedProducts,
-  type ProductDetails,
-} from "@/lib/products";
+import { CATEGORIES, type ProductDetails } from "@/lib/products";
+import type { Product } from "@/lib/products";
 import { ProductCard } from "@/components/catalog/ProductCard";
 import { ProductConfigurator } from "./ProductConfigurator";
 import { ProductGallery } from "./ProductGallery";
 
 type ProductPageProps = {
   product: ProductDetails;
+  relatedProducts: Product[];
 };
 
-export function ProductPage({ product }: ProductPageProps) {
-  const related = getRelatedProducts(product);
+export function ProductPage({ product, relatedProducts }: ProductPageProps) {
+  const related = relatedProducts;
   const categoryTitle = CATEGORIES[product.category].title;
 
   return (

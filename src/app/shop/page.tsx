@@ -2,6 +2,9 @@ import { Suspense } from "react";
 import { Footer } from "@/components/Footer";
 import { Header } from "@/components/Header";
 import { CatalogView } from "@/components/catalog/CatalogView";
+import { getCatalogProducts } from "@/lib/products-service";
+
+export const dynamic = "force-dynamic";
 
 export const metadata = {
   title: "Каталог — Синоним",
@@ -15,13 +18,15 @@ function CatalogFallback() {
   );
 }
 
-export default function ShopPage() {
+export default async function ShopPage() {
+  const initialProducts = await getCatalogProducts();
+
   return (
     <>
       <Header />
       <main>
         <Suspense fallback={<CatalogFallback />}>
-          <CatalogView />
+          <CatalogView initialProducts={initialProducts} />
         </Suspense>
       </main>
       <Footer />

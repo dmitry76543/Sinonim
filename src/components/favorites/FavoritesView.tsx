@@ -1,24 +1,52 @@
 "use client";
 
 import Link from "next/link";
-import { useMemo } from "react";
+import { useEffect, useState } from "react";
 import { ProductCard } from "@/components/catalog/ProductCard";
 import { useFavorites } from "@/context/FavoritesContext";
-import { getProductBySlug } from "@/lib/products";
+import type { Product } from "@/lib/products";
 
 export function FavoritesView() {
   const { slugs, clearFavorites, isReady } = useFavorites();
+  const [products, setProducts] = useState<Product[]>([]);
+  const [loading, setLoading] = useState(false);
 
-  const products = useMemo(
-    () =>
-      slugs
-        .map((slug) => getProductBySlug(slug))
-        .filter((product) => product !== undefined),
-    [slugs]
-  );
+  useEffect(() => {
+    if (!isReady) return;
 
-  if (!isReady) {
-    return (
+    if (!slugs.length) {
+      setProducts([]);
+      return;
+    }
+
+    let cancelled = false;
+    setLoading(true);
+
+    Promise.all(
+      slugs.map(async (slug) => {
+        const response = await fetch(`/api/products/${slug}`);
+        if (!response.ok) return null;
+        const data = (await response.json()) as { product?: Product };
+        return data.product ?? null;
+      })
+    )
+      .then((items) => {
+        if (!cancelled) {
+          setProducts(items.filter((item): item is Product => item !== null));
+        }
+      })
+      .finally(() => {
+        if (!cancelled) {
+          setLoading(false);
+        }
+      });
+
+    return () => {
+      cancelled = true;
+    };
+  }, [slugs, isReady]);
+
+  if (!isReady || loading) {    return (
       <section className="py-16 md:py-24">
         <div className="mx-auto max-w-7xl px-4 md:px-6 lg:px-10 text-center text-brand-muted">
           Загрузка…

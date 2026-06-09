@@ -1,0 +1,91 @@
+export type AdvantShopPhoto = {
+  smallSrc?: string | null;
+  middleSrc?: string | null;
+  bigSrc?: string | null;
+  main?: boolean;
+};
+
+export type AdvantShopCatalogProduct = {
+  productId: number;
+  offerId?: number;
+  urlPath: string;
+  name: string;
+  briefDescription?: string;
+  artNo?: string;
+  price: number;
+  priceWithDiscount?: number;
+  newProduct?: boolean;
+  bestseller?: boolean;
+  sales?: boolean;
+  recomended?: boolean;
+  photoMiddle?: string | null;
+  photoSmall?: string | null;
+  photos?: AdvantShopPhoto[] | null;
+};
+
+export type AdvantShopCatalogResponse = {
+  products?: AdvantShopCatalogProduct[];
+  pager?: {
+    currentPage: number;
+    totalPageCount: number;
+    totalCount: number;
+  };
+  category?: {
+    id: number;
+    url: string;
+    name: string;
+  };
+};
+
+export type AdvantShopCategory = {
+  id: number;
+  name: string;
+  url: string;
+  parentCategoryId?: number;
+};
+
+export type AdvantShopCategoriesResponse = {
+  categories?: AdvantShopCategory[];
+  pagination?: {
+    currentPage: number;
+    totalPageCount: number;
+  };
+};
+
+export type AdvantShopOffer = {
+  offerId: number;
+  artNo?: string;
+  price: number;
+  oldPrice?: number;
+  amount?: number;
+  isMain?: boolean;
+  sizeId?: number | null;
+};
+
+export type AdvantShopProductDetails = {
+  productId: number;
+  artNo?: string;
+  name: string;
+  urlPath: string;
+  briefDescription?: string;
+  description?: string;
+  newProduct?: boolean;
+  bestseller?: boolean;
+  sales?: boolean;
+  photos?: AdvantShopPhoto[] | null;
+  offers?: AdvantShopOffer[];
+  sizeColorPicker?: {
+    sizes?: { id: number; name: string }[];
+  };
+};
+
+export type AdvantShopProperty = {
+  name?: string;
+  value?: string;
+  propertyName?: string;
+  propertyValue?: string;
+};
+
+export type AdvantShopPropertiesResponse = {
+  properties?: AdvantShopProperty[];
+};

@@ -2,13 +2,12 @@
 
 import Image from "next/image";
 import Link from "next/link";
-import { useMemo } from "react";
+import { useEffect, useState } from "react";
 import { useCompare } from "@/context/CompareContext";
 import { MAX_COMPARE_ITEMS } from "@/lib/compare";
 import {
   CATEGORIES,
   formatPrice,
-  getProductDetails,
   type ProductDetails,
 } from "@/lib/products";
 
@@ -72,16 +71,47 @@ function buildRows(products: ProductDetails[]): CompareRow[] {
 
 export function CompareView() {
   const { slugs, removeItem, clearCompare, isReady } = useCompare();
+  const [products, setProducts] = useState<ProductDetails[]>([]);
+  const [loading, setLoading] = useState(false);
 
-  const products = useMemo(
-    () =>
-      slugs
-        .map((slug) => getProductDetails(slug))
-        .filter((product): product is ProductDetails => product !== undefined),
-    [slugs]
-  );
+  useEffect(() => {
+    if (!isReady) return;
 
-  if (!isReady) {
+    if (!slugs.length) {
+      setProducts([]);
+      return;
+    }
+
+    let cancelled = false;
+    setLoading(true);
+
+    Promise.all(
+      slugs.map(async (slug) => {
+        const response = await fetch(`/api/products/${slug}`);
+        if (!response.ok) return null;
+        const data = (await response.json()) as { product?: ProductDetails };
+        return data.product ?? null;
+      })
+    )
+      .then((items) => {
+        if (!cancelled) {
+          setProducts(
+            items.filter((item): item is ProductDetails => item !== null)
+          );
+        }
+      })
+      .finally(() => {
+        if (!cancelled) {
+          setLoading(false);
+        }
+      });
+
+    return () => {
+      cancelled = true;
+    };
+  }, [slugs, isReady]);
+
+  if (!isReady || loading) {
     return (
       <section className="py-16 md:py-24">
         <div className="mx-auto max-w-7xl px-4 md:px-6 lg:px-10 text-center text-brand-muted">
