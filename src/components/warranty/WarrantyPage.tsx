@@ -1,0 +1,104 @@
+import Image from "next/image";
+import Link from "next/link";
+
+const WARRANTY_POINTS = [
+  {
+    title: "Добровольная аттестация",
+    text: "Мы проводим добровольную аттестацию каждого изделия с совокупным весом камней от 0,5 карат и более. Это подтверждает характеристики лабораторных бриллиантов и качество ювелирной работы.",
+  },
+  {
+    title: "Сертификат на партию",
+    text: "По результатам аттестации выдаётся официальный документ с описанием изделия, металла, количества и параметров камней — по системе 4C: огранка, цвет, чистота, каратность.",
+  },
+  {
+    title: "Гарантия 2 года",
+    text: "На все изделия действует гарантия производителя сроком 2 года. При необходимости наши специалисты выполнят ремонт или профессиональную полировку украшения.",
+  },
+];
+
+export function WarrantyPage() {
+  return (
+    <>
+      <section className="py-10 md:py-14">
+        <div className="mx-auto max-w-7xl px-4 md:px-6 lg:px-10">
+          <p className="text-brand-olive text-sm tracking-[0.2em] uppercase mb-2">
+            Синоним
+          </p>
+          <h1 className="font-heading text-3xl md:text-5xl text-brand-olive-dark mb-6 md:mb-8">
+            Гарантия
+          </h1>
+          <p className="text-brand-text leading-relaxed max-w-3xl text-base md:text-lg">
+            Мы проводим добровольную аттестацию каждого изделия с совокупным
+            весом камней от&nbsp;0,5&nbsp;карат и более. Так вы получаете не
+            только красивое украшение, но и документальное подтверждение
+            качества лабораторных бриллиантов и серебра 925 пробы.
+          </p>
+        </div>
+      </section>
+
+      <section className="pb-12 md:pb-16">
+        <div className="mx-auto max-w-7xl px-4 md:px-6 lg:px-10">
+          <div className="grid lg:grid-cols-2 gap-10 lg:gap-16 items-start">
+            <div className="space-y-5">
+              {WARRANTY_POINTS.map((point) => (
+                <div
+                  key={point.title}
+                  className="rounded-xl border border-brand-olive/15 bg-brand-surface p-6 md:p-8"
+                >
+                  <h2 className="font-heading text-xl md:text-2xl text-brand-olive-dark mb-3">
+                    {point.title}
+                  </h2>
+                  <p className="text-brand-text leading-relaxed">{point.text}</p>
+                </div>
+              ))}
+            </div>
+
+            <div>
+              <div className="relative aspect-[3/4] w-full max-w-lg mx-auto lg:max-w-none">
+                <div className="absolute -inset-3 rounded-2xl bg-brand-olive/10 blur-xl" />
+                <Image
+                  src="/images/warranty-certificate.png"
+                  alt="Аттестат партии ювелирных изделий Синоним"
+                  fill
+                  className="object-contain rounded-2xl shadow-lg bg-white"
+                  sizes="(max-width: 1024px) 100vw, 45vw"
+                />
+              </div>
+              <p className="text-brand-muted text-sm text-center mt-4 leading-relaxed">
+                Пример аттестата партии ювелирных изделий с указанием
+                характеристик лабораторных бриллиантов
+              </p>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section className="bg-brand-olive-dark text-white py-12 md:py-16">
+        <div className="mx-auto max-w-3xl px-4 md:px-6 lg:px-10 text-center">
+          <h2 className="font-heading text-2xl md:text-3xl text-brand-sand mb-5">
+            Качество, которому можно доверять
+          </h2>
+          <p className="text-white/80 leading-relaxed mb-8">
+            Лабораторные бриллианты проходят оценку по тем же стандартам, что и
+            природные камни. Аттестация и гарантия — наш способ быть
+            максимально открытыми перед вами.
+          </p>
+          <div className="flex flex-wrap justify-center gap-4">
+            <Link
+              href="/shop"
+              className="inline-flex items-center justify-center px-8 py-3.5 bg-brand-terracotta hover:bg-brand-terracotta-logo text-white text-sm tracking-widest uppercase transition-colors"
+            >
+              Смотреть каталог
+            </Link>
+            <Link
+              href="/about"
+              className="inline-flex items-center justify-center px-8 py-3.5 border border-white/40 hover:border-white text-white text-sm tracking-widest uppercase transition-colors"
+            >
+              О бренде
+            </Link>
+          </div>
+        </div>
+      </section>
+    </>
+  );
+}

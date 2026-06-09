@@ -1,0 +1,39 @@
+@import "tailwindcss";
+
+:root {
+  --color-olive: #73a341;
+  --color-olive-dark: #4a5335;
+  --color-sand: #e8d9b5;
+  --color-terracotta: #d47750;
+  --color-terracotta-logo: #c96a4a;
+  --color-surface: #ffffff;
+  --color-text: #2c2c2c;
+  --color-text-muted: #6b6b6b;
+}
+
+@theme inline {
+  --color-brand-olive: var(--color-olive);
+  --color-brand-olive-dark: var(--color-olive-dark);
+  --color-brand-sand: var(--color-sand);
+  --color-brand-terracotta: var(--color-terracotta);
+  --color-brand-terracotta-logo: var(--color-terracotta-logo);
+  --color-brand-surface: var(--color-surface);
+  --color-brand-text: var(--color-text);
+  --color-brand-muted: var(--color-text-muted);
+  --font-heading: var(--font-playfair);
+  --font-body: var(--font-inter);
+}
+
+body {
+  background-color: var(--color-sand);
+  color: var(--color-text);
+  font-family: var(--font-inter), system-ui, sans-serif;
+}
+
+.font-heading {
+  font-family: var(--font-playfair), Georgia, serif;
+}
+
+.font-body {
+  font-family: var(--font-inter), system-ui, sans-serif;
+}

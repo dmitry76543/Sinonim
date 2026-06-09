@@ -1,0 +1,326 @@
+export type CategorySlug = "rings" | "earrings" | "pendants" | "bracelets" | "gifts";
+
+export type Product = {
+  id: string;
+  slug: string;
+  name: string;
+  category: CategorySlug;
+  price: number;
+  image: string;
+  stoneWeight: number;
+  badge?: "Хит" | "Новинка";
+  isNew?: boolean;
+  description?: string;
+  images?: string[];
+  color?: string;
+  clarity?: string;
+  metal?: string;
+  sizes?: number[];
+};
+
+export type StoneVariant = {
+  weight: number;
+  label: string;
+  price: number;
+};
+
+export type ProductDetails = Product & {
+  description: string;
+  images: string[];
+  color: string;
+  clarity: string;
+  metal: string;
+  sizes: number[];
+  stoneVariants: StoneVariant[];
+};
+
+export const CATEGORIES: Record<
+  CategorySlug,
+  { title: string; titlePlural: string; description: string }
+> = {
+  rings: {
+    title: "Кольца",
+    titlePlural: "Кольца",
+    description: "Кольца из серебра 925 с лабораторными бриллиантами",
+  },
+  earrings: {
+    title: "Серьги",
+    titlePlural: "Серьги",
+    description: "Серьги-пусеты и подвесные модели с выращенными бриллиантами",
+  },
+  pendants: {
+    title: "Подвески",
+    titlePlural: "Подвески",
+    description: "Подвески и колье из серебра с лабораторными камнями",
+  },
+  bracelets: {
+    title: "Браслеты",
+    titlePlural: "Браслеты",
+    description: "Теннисные и цепные браслеты с бриллиантами",
+  },
+  gifts: {
+    title: "Подарки",
+    titlePlural: "Подарки",
+    description: "Готовые подарочные решения до 30 000 ₽",
+  },
+};
+
+export const PRICE_RANGES = [
+  { id: "0-15000", label: "до 15 000 ₽", min: 0, max: 15000 },
+  { id: "15000-25000", label: "15 000 – 25 000 ₽", min: 15000, max: 25000 },
+  { id: "25000-35000", label: "25 000 – 35 000 ₽", min: 25000, max: 35000 },
+  { id: "35000+", label: "от 35 000 ₽", min: 35000, max: Infinity },
+] as const;
+
+export const STONE_WEIGHTS = [
+  { id: "0.1", label: "0.1 карат", value: 0.1 },
+  { id: "0.2", label: "0.2 карат", value: 0.2 },
+  { id: "0.3", label: "0.3 карат", value: 0.3 },
+  { id: "0.5", label: "0.5 карат", value: 0.5 },
+  { id: "1+", label: "1+ карат", value: 1 },
+] as const;
+
+export const SORT_OPTIONS = [
+  { id: "default", label: "По умолчанию" },
+  { id: "price-asc", label: "Цена: по возрастанию" },
+  { id: "price-desc", label: "Цена: по убыванию" },
+  { id: "new", label: "Сначала новинки" },
+] as const;
+
+export const PRODUCTS: Product[] = [
+  {
+    id: "1",
+    slug: "siyanie-ring",
+    name: "Кольцо «Сияние»",
+    category: "rings",
+    price: 24900,
+    image: "/images/product-bracelet.webp",
+    stoneWeight: 0.2,
+    badge: "Хит",
+  },
+  {
+    id: "2",
+    slug: "luna-ring",
+    name: "Кольцо «Луна»",
+    category: "rings",
+    price: 18900,
+    image: "/images/product-ring.webp",
+    stoneWeight: 0.1,
+  },
+  {
+    id: "3",
+    slug: "aurora-ring",
+    name: "Кольцо «Аврора»",
+    category: "rings",
+    price: 32500,
+    image: "/images/product-bracelet.webp",
+    stoneWeight: 0.3,
+    isNew: true,
+    badge: "Новинка",
+  },
+  {
+    id: "4",
+    slug: "grace-ring",
+    name: "Кольцо «Грация»",
+    category: "rings",
+    price: 42800,
+    image: "/images/product-ring.webp",
+    stoneWeight: 0.5,
+  },
+  {
+    id: "5",
+    slug: "solitaire-ring",
+    name: "Кольцо-солитер",
+    category: "rings",
+    price: 14900,
+    image: "/images/product-bracelet.webp",
+    stoneWeight: 0.1,
+  },
+  {
+    id: "6",
+    slug: "stud-earrings",
+    name: "Серьги-пусеты",
+    category: "earrings",
+    price: 19800,
+    image: "/images/product-earrings.webp",
+    stoneWeight: 0.2,
+    badge: "Новинка",
+    isNew: true,
+  },
+  {
+    id: "7",
+    slug: "spark-earrings",
+    name: "Серьги «Искра»",
+    category: "earrings",
+    price: 12900,
+    image: "/images/product-earrings.webp",
+    stoneWeight: 0.1,
+  },
+  {
+    id: "8",
+    slug: "drop-earrings",
+    name: "Серьги-подвески",
+    category: "earrings",
+    price: 27400,
+    image: "/images/product-earrings.webp",
+    stoneWeight: 0.3,
+  },
+  {
+    id: "9",
+    slug: "halo-earrings",
+    name: "Серьги с ободком",
+    category: "earrings",
+    price: 35900,
+    image: "/images/product-earrings.webp",
+    stoneWeight: 0.5,
+  },
+  {
+    id: "10",
+    slug: "cross-pendant",
+    name: "Подвеска-крестик",
+    category: "pendants",
+    price: 16500,
+    image: "/images/product-necklace.webp",
+    stoneWeight: 0.1,
+  },
+  {
+    id: "11",
+    slug: "heart-pendant",
+    name: "Подвеска «Сердце»",
+    category: "pendants",
+    price: 21900,
+    image: "/images/product-necklace.webp",
+    stoneWeight: 0.2,
+    badge: "Хит",
+  },
+  {
+    id: "12",
+    slug: "star-pendant",
+    name: "Подвеска «Звезда»",
+    category: "pendants",
+    price: 14200,
+    image: "/images/product-necklace.webp",
+    stoneWeight: 0.1,
+  },
+  {
+    id: "13",
+    slug: "line-necklace",
+    name: "Колье-линия",
+    category: "pendants",
+    price: 38900,
+    image: "/images/product-necklace.webp",
+    stoneWeight: 0.5,
+    isNew: true,
+  },
+  {
+    id: "14",
+    slug: "tennis-bracelet",
+    name: "Браслет теннисный",
+    category: "bracelets",
+    price: 42000,
+    image: "/images/product-ring.webp",
+    stoneWeight: 1,
+  },
+  {
+    id: "15",
+    slug: "chain-bracelet",
+    name: "Браслет цепной",
+    category: "bracelets",
+    price: 23800,
+    image: "/images/product-bracelet.webp",
+    stoneWeight: 0.2,
+  },
+  {
+    id: "16",
+    slug: "light-bracelet",
+    name: "Браслет «Свет»",
+    category: "bracelets",
+    price: 18500,
+    image: "/images/product-ring.webp",
+    stoneWeight: 0.1,
+  },
+  {
+    id: "17",
+    slug: "gift-set-mini",
+    name: "Подарочный набор Mini",
+    category: "gifts",
+    price: 15900,
+    image: "/images/product-earrings.webp",
+    stoneWeight: 0.1,
+  },
+  {
+    id: "18",
+    slug: "gift-set-classic",
+    name: "Подарочный набор Classic",
+    category: "gifts",
+    price: 29900,
+    image: "/images/product-necklace.webp",
+    stoneWeight: 0.2,
+    badge: "Хит",
+  },
+];
+
+export function formatPrice(price: number): string {
+  return `${price.toLocaleString("ru-RU")} ₽`;
+}
+
+export function isValidCategory(slug: string): slug is CategorySlug {
+  return slug in CATEGORIES;
+}
+
+const STONE_VARIANT_WEIGHTS = [0.1, 0.2, 0.3, 0.5, 1] as const;
+
+const DEFAULT_SIZES = [15, 15.5, 16, 16.5, 17, 17.5, 18, 18.5, 19];
+
+const CATEGORY_IMAGES: Record<CategorySlug, string[]> = {
+  rings: ["/images/product-bracelet.webp", "/images/product-ring.webp"],
+  earrings: ["/images/product-earrings.webp"],
+  pendants: ["/images/product-necklace.webp"],
+  bracelets: ["/images/product-ring.webp", "/images/product-bracelet.webp"],
+  gifts: ["/images/product-earrings.webp", "/images/product-necklace.webp"],
+};
+
+export function getProductBySlug(slug: string): Product | undefined {
+  return PRODUCTS.find((p) => p.slug === slug);
+}
+
+export function getProductDetails(slug: string): ProductDetails | undefined {
+  const product = getProductBySlug(slug);
+  if (!product) return undefined;
+
+  const baseWeight = product.stoneWeight;
+  const stoneVariants: StoneVariant[] = STONE_VARIANT_WEIGHTS.map((weight) => ({
+    weight,
+    label: weight >= 1 ? "1 карат" : `${weight} карат`,
+    price: Math.round(product.price * (weight / baseWeight)),
+  }));
+
+  const categoryImages = CATEGORY_IMAGES[product.category];
+  const images = product.images ?? [
+    product.image,
+    categoryImages[1] ?? product.image,
+    categoryImages[0] ?? product.image,
+  ];
+
+  const hasSizes = product.category === "rings" || product.category === "bracelets";
+
+  return {
+    ...product,
+    description:
+      product.description ??
+      `${product.name} — украшение из серебра 925 пробы с лабораторным бриллиантом. Камень сертифицирован, огранка круглая brillant. Идеально для повседневной носки и особых моментов.`,
+    images,
+    color: product.color ?? "F (бесцветный)",
+    clarity: product.clarity ?? "VS1",
+    metal: product.metal ?? "Серебро 925, родиевое покрытие",
+    sizes: product.sizes ?? (hasSizes ? DEFAULT_SIZES : []),
+    stoneVariants,
+  };
+}
+
+export function getRelatedProducts(product: Product, limit = 4): Product[] {
+  return PRODUCTS.filter((p) => p.category === product.category && p.id !== product.id).slice(
+    0,
+    limit
+  );
+}

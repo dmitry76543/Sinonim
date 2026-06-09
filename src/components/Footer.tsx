@@ -1,0 +1,111 @@
+import Image from "next/image";
+import Link from "next/link";
+import { SITE_PHONE, SITE_PHONE_TEL, SHOWROOM } from "@/lib/contacts";
+
+const FOOTER_LINKS = {
+  catalog: [
+    { label: "Кольца", href: "/shop/rings" },
+    { label: "Серьги", href: "/shop/earrings" },
+    { label: "Подвески", href: "/shop/pendants" },
+    { label: "Браслеты", href: "/shop/bracelets" },
+  ],
+  info: [
+    { label: "О бренде", href: "/about" },
+    { label: "Шоурум", href: "/showroom" },
+    { label: "Доставка и оплата", href: "/shipping" },
+    { label: "Гарантия", href: "/warranty" },
+  ],
+};
+
+export function Footer() {
+  return (
+    <footer className="bg-brand-olive-dark text-white mt-auto">
+      <div className="mx-auto max-w-7xl px-4 md:px-6 lg:px-10 py-12 md:py-16">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-10">
+          <div className="lg:col-span-1">
+            <Link href="/" className="inline-block mb-4">
+              <Image
+                src="/images/logo_20260527190756.png"
+                alt="Синоним"
+                width={160}
+                height={36}
+                className="h-7 w-auto"
+              />
+            </Link>
+            <p className="text-white/70 text-sm leading-relaxed max-w-xs">
+              Выращенные бриллианты в серебре — современный подход к украшениям
+              без компромиссов в качестве.
+            </p>
+          </div>
+
+          <div>
+            <h4 className="text-brand-sand text-xs tracking-[0.2em] uppercase mb-4">
+              Каталог
+            </h4>
+            <ul className="space-y-2.5">
+              {FOOTER_LINKS.catalog.map((link) => (
+                <li key={link.href}>
+                  <Link
+                    href={link.href}
+                    className="text-sm text-white/80 hover:text-brand-sand transition-colors"
+                  >
+                    {link.label}
+                  </Link>
+                </li>
+              ))}
+            </ul>
+          </div>
+
+          <div>
+            <h4 className="text-brand-sand text-xs tracking-[0.2em] uppercase mb-4">
+              Покупателям
+            </h4>
+            <ul className="space-y-2.5">
+              {FOOTER_LINKS.info.map((link) => (
+                <li key={link.href}>
+                  <Link
+                    href={link.href}
+                    className="text-sm text-white/80 hover:text-brand-sand transition-colors"
+                  >
+                    {link.label}
+                  </Link>
+                </li>
+              ))}
+            </ul>
+          </div>
+
+          <div>
+            <h4 className="text-brand-sand text-xs tracking-[0.2em] uppercase mb-4">
+              Контакты
+            </h4>
+            <p className="text-sm text-white/80 mb-2">Шоурум в Москве</p>
+            <p className="text-sm text-white/60 mb-3 leading-relaxed">
+              {SHOWROOM.address}
+            </p>
+            <a
+              href={SITE_PHONE_TEL}
+              className="block text-sm text-brand-sand hover:text-white transition-colors mb-4"
+            >
+              {SITE_PHONE}
+            </a>
+            <p className="text-sm text-white/60">
+              {SHOWROOM.hours}
+            </p>
+          </div>
+        </div>
+
+        <div className="border-t border-white/10 mt-10 pt-6 flex flex-col sm:flex-row justify-between gap-4 text-xs text-white/50">
+          <p>© 2026 Синоним. Все права защищены.</p>
+          <div className="flex gap-6">
+            <Link href="/privacy" className="hover:text-white/80 transition-colors">
+              Политика конфиденциальности
+            </Link>
+            <Link href="/terms" className="hover:text-white/80 transition-colors">
+              Оферта
+            </Link>
+          </div>
+        </div>
+      </div>
+    </footer>
+  );
+}

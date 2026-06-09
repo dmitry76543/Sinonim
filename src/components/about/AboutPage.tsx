@@ -1,0 +1,155 @@
+import Image from "next/image";
+import Link from "next/link";
+
+const PILLARS = [
+  {
+    title: "Вау-цена",
+    text: "Позвольте себе больше – собирайте свои стильные комплекты и сияйте каждый день!",
+  },
+  {
+    title: "Гарантия качества",
+    text: "Принимаем участие в добровольной аттестации качества ювелирных украшений и даем гарантию на изделия 2 года",
+  },
+];
+
+export function AboutPage() {
+  return (
+    <>
+      <section className="py-10 md:py-14">
+        <div className="mx-auto max-w-7xl px-4 md:px-6 lg:px-10">
+          <p className="text-brand-olive text-sm tracking-[0.2em] uppercase mb-2">
+            Синоним
+          </p>
+          <h1 className="font-heading text-3xl md:text-5xl text-brand-olive-dark mb-8 md:mb-10">
+            О бренде
+          </h1>
+
+          <div className="grid lg:grid-cols-2 gap-10 lg:gap-16 items-start">
+            <div className="space-y-5 text-brand-text leading-relaxed">
+              <p>
+                Бренд «Синоним» полностью отражает суть своего названия: у
+                лабораторных бриллиантов тот же исходный материал
+                происхождения, что и у природных. Выращенные бриллианты
+                идентичны по своим физическим, химическим, оптическим свойствам
+                и сиянию, но их путь — современный, экологичный, технологичный.
+              </p>
+              <p className="font-heading text-xl md:text-2xl text-brand-olive-dark">
+                Мы верим, что современная роскошь — это свобода выбирать
+                качество без компромиссов!
+              </p>
+              <p>
+                В команде бренда — профессионалы с двадцатилетним опытом в
+                ювелирной отрасли. Мы установили высокие стандарты изготовления
+                изделий и контролируем их на каждом этапе: от идеи и
+                3D-моделирования до литья, закрепки камней, финишной полировки
+                и упаковки.
+              </p>
+              <p>
+                Надёжность — наш приоритет, поэтому все изделия покрыты
+                усиленным слоем родия для максимальной защиты. В случае поломки
+                наши специалисты выполнят качественный ремонт украшения.
+              </p>
+            </div>
+
+            <div className="relative aspect-[4/5] max-w-md mx-auto lg:max-w-none lg:ml-auto w-full">
+              <div className="absolute -inset-3 rounded-2xl bg-brand-olive/10 blur-xl" />
+              <Image
+                src="/images/product-ring.webp"
+                alt="Украшение Синоним с лабораторным бриллиантом"
+                fill
+                className="object-cover rounded-2xl shadow-lg"
+                sizes="(max-width: 1024px) 100vw, 40vw"
+              />
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section className="bg-brand-olive-dark text-white py-12 md:py-16">
+        <div className="mx-auto max-w-7xl px-4 md:px-6 lg:px-10">
+          <p className="text-brand-sand/90 text-sm tracking-[0.2em] uppercase mb-8 text-center">
+            Уникальная концепция
+          </p>
+
+          <div className="max-w-3xl mx-auto text-center mb-10 md:mb-12">
+            <p className="font-heading text-4xl md:text-5xl tracking-[0.15em] text-brand-sand mb-4">
+              СИНОНИМ
+            </p>
+            <p className="text-lg md:text-xl text-white/90 mb-3">
+              Украшения из серебра с лабораторными бриллиантами
+            </p>
+            <p className="text-white/70 leading-relaxed">
+              Сочетаем ювелирные тренды и современные технологии, делая
+              изысканные украшения ближе и доступнее
+            </p>
+          </div>
+
+          <div className="grid md:grid-cols-2 gap-5 md:gap-6 max-w-4xl mx-auto">
+            {PILLARS.map((item) => (
+              <div
+                key={item.title}
+                className="rounded-xl border border-white/15 bg-white/5 p-6 md:p-8"
+              >
+                <h3 className="font-heading text-xl md:text-2xl text-brand-sand mb-3">
+                  {item.title}
+                </h3>
+                <p className="text-white/75 text-sm md:text-base leading-relaxed">
+                  {item.text}
+                </p>
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      <section className="py-12 md:py-16">
+        <div className="mx-auto max-w-3xl px-4 md:px-6 lg:px-10">
+          <h2 className="font-heading text-2xl md:text-4xl text-brand-olive-dark mb-6 md:mb-8">
+            Особенности бриллиантов нового поколения
+          </h2>
+
+          <div className="space-y-5 text-brand-text leading-relaxed">
+            <p className="text-lg text-brand-olive-dark">
+              Лабораторные бриллианты — натуральные камни без миллионов лет
+              ожидания и вреда природе!
+            </p>
+            <p>
+              Лабораторно выращенные бриллианты обладают оптическими,
+              физическими и химическими свойствами, идентичными природными
+              бриллиантам: и те, и другие состоят из чистого углерода и имеют
+              одинаково высокую твёрдость (10 баллов по шкале Мооса).
+            </p>
+            <p>
+              Камни, выращенные в лаборатории, получают без вреда для людей и
+              природы — это подтверждают современные технологии и
+              международные стандарты производства.
+            </p>
+            <p>
+              Выращенные бриллианты проходят сертификацию в ведущих
+              геммологических лабораториях и институтах в России и за рубежом.
+            </p>
+            <p>
+              Такие камни оцениваются аналогично природным бриллиантам по
+              системе 4C: огранке, цвету, чистоте и каратности.
+            </p>
+          </div>
+
+          <div className="mt-10 pt-8 border-t border-brand-olive/15 flex flex-wrap gap-4">
+            <Link
+              href="/shop"
+              className="inline-flex items-center justify-center px-8 py-3.5 bg-brand-terracotta hover:bg-brand-terracotta-logo text-white text-sm tracking-widest uppercase transition-colors"
+            >
+              Смотреть каталог
+            </Link>
+            <Link
+              href="/showroom"
+              className="inline-flex items-center justify-center px-8 py-3.5 border border-brand-olive/30 text-brand-olive-dark hover:border-brand-olive text-sm tracking-widest uppercase transition-colors"
+            >
+              Примерить в шоуруме
+            </Link>
+          </div>
+        </div>
+      </section>
+    </>
+  );
+}

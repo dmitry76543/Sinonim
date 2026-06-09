@@ -1,0 +1,156 @@
+import Link from "next/link";
+import { SHOWROOM, SITE_PHONE, SITE_PHONE_TEL } from "@/lib/contacts";
+import { DELIVERY_FEE, FREE_DELIVERY_THRESHOLD } from "@/lib/checkout";
+
+const DELIVERY_OPTIONS = [
+  {
+    title: "СДЭК",
+    text: "Доставляем заказы по России через службу СДЭК — до пункта выдачи или курьером до двери. Срок и стоимость рассчитываются при оформлении заказа в зависимости от города и выбранного тарифа.",
+    note: `Бесплатная доставка при заказе от ${FREE_DELIVERY_THRESHOLD.toLocaleString("ru-RU")} ₽. При меньшей сумме — ${DELIVERY_FEE.toLocaleString("ru-RU")} ₽.`,
+  },
+  {
+    title: "Самовывоз",
+    text: "Заберите заказ в шоуруме «Синоним» — бесплатно, без ожидания курьера. Перед визитом мы согласуем время, чтобы украшения были готовы к примерке и выдаче.",
+    note: `${SHOWROOM.address}. ${SHOWROOM.hours}.`,
+  },
+];
+
+const PAYMENT_OPTIONS = [
+  {
+    title: "В шоуруме",
+    items: [
+      "Оплата при получении заказа в шоуруме",
+      "Наличными или банковской картой",
+      "Удобно, если хотите сначала примерить украшение",
+    ],
+  },
+  {
+    title: "На сайте",
+    items: [
+      "Банковской картой онлайн",
+      "По QR-коду через ЮKassa",
+      "Безопасная оплата — данные карты защищены платёжным сервисом",
+    ],
+  },
+];
+
+export function ShippingPage() {
+  return (
+    <>
+      <section className="py-10 md:py-14">
+        <div className="mx-auto max-w-7xl px-4 md:px-6 lg:px-10">
+          <p className="text-brand-olive text-sm tracking-[0.2em] uppercase mb-2">
+            Синоним
+          </p>
+          <h1 className="font-heading text-3xl md:text-5xl text-brand-olive-dark mb-6 md:mb-8">
+            Доставка и оплата
+          </h1>
+          <p className="text-brand-text leading-relaxed max-w-3xl text-base md:text-lg">
+            Мы сделали покупку украшений простой и прозрачной: выберите удобный
+            способ получения заказа и оплатите так, как вам комфортнее — в
+            шоуруме или онлайн на сайте.
+          </p>
+        </div>
+      </section>
+
+      <section className="pb-12 md:pb-16">
+        <div className="mx-auto max-w-7xl px-4 md:px-6 lg:px-10">
+          <h2 className="font-heading text-2xl md:text-3xl text-brand-olive-dark mb-6 md:mb-8">
+            Доставка
+          </h2>
+
+          <div className="grid md:grid-cols-2 gap-5 md:gap-6 mb-8">
+            {DELIVERY_OPTIONS.map((option) => (
+              <div
+                key={option.title}
+                className="rounded-xl border border-brand-olive/15 bg-brand-surface p-6 md:p-8"
+              >
+                <h3 className="font-heading text-xl md:text-2xl text-brand-olive-dark mb-3">
+                  {option.title}
+                </h3>
+                <p className="text-brand-text leading-relaxed mb-4">
+                  {option.text}
+                </p>
+                <p className="text-brand-muted text-sm leading-relaxed">
+                  {option.note}
+                </p>
+              </div>
+            ))}
+          </div>
+
+          <p className="text-brand-muted text-sm leading-relaxed max-w-3xl">
+            После оформления заказа менеджер свяжется с вами по телефону{" "}
+            <a
+              href={SITE_PHONE_TEL}
+              className="text-brand-terracotta hover:text-brand-terracotta-logo transition-colors"
+            >
+              {SITE_PHONE}
+            </a>{" "}
+            для подтверждения деталей доставки или самовывоза.
+          </p>
+        </div>
+      </section>
+
+      <section className="bg-brand-olive-dark text-white py-12 md:py-16">
+        <div className="mx-auto max-w-7xl px-4 md:px-6 lg:px-10">
+          <h2 className="font-heading text-2xl md:text-3xl text-brand-sand mb-6 md:mb-8">
+            Оплата
+          </h2>
+
+          <div className="grid md:grid-cols-2 gap-5 md:gap-6 mb-10">
+            {PAYMENT_OPTIONS.map((option) => (
+              <div
+                key={option.title}
+                className="rounded-xl border border-white/15 bg-white/5 p-6 md:p-8"
+              >
+                <h3 className="font-heading text-xl md:text-2xl text-brand-sand mb-4">
+                  {option.title}
+                </h3>
+                <ul className="space-y-3">
+                  {option.items.map((item) => (
+                    <li
+                      key={item}
+                      className="flex gap-3 text-white/80 text-sm md:text-base leading-relaxed"
+                    >
+                      <span className="mt-2 h-1.5 w-1.5 shrink-0 rounded-full bg-brand-sand" />
+                      {item}
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            ))}
+          </div>
+
+          <p className="text-white/70 text-sm md:text-base leading-relaxed max-w-3xl">
+            Онлайн-оплата на сайте проходит через платёжный сервис{" "}
+            <span className="text-brand-sand">ЮKassa</span> — вы можете
+            оплатить картой или по QR-коду в мобильном приложении банка.
+          </p>
+        </div>
+      </section>
+
+      <section className="py-12 md:py-16">
+        <div className="mx-auto max-w-3xl px-4 md:px-6 lg:px-10 text-center">
+          <p className="text-brand-text leading-relaxed mb-8">
+            Остались вопросы по доставке или оплате? Позвоните нам или приезжайте
+            в шоурум — с радостью подскажем.
+          </p>
+          <div className="flex flex-wrap justify-center gap-4">
+            <Link
+              href="/shop"
+              className="inline-flex items-center justify-center px-8 py-3.5 bg-brand-terracotta hover:bg-brand-terracotta-logo text-white text-sm tracking-widest uppercase transition-colors"
+            >
+              Перейти в каталог
+            </Link>
+            <Link
+              href="/showroom"
+              className="inline-flex items-center justify-center px-8 py-3.5 border border-brand-olive/30 text-brand-olive-dark hover:border-brand-olive text-sm tracking-widest uppercase transition-colors"
+            >
+              Шоурум
+            </Link>
+          </div>
+        </div>
+      </section>
+    </>
+  );
+}

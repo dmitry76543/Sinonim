@@ -1,0 +1,104 @@
+import type { CartItem } from "@/lib/cart";
+
+export { SHOWROOM } from "@/lib/contacts";
+
+export type DeliveryMethod = "pickup" | "delivery";
+
+export type CheckoutFormData = {
+  name: string;
+  phone: string;
+  deliveryMethod: DeliveryMethod;
+  city: string;
+  address: string;
+  apartment: string;
+  comment: string;
+};
+
+export type Order = {
+  id: string;
+  createdAt: string;
+  customer: CheckoutFormData;
+  items: CartItem[];
+  subtotal: number;
+  deliveryFee: number;
+  total: number;
+};
+
+export const ORDERS_STORAGE_KEY = "sinonim-orders";
+export const FREE_DELIVERY_THRESHOLD = 30_000;
+export const DELIVERY_FEE = 500;
+
+export function getDeliveryFee(
+  method: DeliveryMethod,
+  subtotal: number
+): number {
+  if (method === "pickup") return 0;
+  return subtotal >= FREE_DELIVERY_THRESHOLD ? 0 : DELIVERY_FEE;
+}
+
+export function normalizePhone(value: string): string {
+  return value.replace(/\D/g, "");
+}
+
+export function formatPhoneInput(value: string): string {
+  const digits = normalizePhone(value);
+  if (!digits) return "";
+
+  let normalized = digits;
+  if (normalized.startsWith("8")) {
+    normalized = `7${normalized.slice(1)}`;
+  }
+  if (!normalized.startsWith("7")) {
+    normalized = `7${normalized}`;
+  }
+
+  const rest = normalized.slice(1, 11);
+  let result = "+7";
+  if (rest.length > 0) result += ` (${rest.slice(0, 3)}`;
+  if (rest.length >= 3) result += `) ${rest.slice(3, 6)}`;
+  if (rest.length >= 6) result += `-${rest.slice(6, 8)}`;
+  if (rest.length >= 8) result += `-${rest.slice(8, 10)}`;
+  return result;
+}
+
+export function isValidPhone(phone: string): boolean {
+  const digits = normalizePhone(phone);
+  return digits.length === 11 && digits.startsWith("7");
+}
+
+export function validateCheckoutForm(data: CheckoutFormData): string | null {
+  const name = data.name.trim();
+  if (name.length < 2) return "Укажите имя";
+
+  if (!isValidPhone(data.phone)) return "Укажите корректный номер телефона";
+
+  if (data.deliveryMethod === "delivery") {
+    if (!data.city.trim()) return "Укажите город";
+    if (!data.address.trim()) return "Укажите адрес доставки";
+  }
+
+  return null;
+}
+
+export function generateOrderId(): string {
+  const date = new Date();
+  const stamp = [
+    date.getFullYear().toString().slice(-2),
+    String(date.getMonth() + 1).padStart(2, "0"),
+    String(date.getDate()).padStart(2, "0"),
+  ].join("");
+  const random = Math.floor(1000 + Math.random() * 9000);
+  return `SN-${stamp}-${random}`;
+}
+
+export function saveOrder(order: Order): void {
+  if (typeof window === "undefined") return;
+  try {
+    const raw = localStorage.getItem(ORDERS_STORAGE_KEY);
+    const existing = raw ? (JSON.parse(raw) as Order[]) : [];
+    const orders = Array.isArray(existing) ? existing : [];
+    localStorage.setItem(ORDERS_STORAGE_KEY, JSON.stringify([order, ...orders]));
+  } catch {
+    localStorage.setItem(ORDERS_STORAGE_KEY, JSON.stringify([order]));
+  }
+}

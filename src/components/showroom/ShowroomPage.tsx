@@ -1,0 +1,163 @@
+import Image from "next/image";
+import Link from "next/link";
+import {
+  SHOWROOM,
+  SHOWROOM_MAP_EMBED_URL,
+  SHOWROOM_MAP_LINK,
+  SITE_PHONE,
+  SITE_PHONE_TEL,
+} from "@/lib/contacts";
+
+export function ShowroomPage() {
+  return (
+    <>
+      <section className="relative overflow-hidden bg-brand-olive-dark">
+        <div className="absolute inset-0">
+          <Image
+            src="/images/showroom.jpg"
+            alt="Интерьер ювелирного шоурума Синоним"
+            fill
+            className="object-cover opacity-50"
+            priority
+            sizes="100vw"
+          />
+          <div className="absolute inset-0 bg-gradient-to-r from-brand-olive-dark/95 via-brand-olive-dark/75 to-brand-olive-dark/35" />
+        </div>
+
+        <div className="relative mx-auto max-w-7xl px-4 md:px-6 lg:px-10 py-16 md:py-24">
+          <p className="text-brand-sand/90 text-sm tracking-[0.2em] uppercase mb-3">
+            Москва
+          </p>
+          <h1 className="font-heading text-4xl md:text-5xl lg:text-6xl text-white mb-6 max-w-2xl leading-tight">
+            Шоурум Синоним
+          </h1>
+          <p className="text-white/85 text-base md:text-lg max-w-xl leading-relaxed">
+            Пространство, где можно увидеть сияние лабораторных бриллиантов
+            вживую, примерить украшения и выбрать изделие без спешки.
+          </p>
+        </div>
+      </section>
+
+      <section className="py-12 md:py-16">
+        <div className="mx-auto max-w-7xl px-4 md:px-6 lg:px-10">
+          <div className="grid lg:grid-cols-2 gap-10 lg:gap-16 items-start">
+            <div className="space-y-5 text-brand-text leading-relaxed">
+              <h2 className="font-heading text-2xl md:text-3xl text-brand-olive-dark">
+                Добро пожаловать
+              </h2>
+              <p>
+                Мы рады видеть вас в шоуруме «Синоним» — уютном ювелирном
+                пространстве в центре Москвы. Здесь можно рассмотреть кольца,
+                серьги, подвески и браслеты с лабораторными бриллиантами,
+                оценить огранку и блеск камней при дневном свете и подобрать
+                размер.
+              </p>
+              <p>
+                Наши консультанты помогут с выбором, расскажут об особенностях
+                выращенных бриллиантов и сертификации, а также подскажут, как
+                собрать гармоничный комплект украшений. Приходите одной, с
+                близким человеком или за подарком — мы создали атмосферу,
+                в которой приятно принимать решение о покупке.
+              </p>
+              <p className="font-heading text-lg md:text-xl text-brand-olive-dark">
+                Ждём вас — чтобы вы нашли украшение, которое действительно
+                хочется носить каждый день.
+              </p>
+
+              <div className="flex flex-wrap gap-4 pt-4">
+                <Link
+                  href="/shop"
+                  className="inline-flex items-center justify-center px-8 py-3.5 bg-brand-terracotta hover:bg-brand-terracotta-logo text-white text-sm tracking-widest uppercase transition-colors"
+                >
+                  Смотреть каталог
+                </Link>
+                <a
+                  href={SITE_PHONE_TEL}
+                  className="inline-flex items-center justify-center px-8 py-3.5 border border-brand-olive/30 text-brand-olive-dark hover:border-brand-olive text-sm tracking-widest uppercase transition-colors"
+                >
+                  Записаться
+                </a>
+              </div>
+            </div>
+
+            <div className="relative aspect-[4/3] w-full">
+              <div className="absolute -inset-3 rounded-2xl bg-brand-olive/10 blur-xl" />
+              <Image
+                src="/images/showroom.jpg"
+                alt="Интерьер шоурума с витринами украшений"
+                fill
+                className="object-cover rounded-2xl shadow-lg"
+                sizes="(max-width: 1024px) 100vw, 45vw"
+              />
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section className="bg-brand-surface border-y border-brand-olive/10 py-12 md:py-16">
+        <div className="mx-auto max-w-7xl px-4 md:px-6 lg:px-10">
+          <h2 className="font-heading text-2xl md:text-3xl text-brand-olive-dark mb-8 md:mb-10 text-center">
+            Как нас найти
+          </h2>
+
+          <div className="grid md:grid-cols-3 gap-6 mb-10 md:mb-12">
+            <div className="rounded-xl border border-brand-olive/15 bg-brand-sand/30 p-6 md:p-8 text-center md:text-left">
+              <p className="text-brand-olive text-xs tracking-[0.2em] uppercase mb-3">
+                Адрес
+              </p>
+              <p className="text-brand-olive-dark leading-relaxed">
+                {SHOWROOM.address}
+              </p>
+              <a
+                href={SHOWROOM_MAP_LINK}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="inline-block mt-4 text-sm text-brand-terracotta hover:text-brand-terracotta-logo transition-colors"
+              >
+                Открыть в Яндекс Картах →
+              </a>
+            </div>
+
+            <div className="rounded-xl border border-brand-olive/15 bg-brand-sand/30 p-6 md:p-8 text-center md:text-left">
+              <p className="text-brand-olive text-xs tracking-[0.2em] uppercase mb-3">
+                Телефон
+              </p>
+              <a
+                href={SITE_PHONE_TEL}
+                className="font-heading text-xl md:text-2xl text-brand-olive-dark hover:text-brand-olive transition-colors"
+              >
+                {SITE_PHONE}
+              </a>
+              <p className="text-brand-muted text-sm mt-3">
+                Позвоните, чтобы уточнить наличие или договориться о визите
+              </p>
+            </div>
+
+            <div className="rounded-xl border border-brand-olive/15 bg-brand-sand/30 p-6 md:p-8 text-center md:text-left">
+              <p className="text-brand-olive text-xs tracking-[0.2em] uppercase mb-3">
+                Часы работы
+              </p>
+              <p className="font-heading text-xl md:text-2xl text-brand-olive-dark">
+                {SHOWROOM.hours}
+              </p>
+              <p className="text-brand-muted text-sm mt-3">
+                Сб–Вс — выходной. Вход в офис 13
+              </p>
+            </div>
+          </div>
+
+          <div className="overflow-hidden rounded-2xl border border-brand-olive/15 shadow-lg">
+            <iframe
+              title="Карта — шоурум Синоним, ул. Гиляровского 40"
+              src={SHOWROOM_MAP_EMBED_URL}
+              className="w-full h-[360px] md:h-[480px] border-0"
+              allowFullScreen
+              loading="lazy"
+              referrerPolicy="no-referrer-when-downgrade"
+            />
+          </div>
+        </div>
+      </section>
+    </>
+  );
+}
