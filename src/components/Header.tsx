@@ -23,6 +23,53 @@ function IconSearch() {
   );
 }
 
+function HeaderActions() {
+  return (
+    <>
+      <button
+        type="button"
+        className="p-2 sm:p-2.5 text-brand-olive-dark hover:text-brand-olive transition-colors"
+        aria-label="Поиск"
+      >
+        <IconSearch />
+      </button>
+      <FavoritesLink />
+      <CompareLink />
+      <CartLink />
+    </>
+  );
+}
+
+function Logo({ compact = false }: { compact?: boolean }) {
+  return (
+    <Link
+      href="/"
+      className={`flex flex-col group shrink-0 min-w-0 ${
+        compact
+          ? "col-start-2 justify-self-center md:col-start-1 md:justify-self-start items-center md:items-start"
+          : "items-center md:items-start"
+      }`}
+    >
+      <Image
+        src="/images/logo_20260527190756.png"
+        alt="Синоним"
+        width={1000}
+        height={150}
+        className={`w-auto max-w-full object-contain brightness-0 ${
+          compact ? "h-6 max-w-[8.75rem] sm:h-7 sm:max-w-[10rem]" : "h-7 md:h-8"
+        }`}
+        style={{ width: "auto" }}
+        priority
+      />
+      {!compact && (
+        <span className="hidden sm:block text-[10px] md:text-xs text-brand-muted tracking-wide mt-1 text-center md:text-left">
+          выращенные бриллианты в серебре
+        </span>
+      )}
+    </Link>
+  );
+}
+
 export function Header() {
   return (
     <header className="sticky top-0 z-50 bg-brand-surface/95 backdrop-blur-sm border-b border-brand-olive/10">
@@ -40,58 +87,43 @@ export function Header() {
         </Link>
       </div>
 
-      <div className="relative flex items-center justify-between px-4 md:px-6 lg:px-10 py-4 gap-4">
-        <button
-          type="button"
-          className="md:hidden p-2 text-brand-olive-dark shrink-0 z-10"
-          aria-label="Меню"
-        >
-          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" aria-hidden>
-            <path d="M4 7h16M4 12h16M4 17h16" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" />
-          </svg>
-        </button>
-
-        <Link
-          href="/"
-          className="absolute left-1/2 top-1/2 flex -translate-x-1/2 -translate-y-1/2 flex-col items-center md:static md:translate-x-0 md:translate-y-0 md:items-start group shrink-0"
-        >
-          <Image
-            src="/images/logo_20260527190756.png"
-            alt="Синоним"
-            width={1000}
-            height={150}
-            className="h-7 md:h-8 w-auto max-w-none object-contain brightness-0"
-            style={{ width: "auto" }}
-            priority
-          />
-          <span className="hidden sm:block text-[10px] md:text-xs text-brand-muted tracking-wide mt-1">
-            выращенные бриллианты в серебре
-          </span>
-        </Link>
-
-        <nav className="hidden lg:flex items-center gap-8">
-          {NAV_ITEMS.map((item) => (
-            <Link
-              key={item.href}
-              href={item.href}
-              className="text-sm tracking-wide text-brand-text hover:text-brand-olive transition-colors"
-            >
-              {item.label}
-            </Link>
-          ))}
-        </nav>
-
-        <div className="flex items-center gap-1 md:gap-2 shrink-0 z-10 ml-auto">
+      <div className="px-4 md:px-6 lg:px-10 py-4">
+        <div className="grid grid-cols-[2.25rem_minmax(0,1fr)_auto] md:grid-cols-[minmax(0,1fr)_auto] items-center gap-2 lg:hidden">
           <button
             type="button"
-            className="p-2.5 text-brand-olive-dark hover:text-brand-olive transition-colors"
-            aria-label="Поиск"
+            className="p-2 text-brand-olive-dark shrink-0 justify-self-start md:hidden"
+            aria-label="Меню"
           >
-            <IconSearch />
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" aria-hidden>
+              <path d="M4 7h16M4 12h16M4 17h16" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" />
+            </svg>
           </button>
-          <FavoritesLink />
-          <CompareLink />
-          <CartLink />
+
+          <Logo compact />
+
+          <div className="col-start-3 md:col-start-2 flex items-center gap-0.5 sm:gap-1 shrink-0 justify-self-end">
+            <HeaderActions />
+          </div>
+        </div>
+
+        <div className="hidden lg:flex items-center justify-between gap-4">
+          <Logo />
+
+          <nav className="flex items-center gap-8">
+            {NAV_ITEMS.map((item) => (
+              <Link
+                key={item.href}
+                href={item.href}
+                className="text-sm tracking-wide text-brand-text hover:text-brand-olive transition-colors"
+              >
+                {item.label}
+              </Link>
+            ))}
+          </nav>
+
+          <div className="flex items-center gap-2 shrink-0">
+            <HeaderActions />
+          </div>
         </div>
       </div>
     </header>
