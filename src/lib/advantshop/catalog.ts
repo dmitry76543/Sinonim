@@ -40,9 +40,14 @@ async function fetchAllCatalogProducts(body: Record<string, unknown>) {
   const products: AdvantShopCatalogResponse["products"] = [];
   let page = 1;
   let totalPages = 1;
+  const pageSize = 500;
 
   do {
-    const response = await fetchCatalogPage({ ...body, page });
+    const response = await fetchCatalogPage({
+      ...body,
+      page,
+      itemsPerPage: pageSize,
+    });
     products.push(...(response.products ?? []));
     totalPages = response.pager?.totalPageCount ?? 1;
     page += 1;

@@ -19,13 +19,23 @@ type AdvantShopApiEnvelope = {
 };
 
 let cachedClientUserId: string | null = null;
+let clientUserIdPromise: Promise<string> | null = null;
 
-const ADVANTSHOP_FETCH_TIMEOUT_MS = 25_000;
+const DEFAULT_ADVANTSHOP_FETCH_TIMEOUT_MS = 55_000;
+
+function getAdvantShopFetchTimeoutMs(): number {
+  const raw = process.env.ADVANTSHOP_FETCH_TIMEOUT_MS?.trim();
+  if (!raw) return DEFAULT_ADVANTSHOP_FETCH_TIMEOUT_MS;
+  const parsed = Number(raw);
+  return Number.isFinite(parsed) && parsed > 0
+    ? parsed
+    : DEFAULT_ADVANTSHOP_FETCH_TIMEOUT_MS;
+}
 
 async function fetchWithTimeout(
   url: string,
   options: RequestInit,
-  timeoutMs = ADVANTSHOP_FETCH_TIMEOUT_MS
+  timeoutMs = getAdvantShopFetchTimeoutMs()
 ): Promise<Response> {
   const controller = new AbortController();
   const timeout = setTimeout(() => controller.abort(), timeoutMs);
@@ -42,6 +52,31 @@ async function fetchWithTimeout(
   } finally {
     clearTimeout(timeout);
   }
+}
+
+async function fetchWithRetry(
+  url: string,
+  options: RequestInit,
+  attempts = 3
+): Promise<Response> {
+  let lastError: unknown;
+
+  for (let attempt = 1; attempt <= attempts; attempt += 1) {
+    try {
+      return await fetchWithTimeout(url, options);
+    } catch (error) {
+      lastError = error;
+      const isTimeout =
+        error instanceof Error &&
+        error.message.includes("не ответил вовремя");
+      if (!isTimeout || attempt === attempts) {
+        throw error;
+      }
+      await new Promise((resolve) => setTimeout(resolve, attempt * 1000));
+    }
+  }
+
+  throw lastError;
 }
 
 function buildAdvantShopUrl(base: string, path: string): URL {
@@ -114,7 +149,7 @@ async function advantshopRequest<T>(
     }
   }
 
-  const response = await fetchWithTimeout(url.toString(), {
+  const response = await fetchWithRetry(url.toString(), {
     method: options.method ?? "GET",
     headers: {
       "Content-Type": "application/json",
@@ -132,14 +167,12 @@ async function advantshopRequest<T>(
   return parseAdvantShopResponse<T>(response);
 }
 
-async function ensureClientUserId(): Promise<string> {
-  if (cachedClientUserId) return cachedClientUserId;
-
+async function fetchClientUserId(): Promise<string> {
   const apiKey = getAdvantShopClientApiKey();
   const url = buildAdvantShopUrl(getAdvantShopBaseUrl(), "api/init");
   url.searchParams.set("apikey", apiKey);
 
-  const response = await fetchWithTimeout(url.toString(), {
+  const response = await fetchWithRetry(url.toString(), {
     headers: {
       Accept: "application/json",
       "X-API-KEY": apiKey,
@@ -152,7 +185,6 @@ async function ensureClientUserId(): Promise<string> {
     readResponseHeader(response, "x-api-user-id");
 
   if (userId) {
-    cachedClientUserId = userId;
     return userId;
   }
 
@@ -162,13 +194,29 @@ async function ensureClientUserId(): Promise<string> {
   const customerId = payload.customer?.id;
 
   if (customerId) {
-    cachedClientUserId = customerId;
     return customerId;
   }
 
   throw new Error(
     "AdvantShop не вернул X-API-USER-ID. Проверьте Client API ключ (вкладка «API с авторизацией»)."
   );
+}
+
+async function ensureClientUserId(): Promise<string> {
+  if (cachedClientUserId) return cachedClientUserId;
+
+  if (!clientUserIdPromise) {
+    clientUserIdPromise = fetchClientUserId()
+      .then((userId) => {
+        cachedClientUserId = userId;
+        return userId;
+      })
+      .finally(() => {
+        clientUserIdPromise = null;
+      });
+  }
+
+  return clientUserIdPromise;
 }
 
 /** Server API — categories, orders */

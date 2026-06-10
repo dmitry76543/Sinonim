@@ -34,7 +34,7 @@ export function CatalogView({
   const [catalogError, setCatalogError] = useState<string | undefined>(
     initialError
   );
-  const [loading, setLoading] = useState(!initialProducts?.length && !initialError);
+  const [loading, setLoading] = useState(!initialProducts?.length);
 
   const basePath = category ? `/shop/${category}` : "/shop";
   const filters = parseFiltersFromSearchParams(
@@ -46,19 +46,20 @@ export function CatalogView({
     const params = new URLSearchParams();
     if (category) params.set("category", category);
 
-    if (filters.sort === "default") {
-      if (initialProducts?.length || initialError) {
-        setCatalogProducts(initialProducts ?? []);
-        setCatalogError(initialError);
-        setLoading(false);
-        return;
-      }
-    } else {
+    if (filters.sort === "default" && initialProducts?.length && !initialError) {
+      setCatalogProducts(initialProducts);
+      setCatalogError(undefined);
+      setLoading(false);
+      return;
+    }
+
+    if (filters.sort !== "default") {
       params.set("sort", filters.sort);
     }
 
     let cancelled = false;
     setLoading(true);
+    setCatalogError(undefined);
 
     fetch(`/api/catalog?${params.toString()}`)
       .then(async (response) => {
