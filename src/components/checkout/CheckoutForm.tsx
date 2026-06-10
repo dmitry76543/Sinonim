@@ -1,6 +1,6 @@
 "use client";
 
-import Image from "next/image";
+import { ProductImage } from "@/components/catalog/ProductImage";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useEffect, useMemo, useState } from "react";
@@ -67,7 +67,7 @@ export function CheckoutForm() {
     updateField("deliveryMethod", method);
   };
 
-  const handleSubmit = (event: React.FormEvent) => {
+  const handleSubmit = async (event: React.FormEvent) => {
     event.preventDefault();
     const validationError = validateCheckoutForm(form);
     if (validationError) {
@@ -76,28 +76,65 @@ export function CheckoutForm() {
     }
 
     setIsSubmitting(true);
+    setError(null);
 
-    const order: Order = {
-      id: generateOrderId(),
-      createdAt: new Date().toISOString(),
-      customer: {
-        ...form,
-        name: form.name.trim(),
-        city: form.city.trim(),
-        address: form.address.trim(),
-        apartment: form.apartment.trim(),
-        comment: form.comment.trim(),
-      },
-      items: [...items],
-      subtotal: total,
-      deliveryFee,
-      total: orderTotal,
+    const customer = {
+      ...form,
+      name: form.name.trim(),
+      city: form.city.trim(),
+      address: form.address.trim(),
+      apartment: form.apartment.trim(),
+      comment: form.comment.trim(),
     };
 
-    saveOrder(order);
-    clearCart();
-    setCompletedOrder(order);
-    setIsSubmitting(false);
+    try {
+      const response = await fetch("/api/orders", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          customer,
+          items,
+          subtotal: total,
+        }),
+      });
+
+      const data = (await response.json()) as {
+        id?: string;
+        deliveryFee?: number;
+        total?: number;
+        advantshopOrderId?: number;
+        advantshopOrderNumber?: string;
+        error?: string;
+      };
+
+      if (!response.ok) {
+        throw new Error(data.error ?? "Не удалось оформить заказ");
+      }
+
+      const order: Order = {
+        id: data.id ?? generateOrderId(),
+        createdAt: new Date().toISOString(),
+        customer,
+        items: [...items],
+        subtotal: total,
+        deliveryFee: data.deliveryFee ?? deliveryFee,
+        total: data.total ?? orderTotal,
+        advantshopOrderId: data.advantshopOrderId,
+        advantshopOrderNumber: data.advantshopOrderNumber,
+      };
+
+      saveOrder(order);
+      clearCart();
+      setCompletedOrder(order);
+    } catch (submitError) {
+      setError(
+        submitError instanceof Error
+          ? submitError.message
+          : "Не удалось оформить заказ"
+      );
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   if (!isReady) {
@@ -125,7 +162,7 @@ export function CheckoutForm() {
           <p className="text-brand-muted mb-2">
             Номер заказа{" "}
             <span className="font-medium text-brand-olive-dark">
-              {completedOrder.id}
+              {completedOrder.advantshopOrderNumber ?? completedOrder.id}
             </span>
           </p>
           <p className="text-brand-muted mb-8">
@@ -395,7 +432,7 @@ export function CheckoutForm() {
                   {items.map((item) => (
                     <li key={item.id} className="flex gap-3">
                       <div className="relative w-14 h-14 shrink-0 rounded-lg overflow-hidden bg-brand-sand/30">
-                        <Image
+                        <ProductImage
                           src={item.image}
                           alt={item.name}
                           fill

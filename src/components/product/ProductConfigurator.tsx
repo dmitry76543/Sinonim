@@ -6,6 +6,7 @@ import { CompareButton } from "@/components/compare/CompareButton";
 import { FavoriteButton } from "@/components/favorites/FavoriteButton";
 import { useCart } from "@/context/CartContext";
 import { formatPrice, type ProductDetails } from "@/lib/products";
+import { useProductSelection } from "./ProductSelectionContext";
 
 type ProductConfiguratorProps = {
   product: ProductDetails;
@@ -16,9 +17,7 @@ export function ProductConfigurator({ product }: ProductConfiguratorProps) {
     (v) => v.weight === product.stoneWeight
   ) ?? product.stoneVariants[0];
 
-  const [selectedSize, setSelectedSize] = useState(
-    product.sizes.length > 0 ? product.sizes[3] ?? product.sizes[0] : null
-  );
+  const { selectedSize, setSelectedSize, artNo } = useProductSelection();
   const [added, setAdded] = useState(false);
   const { addItem } = useCart();
 
@@ -31,6 +30,7 @@ export function ProductConfigurator({ product }: ProductConfiguratorProps) {
       stoneWeight: defaultVariant.weight,
       stoneLabel: defaultVariant.label,
       size: selectedSize,
+      artNo,
     });
     setAdded(true);
     setTimeout(() => setAdded(false), 3000);

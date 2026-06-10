@@ -16,6 +16,8 @@ export type Product = {
   clarity?: string;
   metal?: string;
   sizes?: number[];
+  artNo?: string;
+  sizeArtNos?: Record<string, string>;
 };
 
 export type StoneVariant = {

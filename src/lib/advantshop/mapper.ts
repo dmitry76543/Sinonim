@@ -90,6 +90,39 @@ function parseProperty(
   return undefined;
 }
 
+function pickDefaultArtNo(
+  item: Pick<AdvantShopProductDetails, "artNo" | "offers">
+): string {
+  return (
+    item.artNo ??
+    item.offers?.find((offer) => offer.isMain)?.artNo ??
+    item.offers?.[0]?.artNo ??
+    ""
+  );
+}
+
+function buildSizeArtNos(
+  item: AdvantShopProductDetails
+): Record<string, string> | undefined {
+  if (!item.sizeColorPicker?.sizes?.length || !item.offers?.length) {
+    return undefined;
+  }
+
+  const map: Record<string, string> = {};
+  const fallbackArtNo = pickDefaultArtNo(item);
+
+  for (const size of item.sizeColorPicker.sizes) {
+    const sizeValue = Number.parseFloat(size.name.replace(",", "."));
+    if (Number.isNaN(sizeValue)) continue;
+
+    const offer = item.offers.find((entry) => entry.sizeId === size.id);
+    const artNo = offer?.artNo ?? fallbackArtNo;
+    if (artNo) map[String(sizeValue)] = artNo;
+  }
+
+  return Object.keys(map).length ? map : undefined;
+}
+
 function mapBadge(
   product: Pick<AdvantShopCatalogProduct, "newProduct" | "bestseller" | "sales">
 ): Product["badge"] {
@@ -121,6 +154,10 @@ export function mapCatalogProduct(
     description: item.briefDescription || undefined,
     images: resolveProductImages(collectImages(item.photos)),
     sizes: hasSizes ? sizes : undefined,
+    artNo:
+      item.artNo ??
+      item.offers?.find((offer) => offer.isMain)?.artNo ??
+      item.offers?.[0]?.artNo,
   };
 }
 
@@ -149,6 +186,8 @@ export function mapProductDetails(
   const sizes = extractProductSizes(item, category);
   const hasSizes =
     category === "rings" || category === "bracelets" || sizes.length > 0;
+  const artNo = pickDefaultArtNo(item);
+  const sizeArtNos = buildSizeArtNos(item);
 
   return {
     id: String(item.productId),
@@ -172,5 +211,7 @@ export function mapProductDetails(
       "Серебро 925, родиевое покрытие",
     sizes: hasSizes ? sizes : [],
     stoneVariants,
+    artNo: artNo || undefined,
+    sizeArtNos,
   };
 }

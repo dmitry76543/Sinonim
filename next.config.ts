@@ -2,6 +2,14 @@ import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
   images: {
+    localPatterns: [
+      {
+        pathname: "/images/**",
+      },
+      {
+        pathname: "/api/advantshop-image",
+      },
+    ],
     remotePatterns: [
       {
         protocol: "https",
@@ -10,6 +18,14 @@ const nextConfig: NextConfig = {
       {
         protocol: "https",
         hostname: "**.on-advantshop.net",
+      },
+      {
+        protocol: "http",
+        hostname: "synonym-925.ru",
+      },
+      {
+        protocol: "https",
+        hostname: "synonym-925.ru",
       },
       {
         protocol: "https",

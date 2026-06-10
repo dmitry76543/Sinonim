@@ -25,6 +25,7 @@ type AddToCartInput = {
   stoneWeight: number;
   stoneLabel: string;
   size: number | null;
+  artNo?: string;
 };
 
 type CartContextValue = {
@@ -91,6 +92,7 @@ export function CartProvider({ children }: { children: ReactNode }) {
           stoneWeight: input.stoneWeight,
           stoneLabel: input.stoneLabel,
           size: input.size,
+          artNo: input.artNo,
           quantity: 1,
         },
       ];

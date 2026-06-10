@@ -3,7 +3,9 @@ import { CATEGORIES, type ProductDetails } from "@/lib/products";
 import type { Product } from "@/lib/products";
 import { ProductCard } from "@/components/catalog/ProductCard";
 import { ProductConfigurator } from "./ProductConfigurator";
+import { ProductDescription } from "./ProductDescription";
 import { ProductGallery } from "./ProductGallery";
+import { ProductSelectionProvider } from "./ProductSelectionContext";
 
 type ProductPageProps = {
   product: ProductDetails;
@@ -46,27 +48,23 @@ export function ProductPage({ product, relatedProducts }: ProductPageProps) {
           </ol>
         </nav>
 
-        <div className="grid lg:grid-cols-2 gap-8 lg:gap-14 mb-16 md:mb-20">
-          <ProductGallery images={product.images} name={product.name} />
+        <ProductSelectionProvider product={product}>
+          <div className="grid lg:grid-cols-2 gap-8 lg:gap-14 mb-16 md:mb-20">
+            <ProductGallery images={product.images} name={product.name} />
 
-          <div>
-            <p className="text-brand-olive text-sm tracking-[0.2em] uppercase mb-2">
-              {categoryTitle}
-            </p>
-            <h1 className="font-heading text-3xl md:text-4xl text-brand-olive-dark mb-6">
-              {product.name}
-            </h1>
-            <ProductConfigurator product={product} />
+            <div>
+              <p className="text-brand-olive text-sm tracking-[0.2em] uppercase mb-2">
+                {categoryTitle}
+              </p>
+              <h1 className="font-heading text-3xl md:text-4xl text-brand-olive-dark mb-6">
+                {product.name}
+              </h1>
+              <ProductConfigurator product={product} />
+            </div>
           </div>
-        </div>
 
-        <div className="grid md:grid-cols-2 gap-8 mb-16 md:mb-20">
-          <div className="bg-brand-surface rounded-xl p-6 md:p-8">
-            <h2 className="font-heading text-xl text-brand-olive-dark mb-4">
-              Описание
-            </h2>
-            <p className="text-brand-muted leading-relaxed">{product.description}</p>
-          </div>
+          <div className="grid md:grid-cols-2 gap-8 mb-16 md:mb-20">
+            <ProductDescription product={product} />
 
           <div className="bg-brand-surface rounded-xl p-6 md:p-8">
             <h2 className="font-heading text-xl text-brand-olive-dark mb-4">
@@ -99,7 +97,8 @@ export function ProductPage({ product, relatedProducts }: ProductPageProps) {
               </div>
             </dl>
           </div>
-        </div>
+          </div>
+        </ProductSelectionProvider>
 
         {related.length > 0 && (
           <div>

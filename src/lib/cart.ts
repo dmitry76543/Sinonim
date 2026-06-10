@@ -8,6 +8,7 @@ export type CartItem = {
   stoneLabel: string;
   size: number | null;
   quantity: number;
+  artNo?: string;
 };
 
 export const CART_STORAGE_KEY = "sinonim-cart";

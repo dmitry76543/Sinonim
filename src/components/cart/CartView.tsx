@@ -1,7 +1,7 @@
 "use client";
 
-import Image from "next/image";
 import Link from "next/link";
+import { ProductImage } from "@/components/catalog/ProductImage";
 import { useCart } from "@/context/CartContext";
 import { formatPrice } from "@/lib/products";
 
@@ -61,7 +61,7 @@ export function CartView() {
                   href={`/products/${item.productSlug}`}
                   className="relative w-24 h-24 md:w-28 md:h-28 shrink-0 rounded-lg overflow-hidden bg-brand-sand/30"
                 >
-                  <Image
+                  <ProductImage
                     src={item.image}
                     alt={item.name}
                     fill

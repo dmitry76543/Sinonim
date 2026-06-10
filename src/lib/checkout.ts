@@ -22,6 +22,8 @@ export type Order = {
   subtotal: number;
   deliveryFee: number;
   total: number;
+  advantshopOrderId?: number;
+  advantshopOrderNumber?: string;
 };
 
 export const ORDERS_STORAGE_KEY = "sinonim-orders";
