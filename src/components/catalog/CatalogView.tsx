@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import Link from "next/link";
 import { useSearchParams } from "next/navigation";
 import { CATEGORIES, type CategorySlug, type Product } from "@/lib/products";
@@ -15,26 +15,39 @@ import { ProductCard } from "./ProductCard";
 const CATALOG_GRID =
   "grid grid-cols-2 md:grid-cols-4 gap-4 md:gap-5 lg:gap-6";
 
+const CLIENT_CATALOG_TIMEOUT_MS = 50_000;
+
 type CatalogViewProps = {
   category?: CategorySlug;
-  initialProducts?: Product[];
-  catalogError?: string;
 };
 
-export function CatalogView({
-  category,
-  initialProducts,
-  catalogError: initialError,
-}: CatalogViewProps) {
+async function fetchCatalog(
+  params: URLSearchParams,
+  signal: AbortSignal
+): Promise<{ products: Product[]; error?: string }> {
+  const response = await fetch(`/api/catalog?${params.toString()}`, { signal });
+  const data = (await response.json()) as {
+    products?: Product[];
+    error?: string;
+  };
+
+  if (!response.ok || data.error) {
+    return {
+      products: [],
+      error: data.error ?? "Не удалось загрузить каталог из AdvantShop",
+    };
+  }
+
+  return { products: data.products ?? [] };
+}
+
+export function CatalogView({ category }: CatalogViewProps) {
   const searchParams = useSearchParams();
   const [filtersOpen, setFiltersOpen] = useState(false);
-  const [catalogProducts, setCatalogProducts] = useState<Product[]>(
-    initialProducts ?? []
-  );
-  const [catalogError, setCatalogError] = useState<string | undefined>(
-    initialError
-  );
-  const [loading, setLoading] = useState(!initialProducts?.length);
+  const [catalogProducts, setCatalogProducts] = useState<Product[]>([]);
+  const [catalogError, setCatalogError] = useState<string | undefined>();
+  const [loading, setLoading] = useState(true);
+  const [reloadKey, setReloadKey] = useState(0);
 
   const basePath = category ? `/shop/${category}` : "/shop";
   const filters = parseFiltersFromSearchParams(
@@ -42,50 +55,48 @@ export function CatalogView({
     category
   );
 
+  const retryLoad = useCallback(() => {
+    setReloadKey((key) => key + 1);
+  }, []);
+
   useEffect(() => {
     const params = new URLSearchParams();
     if (category) params.set("category", category);
+    if (filters.sort !== "default") params.set("sort", filters.sort);
 
-    if (filters.sort === "default" && initialProducts?.length && !initialError) {
-      setCatalogProducts(initialProducts);
-      setCatalogError(undefined);
-      setLoading(false);
-      return;
-    }
-
-    if (filters.sort !== "default") {
-      params.set("sort", filters.sort);
-    }
+    const controller = new AbortController();
+    const timeoutId = window.setTimeout(() => {
+      controller.abort();
+    }, CLIENT_CATALOG_TIMEOUT_MS);
 
     let cancelled = false;
     setLoading(true);
     setCatalogError(undefined);
 
-    fetch(`/api/catalog?${params.toString()}`)
-      .then(async (response) => {
-        const data = (await response.json()) as {
-          products?: Product[];
-          error?: string;
-        };
-        if (!cancelled) {
-          if (!response.ok || data.error) {
-            setCatalogError(
-              data.error ?? "Не удалось загрузить каталог из AdvantShop"
-            );
-            setCatalogProducts([]);
-            return;
-          }
-          setCatalogError(undefined);
-          setCatalogProducts(data.products ?? []);
-        }
-      })
-      .catch(() => {
-        if (!cancelled) {
-          setCatalogError("Не удалось загрузить каталог из AdvantShop");
+    fetchCatalog(params, controller.signal)
+      .then(({ products, error }) => {
+        if (cancelled) return;
+        if (error) {
+          setCatalogError(error);
           setCatalogProducts([]);
+          return;
         }
+        setCatalogError(undefined);
+        setCatalogProducts(products);
+      })
+      .catch((error: unknown) => {
+        if (cancelled) return;
+        if (error instanceof Error && error.name === "AbortError") {
+          setCatalogError(
+            "Загрузка каталога заняла слишком много времени. Нажмите «Попробовать снова»."
+          );
+        } else {
+          setCatalogError("Не удалось загрузить каталог из AdvantShop");
+        }
+        setCatalogProducts([]);
       })
       .finally(() => {
+        window.clearTimeout(timeoutId);
         if (!cancelled) {
           setLoading(false);
         }
@@ -93,8 +104,10 @@ export function CatalogView({
 
     return () => {
       cancelled = true;
+      controller.abort();
+      window.clearTimeout(timeoutId);
     };
-  }, [category, filters.sort, initialProducts, initialError]);
+  }, [category, filters.sort, reloadKey]);
 
   const products = filterProducts(filters, catalogProducts);
   const activeFilterCount = countActiveFilters(filters);
@@ -235,13 +248,16 @@ export function CatalogView({
                 <p className="mb-2 font-heading text-xl text-brand-olive-dark">
                   Каталог временно недоступен
                 </p>
-                <p className="mx-auto mb-2 max-w-xl text-sm text-brand-muted">
+                <p className="mx-auto mb-6 max-w-xl text-sm text-brand-muted">
                   {catalogError}
                 </p>
-                <p className="mx-auto max-w-xl text-xs text-brand-muted">
-                  Проверьте ключ Client API в `.env.local` (вкладка «API с
-                  авторизацией» в AdvantShop) и перезапустите сервер.
-                </p>
+                <button
+                  type="button"
+                  onClick={retryLoad}
+                  className="inline-flex bg-brand-olive px-6 py-3 text-sm tracking-widest uppercase text-white transition-colors hover:bg-brand-olive-dark"
+                >
+                  Попробовать снова
+                </button>
               </div>
             ) : products.length > 0 ? (
               <div className={CATALOG_GRID}>

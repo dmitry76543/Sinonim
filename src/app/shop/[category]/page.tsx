@@ -3,7 +3,6 @@ import { notFound } from "next/navigation";
 import { Footer } from "@/components/Footer";
 import { Header } from "@/components/Header";
 import { CatalogView } from "@/components/catalog/CatalogView";
-import { loadCatalogPageData } from "@/lib/catalog-page";
 import { CATEGORIES, isValidCategory, type CategorySlug } from "@/lib/products";
 
 type PageProps = {
@@ -34,20 +33,12 @@ export default async function CategoryPage({ params }: PageProps) {
     notFound();
   }
 
-  const { initialProducts, catalogError } = await loadCatalogPageData(
-    category as CategorySlug
-  );
-
   return (
     <>
       <Header />
       <main>
         <Suspense fallback={<CatalogFallback />}>
-          <CatalogView
-            category={category as CategorySlug}
-            initialProducts={initialProducts}
-            catalogError={catalogError}
-          />
+          <CatalogView category={category as CategorySlug} />
         </Suspense>
       </main>
       <Footer />

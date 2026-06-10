@@ -21,7 +21,7 @@ type AdvantShopApiEnvelope = {
 let cachedClientUserId: string | null = null;
 let clientUserIdPromise: Promise<string> | null = null;
 
-const DEFAULT_ADVANTSHOP_FETCH_TIMEOUT_MS = 55_000;
+const DEFAULT_ADVANTSHOP_FETCH_TIMEOUT_MS = 22_000;
 
 function getAdvantShopFetchTimeoutMs(): number {
   const raw = process.env.ADVANTSHOP_FETCH_TIMEOUT_MS?.trim();
@@ -57,7 +57,7 @@ async function fetchWithTimeout(
 async function fetchWithRetry(
   url: string,
   options: RequestInit,
-  attempts = 3
+  attempts = 2
 ): Promise<Response> {
   let lastError: unknown;
 
@@ -177,7 +177,7 @@ async function fetchClientUserId(): Promise<string> {
       Accept: "application/json",
       "X-API-KEY": apiKey,
     },
-    next: { revalidate: CATALOG_REVALIDATE_SECONDS },
+    cache: "no-store",
   });
 
   const userId =
@@ -202,11 +202,17 @@ async function fetchClientUserId(): Promise<string> {
   );
 }
 
+/** Used by unstable_cache — bypasses in-memory session cache. */
+export async function fetchClientUserIdUncached(): Promise<string> {
+  return fetchClientUserId();
+}
+
 async function ensureClientUserId(): Promise<string> {
   if (cachedClientUserId) return cachedClientUserId;
 
   if (!clientUserIdPromise) {
-    clientUserIdPromise = fetchClientUserId()
+    clientUserIdPromise = import("./session")
+      .then(({ getCachedClientUserId }) => getCachedClientUserId())
       .then((userId) => {
         cachedClientUserId = userId;
         return userId;

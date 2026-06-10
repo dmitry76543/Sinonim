@@ -27,6 +27,13 @@ export async function GET(request: Request) {
       error instanceof Error
         ? error.message
         : "Не удалось загрузить каталог";
-    return NextResponse.json({ products: [], error: message }, { status: 502 });
+    const friendlyMessage =
+      message === "terminated" || message.includes("fetch failed")
+        ? "AdvantShop не ответил вовремя. Попробуйте обновить страницу."
+        : message;
+    return NextResponse.json(
+      { products: [], error: friendlyMessage },
+      { status: 502 }
+    );
   }
 }
