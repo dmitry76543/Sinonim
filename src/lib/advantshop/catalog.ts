@@ -1,7 +1,7 @@
 import type { CategorySlug, Product, ProductDetails } from "@/lib/products";
 import { advantshopClientFetch, advantshopFetch } from "./client";
 import { getCategoryUrlMap } from "./config";
-import { mapCatalogProduct, mapProductDetails, extractProductSizes } from "./mapper";
+import { mapCatalogProduct, mapProductDetails } from "./mapper";
 import type {
   AdvantShopCatalogResponse,
   AdvantShopCategoriesResponse,
@@ -57,44 +57,6 @@ export async function fetchAdvantShopCategories() {
   });
 }
 
-async function enrichProductsWithSizes(products: Product[]): Promise<Product[]> {
-  const targets = products.filter(
-    (product) =>
-      (product.category === "rings" || product.category === "bracelets") &&
-      !product.sizes?.length
-  );
-
-  if (!targets.length) return products;
-
-  const sizeEntries = await Promise.all(
-    targets.map(async (product) => {
-      try {
-        const details = await advantshopClientFetch<AdvantShopProductDetails>(
-          `/api/products/${product.id}`
-        );
-        const sizes = extractProductSizes(details, product.category);
-        return sizes.length ? ([product.id, sizes] as const) : null;
-      } catch {
-        return null;
-      }
-    })
-  );
-
-  const sizesByProductId = new Map(
-    sizeEntries.filter(
-      (entry): entry is readonly [string, number[]] => entry !== null
-    )
-  );
-
-  if (!sizesByProductId.size) return products;
-
-  return products.map((product) =>
-    sizesByProductId.has(product.id)
-      ? { ...product, sizes: sizesByProductId.get(product.id) }
-      : product
-  );
-}
-
 export async function fetchAdvantShopProducts(options?: {
   category?: CategorySlug;
   sort?: string;
@@ -107,8 +69,7 @@ export async function fetchAdvantShopProducts(options?: {
     if (!categoryUrl) return [];
 
     const items = await fetchAllCatalogProducts({ url: categoryUrl, sorting: sort });
-    const products = items.map((item) => mapCatalogProduct(item, options.category!));
-    return enrichProductsWithSizes(products);
+    return items.map((item) => mapCatalogProduct(item, options.category!));
   }
 
   const slugs = Object.keys(categoryMap) as CategorySlug[];
@@ -131,16 +92,35 @@ export async function fetchAdvantShopProducts(options?: {
     }
   }
 
-  return enrichProductsWithSizes(Array.from(merged.values()));
+  return Array.from(merged.values());
 }
 
 export async function fetchAdvantShopProductDetails(
   slug: string
 ): Promise<ProductDetails | undefined> {
-  const allProducts = await fetchAdvantShopProducts();
-  const summary = allProducts.find((product) => product.slug === slug);
+  const categoryMap = getCategoryUrlMap();
+  const slugs = Object.keys(categoryMap) as CategorySlug[];
 
-  if (!summary) return undefined;
+  const lists = await Promise.all(
+    slugs.map(async (category) => ({
+      category,
+      products: await fetchAdvantShopProducts({ category }),
+    }))
+  );
+
+  let summary: Product | undefined;
+  let summaryCategory: CategorySlug | undefined;
+
+  for (const list of lists) {
+    const match = list.products.find((product) => product.slug === slug);
+    if (match) {
+      summary = match;
+      summaryCategory = list.category;
+      break;
+    }
+  }
+
+  if (!summary || !summaryCategory) return undefined;
 
   const [details, propertiesResponse] = await Promise.all([
     advantshopClientFetch<AdvantShopProductDetails>(
@@ -155,7 +135,7 @@ export async function fetchAdvantShopProductDetails(
   const properties = propertiesResponse.properties ?? [];
   const product = mapProductDetails(
     details,
-    summary.category,
+    summaryCategory,
     properties
   );
 
@@ -186,9 +166,16 @@ export async function fetchAdvantShopProductsBySlugs(
 ): Promise<Product[]> {
   if (!slugs.length) return [];
 
-  const allProducts = await fetchAdvantShopProducts();
+  const categoryMap = getCategoryUrlMap();
+  const categories = Object.keys(categoryMap) as CategorySlug[];
   const slugSet = new Set(slugs);
-  return allProducts.filter((product) => slugSet.has(product.slug));
+
+  const lists = await Promise.all(
+    categories.map((category) => fetchAdvantShopProducts({ category }))
+  );
+
+  const merged = lists.flat();
+  return merged.filter((product) => slugSet.has(product.slug));
 }
 
 export function resolveCategorySlugFromAdvantShopUrl(

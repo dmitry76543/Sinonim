@@ -1,9 +1,12 @@
+import { unstable_cache } from "next/cache";
 import {
   fetchAdvantShopProductDetails,
   fetchAdvantShopProducts,
-  fetchAdvantShopProductsBySlugs,
 } from "@/lib/advantshop/catalog";
-import { isAdvantShopConfigured } from "@/lib/advantshop/config";
+import {
+  CATALOG_REVALIDATE_SECONDS,
+  isAdvantShopConfigured,
+} from "@/lib/advantshop/config";
 import {
   PRODUCTS,
   getProductBySlug as getStaticProductBySlug,
@@ -14,12 +17,25 @@ import {
   type ProductDetails,
 } from "@/lib/products";
 
+const getCachedAdvantShopCatalog = unstable_cache(
+  async (categoryKey: string, sort: string) => {
+    const category =
+      categoryKey === "all" ? undefined : (categoryKey as CategorySlug);
+    return fetchAdvantShopProducts({ category, sort });
+  },
+  ["advantshop-catalog"],
+  { revalidate: CATALOG_REVALIDATE_SECONDS, tags: ["catalog"] }
+);
+
 export async function getCatalogProducts(options?: {
   category?: CategorySlug;
   sort?: string;
 }): Promise<Product[]> {
   if (isAdvantShopConfigured()) {
-    return fetchAdvantShopProducts(options);
+    return getCachedAdvantShopCatalog(
+      options?.category ?? "all",
+      options?.sort ?? "default"
+    );
   }
 
   let products = [...PRODUCTS];
@@ -41,7 +57,7 @@ export async function getCatalogProducts(options?: {
 
 export async function getProductBySlug(slug: string): Promise<Product | undefined> {
   if (isAdvantShopConfigured()) {
-    const products = await fetchAdvantShopProducts();
+    const products = await getCatalogProducts();
     return products.find((item) => item.slug === slug);
   }
 
@@ -68,11 +84,14 @@ export async function getRelatedProducts(
 
 export async function getProductsBySlugs(slugs: string[]): Promise<Product[]> {
   if (isAdvantShopConfigured()) {
-    const products = await fetchAdvantShopProductsBySlugs(slugs);
+    const products = await getCatalogProducts();
+    const slugSet = new Set(slugs);
     const order = new Map(slugs.map((slug, index) => [slug, index]));
-    return products.sort(
-      (a, b) => (order.get(a.slug) ?? 0) - (order.get(b.slug) ?? 0)
-    );
+    return products
+      .filter((product) => slugSet.has(product.slug))
+      .sort(
+        (a, b) => (order.get(a.slug) ?? 0) - (order.get(b.slug) ?? 0)
+      );
   }
 
   return slugs

@@ -43,9 +43,16 @@ export function CatalogView({
   );
 
   useEffect(() => {
+    if (filters.sort === "default") {
+      setCatalogProducts(initialProducts ?? []);
+      setCatalogError(initialError);
+      setLoading(false);
+      return;
+    }
+
     const params = new URLSearchParams();
     if (category) params.set("category", category);
-    if (filters.sort !== "default") params.set("sort", filters.sort);
+    params.set("sort", filters.sort);
 
     let cancelled = false;
     setLoading(true);
@@ -83,7 +90,7 @@ export function CatalogView({
     return () => {
       cancelled = true;
     };
-  }, [category, filters.sort]);
+  }, [category, filters.sort, initialProducts, initialError]);
 
   const products = filterProducts(filters, catalogProducts);
   const activeFilterCount = countActiveFilters(filters);

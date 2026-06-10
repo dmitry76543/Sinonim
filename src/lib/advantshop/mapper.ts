@@ -1,4 +1,5 @@
 import type { CategorySlug, Product, ProductDetails, StoneVariant } from "@/lib/products";
+import { RING_BRACELET_SIZES } from "@/lib/products";
 import { resolveProductImageUrl, resolveProductImages } from "./images";
 import type {
   AdvantShopCatalogProduct,
@@ -132,14 +133,26 @@ function mapBadge(
   return undefined;
 }
 
+function resolveCatalogSizes(
+  sizes: number[],
+  category: CategorySlug
+): number[] | undefined {
+  const needsSizes =
+    category === "rings" || category === "bracelets" || sizes.length > 0;
+  if (!needsSizes) return undefined;
+  if (sizes.length) return sizes;
+  if (category === "rings" || category === "bracelets") {
+    return [...RING_BRACELET_SIZES];
+  }
+  return undefined;
+}
+
 export function mapCatalogProduct(
   item: AdvantShopCatalogProduct,
   category: CategorySlug
 ): Product {
   const price = Math.round(item.priceWithDiscount ?? item.price);
   const sizes = extractProductSizes(item, category);
-  const hasSizes =
-    category === "rings" || category === "bracelets" || sizes.length > 0;
 
   return {
     id: String(item.productId),
@@ -153,7 +166,7 @@ export function mapCatalogProduct(
     isNew: Boolean(item.newProduct),
     description: item.briefDescription || undefined,
     images: resolveProductImages(collectImages(item.photos)),
-    sizes: hasSizes ? sizes : undefined,
+    sizes: resolveCatalogSizes(sizes, category),
     artNo:
       item.artNo ??
       item.offers?.find((offer) => offer.isMain)?.artNo ??

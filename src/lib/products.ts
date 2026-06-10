@@ -67,6 +67,10 @@ export const CATEGORIES: Record<
   },
 };
 
+export const CATALOG_CATEGORY_SLUGS = Object.keys(
+  CATEGORIES
+) as CategorySlug[];
+
 export const PRICE_RANGES = [
   { id: "0-15000", label: "до 15 000 ₽", min: 0, max: 15000 },
   { id: "15000-25000", label: "15 000 – 25 000 ₽", min: 15000, max: 25000 },
