@@ -1,6 +1,5 @@
-import { CATALOG_PAGE_REVALIDATE } from "@/lib/catalog-page";
-
-export const revalidate = CATALOG_PAGE_REVALIDATE;
+// Catalog pages load AdvantShop at runtime — not during `next build` (Render timeout).
+export const dynamic = "force-dynamic";
 
 export default function ShopLayout({
   children,

@@ -43,16 +43,19 @@ export function CatalogView({
   );
 
   useEffect(() => {
-    if (filters.sort === "default") {
-      setCatalogProducts(initialProducts ?? []);
-      setCatalogError(initialError);
-      setLoading(false);
-      return;
-    }
-
     const params = new URLSearchParams();
     if (category) params.set("category", category);
-    params.set("sort", filters.sort);
+
+    if (filters.sort === "default") {
+      if (initialProducts?.length || initialError) {
+        setCatalogProducts(initialProducts ?? []);
+        setCatalogError(initialError);
+        setLoading(false);
+        return;
+      }
+    } else {
+      params.set("sort", filters.sort);
+    }
 
     let cancelled = false;
     setLoading(true);

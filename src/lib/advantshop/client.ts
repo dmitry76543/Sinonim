@@ -20,6 +20,30 @@ type AdvantShopApiEnvelope = {
 
 let cachedClientUserId: string | null = null;
 
+const ADVANTSHOP_FETCH_TIMEOUT_MS = 25_000;
+
+async function fetchWithTimeout(
+  url: string,
+  options: RequestInit,
+  timeoutMs = ADVANTSHOP_FETCH_TIMEOUT_MS
+): Promise<Response> {
+  const controller = new AbortController();
+  const timeout = setTimeout(() => controller.abort(), timeoutMs);
+
+  try {
+    return await fetch(url, { ...options, signal: controller.signal });
+  } catch (error) {
+    if (error instanceof Error && error.name === "AbortError") {
+      throw new Error(
+        "AdvantShop API не ответил вовремя. Попробуйте обновить страницу."
+      );
+    }
+    throw error;
+  } finally {
+    clearTimeout(timeout);
+  }
+}
+
 function buildAdvantShopUrl(base: string, path: string): URL {
   const normalizedPath = path.replace(/^\//, "");
   return new URL(`${base.replace(/\/$/, "")}/${normalizedPath}`);
@@ -90,7 +114,7 @@ async function advantshopRequest<T>(
     }
   }
 
-  const response = await fetch(url.toString(), {
+  const response = await fetchWithTimeout(url.toString(), {
     method: options.method ?? "GET",
     headers: {
       "Content-Type": "application/json",
@@ -115,7 +139,7 @@ async function ensureClientUserId(): Promise<string> {
   const url = buildAdvantShopUrl(getAdvantShopBaseUrl(), "api/init");
   url.searchParams.set("apikey", apiKey);
 
-  const response = await fetch(url.toString(), {
+  const response = await fetchWithTimeout(url.toString(), {
     headers: {
       Accept: "application/json",
       "X-API-KEY": apiKey,
