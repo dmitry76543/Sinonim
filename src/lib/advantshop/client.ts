@@ -43,7 +43,12 @@ async function parseAdvantShopResponse<T>(
   const text = await response.text();
 
   if (!response.ok) {
-    throw new Error(`AdvantShop API ${response.status}: ${text}`);
+    if (response.status === 404 && text.includes("404 - File or directory not found")) {
+      throw new Error(
+        "AdvantShop API 404: проверьте ADVANTSHOP_BASE_URL. Для технического домена нужен путь магазина (https://s4.advantme.ru/437293-svmk), для своего домена — https://synonym-925.ru"
+      );
+    }
+    throw new Error(`AdvantShop API ${response.status}: ${text.slice(0, 300)}`);
   }
 
   let payload: T & AdvantShopApiEnvelope;

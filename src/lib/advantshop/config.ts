@@ -1,8 +1,31 @@
 import type { CategorySlug } from "@/lib/products";
 
 function readEnv(name: string): string | undefined {
-  const value = process.env[name]?.trim();
+  const raw = process.env[name]?.trim();
+  if (!raw) return undefined;
+
+  const value = raw.replace(/^["']|["']$/g, "");
   return value || undefined;
+}
+
+function assertAdvantShopBaseUrl(base: string): string {
+  try {
+    const parsed = new URL(base);
+    if (
+      parsed.hostname.endsWith("advantme.ru") &&
+      (!parsed.pathname || parsed.pathname === "/")
+    ) {
+      throw new Error(
+        "ADVANTSHOP_BASE_URL must include the shop path, e.g. https://s4.advantme.ru/437293-svmk"
+      );
+    }
+  } catch (error) {
+    if (error instanceof Error && error.message.includes("ADVANTSHOP_BASE_URL")) {
+      throw error;
+    }
+  }
+
+  return base.replace(/\/$/, "");
 }
 
 export function isAdvantShopConfigured(): boolean {
@@ -14,7 +37,7 @@ export function getAdvantShopBaseUrl(): string {
   if (!base) {
     throw new Error("ADVANTSHOP_BASE_URL is not configured");
   }
-  return base.replace(/\/$/, "");
+  return assertAdvantShopBaseUrl(base);
 }
 
 /** Server API key — categories, orders, customers */

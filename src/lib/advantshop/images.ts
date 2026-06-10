@@ -2,6 +2,23 @@ import { getAdvantShopBaseUrl, isAdvantShopConfigured } from "./config";
 
 const ADVANTSHOP_IMAGE_HOSTS = ["advantme.ru", "on-advantshop.net"];
 
+function getConfiguredImageHosts(): string[] {
+  const hosts = [...ADVANTSHOP_IMAGE_HOSTS];
+
+  if (isAdvantShopConfigured()) {
+    try {
+      const { hostname } = new URL(getAdvantShopBaseUrl());
+      if (!hosts.some((host) => hostname === host || hostname.endsWith(`.${host}`))) {
+        hosts.push(hostname);
+      }
+    } catch {
+      // ignore invalid base URL here; config will throw on actual API calls
+    }
+  }
+
+  return hosts;
+}
+
 export function isAdvantShopImageUrl(src: string): boolean {
   if (!src.startsWith("http://") && !src.startsWith("https://")) {
     return false;
@@ -9,7 +26,7 @@ export function isAdvantShopImageUrl(src: string): boolean {
 
   try {
     const { hostname } = new URL(src);
-    return ADVANTSHOP_IMAGE_HOSTS.some(
+    return getConfiguredImageHosts().some(
       (host) => hostname === host || hostname.endsWith(`.${host}`)
     );
   } catch {

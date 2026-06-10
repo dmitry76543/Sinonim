@@ -7,4 +7,12 @@ services:
     startCommand: npm start
     envVars:
       - key: NODE_VERSION
-        value: 20
+        value: "20"
+      - key: ADVANTSHOP_BASE_URL
+        sync: false
+      - key: ADVANTSHOP_SERVER_API_KEY
+        sync: false
+      - key: ADVANTSHOP_CLIENT_API_KEY
+        sync: false
+      - key: ADVANTSHOP_CATEGORY_MAP
+        sync: false
