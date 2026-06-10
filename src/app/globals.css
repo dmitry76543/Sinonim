@@ -37,3 +37,29 @@ body {
 .font-body {
   font-family: var(--font-inter), system-ui, sans-serif;
 }
+
+@keyframes hero-unroll {
+  from {
+    clip-path: inset(0 0 100% 0);
+    opacity: 0;
+    transform: translateY(-0.35em);
+  }
+  to {
+    clip-path: inset(0 0 0 0);
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.hero-unroll {
+  animation: hero-unroll 1.15s cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .hero-unroll {
+    animation: none;
+    opacity: 1;
+    transform: none;
+    clip-path: none;
+  }
+}
