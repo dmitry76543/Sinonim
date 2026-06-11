@@ -99,12 +99,13 @@ export function Categories() {
                   className="object-cover group-hover:scale-105 transition-transform duration-500"
                   sizes="(max-width: 768px) 50vw, 25vw"
                 />
-                <div className="absolute inset-0 bg-gradient-to-t from-brand-olive-dark/60 via-transparent to-transparent" />
               </div>
-              <div className="absolute bottom-0 left-0 right-0 p-4 md:p-5 text-white">
-                <h3 className="font-heading text-xl md:text-2xl mb-1">{cat.title}</h3>
-                <p className="text-xs md:text-sm text-white/80">{cat.count}</p>
-                <p className="text-sm text-brand-sand mt-1">{cat.priceFrom}</p>
+              <div className="p-4 md:p-5">
+                <h3 className="font-heading text-xl md:text-2xl mb-1 text-brand-olive-dark">
+                  {cat.title}
+                </h3>
+                <p className="text-xs md:text-sm text-brand-muted">{cat.count}</p>
+                <p className="text-sm text-brand-olive-dark mt-1">{cat.priceFrom}</p>
               </div>
             </Link>
           ))}
