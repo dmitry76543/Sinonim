@@ -117,12 +117,17 @@ function pickRandomProduct(products: Product[]): Product | undefined {
 }
 
 export async function getFeaturedProducts(): Promise<Product[]> {
-  const picks = await Promise.all(
-    FEATURED_CATEGORY_SLUGS.map(async (category) => {
-      const products = await getCatalogProducts({ category });
-      return pickRandomProduct(products);
-    })
-  );
+  try {
+    const picks = await Promise.all(
+      FEATURED_CATEGORY_SLUGS.map(async (category) => {
+        const products = await getCatalogProducts({ category });
+        return pickRandomProduct(products);
+      })
+    );
 
-  return picks.filter((product): product is Product => product !== undefined);
+    return picks.filter((product): product is Product => product !== undefined);
+  } catch (error) {
+    console.error("Failed to load featured products:", error);
+    return [];
+  }
 }

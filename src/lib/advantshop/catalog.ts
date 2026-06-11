@@ -16,6 +16,12 @@ const SORT_MAP: Record<string, string> = {
   new: "DescByAddingDate",
 };
 
+function isMissingCategoryError(error: unknown): boolean {
+  return (
+    error instanceof Error && error.message.includes("Категория не найдена")
+  );
+}
+
 function getCategorySlugByUrl(url: string): CategorySlug | undefined {
   const map = getCategoryUrlMap();
 
@@ -73,8 +79,21 @@ export async function fetchAdvantShopProducts(options?: {
     const categoryUrl = categoryMap[options.category];
     if (!categoryUrl) return [];
 
-    const items = await fetchAllCatalogProducts({ url: categoryUrl, sorting: sort });
-    return items.map((item) => mapCatalogProduct(item, options.category!));
+    try {
+      const items = await fetchAllCatalogProducts({
+        url: categoryUrl,
+        sorting: sort,
+      });
+      return items.map((item) => mapCatalogProduct(item, options.category!));
+    } catch (error) {
+      if (isMissingCategoryError(error)) {
+        console.warn(
+          `AdvantShop category not found for "${options.category}" (url: ${categoryUrl})`
+        );
+        return [];
+      }
+      throw error;
+    }
   }
 
   const slugs = Object.keys(categoryMap) as CategorySlug[];
@@ -85,8 +104,18 @@ export async function fetchAdvantShopProducts(options?: {
       const url = categoryMap[slug];
       if (!url) return [] as Product[];
 
-      const items = await fetchAllCatalogProducts({ url, sorting: sort });
-      return items.map((item) => mapCatalogProduct(item, slug));
+      try {
+        const items = await fetchAllCatalogProducts({ url, sorting: sort });
+        return items.map((item) => mapCatalogProduct(item, slug));
+      } catch (error) {
+        if (isMissingCategoryError(error)) {
+          console.warn(
+            `AdvantShop category not found for "${slug}" (url: ${url})`
+          );
+          return [] as Product[];
+        }
+        throw error;
+      }
     })
   );
 
