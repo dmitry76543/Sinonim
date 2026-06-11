@@ -73,16 +73,31 @@ export function getAdvantShopApiKey(): string {
   return getAdvantShopServerApiKey();
 }
 
+function parseCategoryUrlMap(raw: string): Partial<Record<CategorySlug, string>> {
+  if (raw.startsWith("{")) {
+    try {
+      return JSON.parse(raw) as Partial<Record<CategorySlug, string>>;
+    } catch {
+      return {};
+    }
+  }
+
+  // Amvera env vars cannot contain quotes — use: rings:koltso,earrings:sergi,...
+  const map: Partial<Record<CategorySlug, string>> = {};
+  for (const part of raw.split(",")) {
+    const [slug, url] = part.split(":").map((segment) => segment.trim());
+    if (slug && url) {
+      map[slug as CategorySlug] = url;
+    }
+  }
+  return map;
+}
+
 /** Map site category slugs to AdvantShop category URL paths */
 export function getCategoryUrlMap(): Partial<Record<CategorySlug, string>> {
   const raw = readEnv("ADVANTSHOP_CATEGORY_MAP");
   if (!raw) return {};
-
-  try {
-    return JSON.parse(raw) as Partial<Record<CategorySlug, string>>;
-  } catch {
-    return {};
-  }
+  return parseCategoryUrlMap(raw);
 }
 
 export const CATALOG_REVALIDATE_SECONDS = Number(
