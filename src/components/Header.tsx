@@ -1,3 +1,6 @@
+"use client";
+
+import { useEffect, useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { CartLink } from "@/components/cart/CartLink";
@@ -71,6 +74,28 @@ function Logo({ compact = false }: { compact?: boolean }) {
 }
 
 export function Header() {
+  const [menuOpen, setMenuOpen] = useState(false);
+
+  useEffect(() => {
+    if (!menuOpen) return;
+
+    const previousOverflow = document.body.style.overflow;
+    document.body.style.overflow = "hidden";
+
+    const handleEscape = (event: KeyboardEvent) => {
+      if (event.key === "Escape") setMenuOpen(false);
+    };
+
+    document.addEventListener("keydown", handleEscape);
+
+    return () => {
+      document.body.style.overflow = previousOverflow;
+      document.removeEventListener("keydown", handleEscape);
+    };
+  }, [menuOpen]);
+
+  const closeMenu = () => setMenuOpen(false);
+
   return (
     <header className="sticky top-0 z-50 bg-brand-surface/95 backdrop-blur-sm border-b border-brand-olive/10">
       <div className="hidden md:flex justify-between items-center px-6 lg:px-10 py-2 text-xs text-brand-muted border-b border-brand-sand">
@@ -91,12 +116,31 @@ export function Header() {
         <div className="grid grid-cols-[2.25rem_minmax(0,1fr)_auto] md:grid-cols-[minmax(0,1fr)_auto] items-center gap-2 lg:hidden">
           <button
             type="button"
-            className="p-2 text-brand-olive-dark shrink-0 justify-self-start md:hidden"
-            aria-label="Меню"
+            className="p-2 text-brand-olive-dark shrink-0 justify-self-start"
+            aria-label={menuOpen ? "Закрыть меню" : "Открыть меню"}
+            aria-expanded={menuOpen}
+            aria-controls="mobile-nav"
+            onClick={() => setMenuOpen((open) => !open)}
           >
-            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" aria-hidden>
-              <path d="M4 7h16M4 12h16M4 17h16" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" />
-            </svg>
+            {menuOpen ? (
+              <svg width="22" height="22" viewBox="0 0 24 24" fill="none" aria-hidden>
+                <path
+                  d="M18 6 6 18M6 6l12 12"
+                  stroke="currentColor"
+                  strokeWidth="1.5"
+                  strokeLinecap="round"
+                />
+              </svg>
+            ) : (
+              <svg width="22" height="22" viewBox="0 0 24 24" fill="none" aria-hidden>
+                <path
+                  d="M4 7h16M4 12h16M4 17h16"
+                  stroke="currentColor"
+                  strokeWidth="1.5"
+                  strokeLinecap="round"
+                />
+              </svg>
+            )}
           </button>
 
           <Logo compact />
@@ -105,6 +149,66 @@ export function Header() {
             <HeaderActions />
           </div>
         </div>
+
+        {menuOpen && (
+          <>
+            <button
+              type="button"
+              className="fixed inset-0 z-40 bg-black/30 lg:hidden"
+              aria-label="Закрыть меню"
+              onClick={closeMenu}
+            />
+            <nav
+              id="mobile-nav"
+              className="fixed inset-x-0 top-[calc(3.5rem+1px)] z-40 max-h-[calc(100dvh-3.5rem)] overflow-y-auto border-b border-brand-olive/10 bg-brand-surface px-4 py-6 shadow-lg lg:hidden md:top-[calc(5.5rem+1px)] md:max-h-[calc(100dvh-5.5rem)]"
+            >
+              <ul className="flex flex-col gap-1">
+                {NAV_ITEMS.map((item) => (
+                  <li key={item.href}>
+                    <Link
+                      href={item.href}
+                      className="block rounded-lg px-3 py-3 text-base tracking-wide text-brand-text hover:bg-brand-sand/50 hover:text-brand-olive transition-colors"
+                      onClick={closeMenu}
+                    >
+                      {item.label}
+                    </Link>
+                  </li>
+                ))}
+              </ul>
+
+              <div className="mt-6 flex flex-col gap-3 border-t border-brand-sand pt-6 text-sm text-brand-muted">
+                <Link
+                  href="/shop"
+                  className="hover:text-brand-olive transition-colors"
+                  onClick={closeMenu}
+                >
+                  Весь каталог
+                </Link>
+                <Link
+                  href="/shipping"
+                  className="hover:text-brand-olive transition-colors"
+                  onClick={closeMenu}
+                >
+                  Доставка и оплата
+                </Link>
+                <Link
+                  href="/showroom"
+                  className="hover:text-brand-olive transition-colors"
+                  onClick={closeMenu}
+                >
+                  Шоурум
+                </Link>
+                <Link
+                  href={SITE_PHONE_TEL}
+                  className="font-medium text-brand-olive-dark hover:text-brand-olive transition-colors"
+                  onClick={closeMenu}
+                >
+                  {SITE_PHONE}
+                </Link>
+              </div>
+            </nav>
+          </>
+        )}
 
         <div className="hidden lg:flex items-center justify-between gap-4">
           <Logo />
