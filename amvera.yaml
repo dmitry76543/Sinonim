@@ -8,8 +8,10 @@ meta:
     version: "20"
 
 build:
-  additionalCommands: npm run build
+  additionalCommands: npm ci && npm run build
+  artifacts:
+    ".next/standalone/**": /
 
 run:
-  command: node .next/standalone/server.js
+  command: node server.js
   containerPort: 80

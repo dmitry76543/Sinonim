@@ -20,22 +20,22 @@
   --color-brand-surface: var(--color-surface);
   --color-brand-text: var(--color-text);
   --color-brand-muted: var(--color-text-muted);
-  --font-heading: var(--font-playfair);
-  --font-body: var(--font-inter);
+  --font-heading: "Playfair Display", Georgia, "Times New Roman", serif;
+  --font-body: "Inter", system-ui, -apple-system, sans-serif;
 }
 
 body {
   background-color: var(--color-sand);
   color: var(--color-text);
-  font-family: var(--font-inter), system-ui, sans-serif;
+  font-family: var(--font-body);
 }
 
 .font-heading {
-  font-family: var(--font-playfair), Georgia, serif;
+  font-family: var(--font-heading);
 }
 
 .font-body {
-  font-family: var(--font-inter), system-ui, sans-serif;
+  font-family: var(--font-body);
 }
 
 @keyframes hero-unroll {
