@@ -6,7 +6,7 @@ import { CatalogView } from "@/components/catalog/CatalogView";
 export const metadata = {
   title: "Каталог — Синоним",
   description:
-    "Каталог украшений из серебра 925 с лабораторными бриллиантами. Кольца, серьги, подвески, браслеты.",
+    "Каталог украшений из серебра 925 с лабораторными бриллиантами. Кольца, серьги, колье, браслеты.",
 };
 
 function CatalogFallback() {

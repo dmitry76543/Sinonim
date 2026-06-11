@@ -12,7 +12,7 @@ import { SITE_PHONE, SITE_PHONE_TEL } from "@/lib/contacts";
 const NAV_ITEMS = [
   { label: "Кольца", href: "/shop/rings" },
   { label: "Серьги", href: "/shop/earrings" },
-  { label: "Подвески", href: "/shop/pendants" },
+  { label: "Колье", href: "/shop/pendants" },
   { label: "Браслеты", href: "/shop/bracelets" },
   { label: "О бренде", href: "/about" },
 ];

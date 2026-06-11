@@ -51,9 +51,9 @@ export const CATEGORIES: Record<
     description: "Серьги-пусеты и подвесные модели с выращенными бриллиантами",
   },
   pendants: {
-    title: "Подвески",
-    titlePlural: "Подвески",
-    description: "Подвески и колье из серебра с лабораторными камнями",
+    title: "Колье",
+    titlePlural: "Колье",
+    description: "Колье из серебра с лабораторными камнями",
   },
   bracelets: {
     title: "Браслеты",

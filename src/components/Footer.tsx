@@ -6,7 +6,7 @@ const FOOTER_LINKS = {
   catalog: [
     { label: "Кольца", href: "/shop/rings" },
     { label: "Серьги", href: "/shop/earrings" },
-    { label: "Подвески", href: "/shop/pendants" },
+    { label: "Колье", href: "/shop/pendants" },
     { label: "Браслеты", href: "/shop/bracelets" },
   ],
   info: [

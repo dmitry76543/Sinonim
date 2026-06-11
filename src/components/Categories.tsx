@@ -22,7 +22,7 @@ const CATEGORIES = [
     priceFrom: "от 12 900 ₽",
   },
   {
-    title: "Подвески",
+    title: "Колье",
     href: "/shop/pendants",
     image: "/images/categories/pendants.jpg",
     count: "32 модели",
