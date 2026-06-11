@@ -42,6 +42,21 @@ export type AdvantShopCatalogResponse = {
   };
 };
 
+export type AdvantShopSearchResponse = {
+  products?: AdvantShopCatalogProduct[];
+  categories?: AdvantShopCategory[];
+  pager?: {
+    currentPage: number;
+    totalPageCount: number;
+    totalCount: number;
+  };
+};
+
+export type AdvantShopSearchAutocompleteResponse = {
+  products?: AdvantShopCatalogProduct[];
+  categories?: AdvantShopCategory[];
+};
+
 export type AdvantShopCategory = {
   id: number;
   name: string;

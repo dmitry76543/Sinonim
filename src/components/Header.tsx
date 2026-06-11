@@ -6,6 +6,7 @@ import Link from "next/link";
 import { CartLink } from "@/components/cart/CartLink";
 import { CompareLink } from "@/components/compare/CompareLink";
 import { FavoritesLink } from "@/components/favorites/FavoritesLink";
+import { SearchForm } from "@/components/search/SearchForm";
 import { SITE_PHONE, SITE_PHONE_TEL } from "@/lib/contacts";
 
 const NAV_ITEMS = [
@@ -26,13 +27,22 @@ function IconSearch() {
   );
 }
 
-function HeaderActions() {
+function HeaderActions({
+  searchOpen,
+  onSearchToggle,
+}: {
+  searchOpen: boolean;
+  onSearchToggle: () => void;
+}) {
   return (
     <>
       <button
         type="button"
         className="p-2 sm:p-2.5 text-brand-olive-dark hover:text-brand-olive transition-colors"
-        aria-label="Поиск"
+        aria-label={searchOpen ? "Закрыть поиск" : "Поиск"}
+        aria-expanded={searchOpen}
+        aria-controls="header-search"
+        onClick={onSearchToggle}
       >
         <IconSearch />
       </button>
@@ -75,6 +85,7 @@ function Logo({ compact = false }: { compact?: boolean }) {
 
 export function Header() {
   const [menuOpen, setMenuOpen] = useState(false);
+  const [searchOpen, setSearchOpen] = useState(false);
 
   useEffect(() => {
     if (!menuOpen) return;
@@ -94,10 +105,37 @@ export function Header() {
     };
   }, [menuOpen]);
 
+  useEffect(() => {
+    if (!searchOpen) return;
+
+    const handleEscape = (event: KeyboardEvent) => {
+      if (event.key === "Escape") setSearchOpen(false);
+    };
+
+    document.addEventListener("keydown", handleEscape);
+
+    return () => {
+      document.removeEventListener("keydown", handleEscape);
+    };
+  }, [searchOpen]);
+
   const closeMenu = () => setMenuOpen(false);
+  const closeSearch = () => setSearchOpen(false);
+
+  const toggleSearch = () => {
+    setSearchOpen((open) => {
+      if (!open) setMenuOpen(false);
+      return !open;
+    });
+  };
+
+  const openMenu = () => {
+    setSearchOpen(false);
+    setMenuOpen((open) => !open);
+  };
 
   return (
-    <header className="sticky top-0 z-50 bg-brand-surface/95 backdrop-blur-sm border-b border-brand-olive/10">
+    <header className="sticky top-0 z-50 bg-brand-surface/95 backdrop-blur-sm border-b border-brand-olive/10 relative">
       <div className="hidden md:flex justify-between items-center px-6 lg:px-10 py-2 text-xs text-brand-muted border-b border-brand-sand">
         <div className="flex gap-6">
           <Link href="/shipping" className="hover:text-brand-olive transition-colors">
@@ -120,7 +158,7 @@ export function Header() {
             aria-label={menuOpen ? "Закрыть меню" : "Открыть меню"}
             aria-expanded={menuOpen}
             aria-controls="mobile-nav"
-            onClick={() => setMenuOpen((open) => !open)}
+            onClick={openMenu}
           >
             {menuOpen ? (
               <svg width="22" height="22" viewBox="0 0 24 24" fill="none" aria-hidden>
@@ -146,7 +184,7 @@ export function Header() {
           <Logo compact />
 
           <div className="col-start-3 md:col-start-2 flex items-center gap-0.5 sm:gap-1 shrink-0 justify-self-end">
-            <HeaderActions />
+            <HeaderActions searchOpen={searchOpen} onSearchToggle={toggleSearch} />
           </div>
         </div>
 
@@ -160,8 +198,13 @@ export function Header() {
             />
             <nav
               id="mobile-nav"
-              className="fixed inset-x-0 top-[calc(3.5rem+1px)] z-40 max-h-[calc(100dvh-3.5rem)] overflow-y-auto border-b border-brand-olive/10 bg-brand-surface px-4 py-6 shadow-lg lg:hidden md:top-[calc(5.5rem+1px)] md:max-h-[calc(100dvh-5.5rem)]"
+              className="fixed inset-x-0 top-[calc(3.5rem+1px)] z-40 flex max-h-[calc(100dvh-3.5rem)] flex-col border-b border-brand-olive/10 bg-brand-surface shadow-lg lg:hidden md:top-[calc(5.5rem+1px)] md:max-h-[calc(100dvh-5.5rem)]"
             >
+              <div className="shrink-0 px-4 pt-6 pb-4">
+                <SearchForm compact onSubmit={closeMenu} />
+              </div>
+
+              <div className="min-h-0 flex-1 overflow-y-auto px-4 pb-6">
               <ul className="flex flex-col gap-1">
                 {NAV_ITEMS.map((item) => (
                   <li key={item.href}>
@@ -206,6 +249,7 @@ export function Header() {
                   {SITE_PHONE}
                 </Link>
               </div>
+              </div>
             </nav>
           </>
         )}
@@ -226,9 +270,20 @@ export function Header() {
           </nav>
 
           <div className="flex items-center gap-2 shrink-0">
-            <HeaderActions />
+            <HeaderActions searchOpen={searchOpen} onSearchToggle={toggleSearch} />
           </div>
         </div>
+
+        {searchOpen && (
+          <div
+            id="header-search"
+            className="mt-4 border-t border-brand-olive/10 pt-4 lg:mt-0 lg:border-t-0 lg:pt-0 lg:absolute lg:left-0 lg:right-0 lg:top-full lg:border-b lg:border-brand-olive/10 lg:bg-brand-surface lg:px-10 lg:py-4 lg:shadow-sm"
+          >
+            <div className="mx-auto max-w-xl lg:max-w-2xl">
+              <SearchForm autoFocus compact onSubmit={closeSearch} />
+            </div>
+          </div>
+        )}
       </div>
     </header>
   );
