@@ -11,5 +11,5 @@ build:
   additionalCommands: npm run build
 
 run:
-  command: npm run start
+  command: node .next/standalone/server.js
   containerPort: 80
