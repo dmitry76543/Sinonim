@@ -14,7 +14,6 @@ const NAV_ITEMS = [
   { label: "Серьги", href: "/shop/earrings" },
   { label: "Подвески", href: "/shop/pendants" },
   { label: "Браслеты", href: "/shop/bracelets" },
-  { label: "Подарки", href: "/shop/gifts" },
   { label: "О бренде", href: "/about" },
 ];
 

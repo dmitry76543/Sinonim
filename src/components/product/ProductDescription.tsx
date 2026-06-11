@@ -18,7 +18,7 @@ export function ProductDescription({ product }: ProductDescriptionProps) {
       <p className="text-brand-muted leading-relaxed">{product.description}</p>
       {artNo && (
         <p className="mt-4 text-sm text-brand-muted">
-          <span className="text-brand-text">Артикул модификации:</span>{" "}
+          <span className="text-brand-text">Артикул изделия:</span>{" "}
           <span className="font-medium text-brand-olive-dark">{artNo}</span>
         </p>
       )}
