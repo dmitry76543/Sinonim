@@ -102,3 +102,27 @@ export async function getProductsBySlugs(slugs: string[]): Promise<Product[]> {
 export function getCatalogSource(): "advantshop" | "static" {
   return isAdvantShopConfigured() ? "advantshop" : "static";
 }
+
+const FEATURED_CATEGORY_SLUGS: CategorySlug[] = [
+  "rings",
+  "earrings",
+  "pendants",
+  "bracelets",
+];
+
+function pickRandomProduct(products: Product[]): Product | undefined {
+  if (!products.length) return undefined;
+  const index = Math.floor(Math.random() * products.length);
+  return products[index];
+}
+
+export async function getFeaturedProducts(): Promise<Product[]> {
+  const picks = await Promise.all(
+    FEATURED_CATEGORY_SLUGS.map(async (category) => {
+      const products = await getCatalogProducts({ category });
+      return pickRandomProduct(products);
+    })
+  );
+
+  return picks.filter((product): product is Product => product !== undefined);
+}
