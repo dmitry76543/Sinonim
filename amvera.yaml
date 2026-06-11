@@ -9,9 +9,7 @@ meta:
 
 build:
   additionalCommands: npm ci && npm run build
-  artifacts:
-    ".next/standalone/**": /
 
 run:
-  command: node server.js
+  command: node .next/standalone/server.js
   containerPort: 80
