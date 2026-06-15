@@ -29,6 +29,14 @@ const nextConfig: NextConfig = {
         hostname: "synonym-925.ru",
       },
       {
+        protocol: "http",
+        hostname: "shop.synonym-jewelry.ru",
+      },
+      {
+        protocol: "https",
+        hostname: "shop.synonym-jewelry.ru",
+      },
+      {
         protocol: "https",
         hostname: "synonym-jewelry.ru",
       },
