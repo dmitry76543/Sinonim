@@ -1,6 +1,12 @@
 import { getAdvantShopBaseUrl, isAdvantShopConfigured } from "./config";
 
-const ADVANTSHOP_IMAGE_HOSTS = ["advantme.ru", "on-advantshop.net"];
+const ADVANTSHOP_IMAGE_HOSTS = [
+  "advantme.ru",
+  "on-advantshop.net",
+  "synonym-925.ru",
+  "synonym-jewelry.ru",
+  "shop.synonym-jewelry.ru",
+];
 
 function getConfiguredImageHosts(): string[] {
   const hosts = [...ADVANTSHOP_IMAGE_HOSTS];
@@ -37,8 +43,14 @@ export function isAdvantShopImageUrl(src: string): boolean {
 export function isAllowedAdvantShopImageUrl(src: string): boolean {
   if (!isAdvantShopImageUrl(src)) return false;
 
-  const base = getAdvantShopBaseUrl();
-  return src.startsWith(`${base}/`) || src.includes("/pictures/");
+  if (src.includes("/pictures/")) return true;
+
+  try {
+    const base = getAdvantShopBaseUrl();
+    return src.startsWith(`${base}/`);
+  } catch {
+    return false;
+  }
 }
 
 export function resolveProductImageUrl(src: string): string {

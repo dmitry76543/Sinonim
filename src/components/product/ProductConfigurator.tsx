@@ -8,6 +8,11 @@ import { useCart } from "@/context/CartContext";
 import { formatPrice, type ProductDetails } from "@/lib/products";
 import { useProductSelection } from "./ProductSelectionContext";
 
+function formatWeightGrams(value: string): string {
+  const trimmed = value.trim().replace(/\s*г(?:р)?\.?\s*$/i, "");
+  return `${trimmed} гр.`;
+}
+
 type ProductConfiguratorProps = {
   product: ProductDetails;
 };
@@ -52,6 +57,11 @@ export function ProductConfigurator({ product }: ProductConfiguratorProps) {
         <p className="text-sm text-brand-muted">
           Лабораторный бриллиант · Сертификат качества
         </p>
+        {product.weightGrams ? (
+          <p className="mt-1 text-sm text-brand-muted">
+            Вес изделия: {formatWeightGrams(product.weightGrams)}
+          </p>
+        ) : null}
       </div>
 
       <div className="space-y-4">

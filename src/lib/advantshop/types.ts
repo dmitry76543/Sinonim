@@ -106,6 +106,12 @@ export type AdvantShopProperty = {
   propertyValue?: string;
 };
 
-export type AdvantShopPropertiesResponse = {
+export type AdvantShopPropertyGroup = {
+  groupName?: string;
   properties?: AdvantShopProperty[];
 };
+
+/** Client API may return a flat list or grouped blocks. */
+export type AdvantShopPropertiesResponse =
+  | { properties?: AdvantShopProperty[] }
+  | AdvantShopPropertyGroup[];

@@ -34,6 +34,7 @@ export type ProductDetails = Product & {
   metal: string;
   sizes: number[];
   stoneVariants: StoneVariant[];
+  weightGrams?: string;
 };
 
 export const CATEGORIES: Record<

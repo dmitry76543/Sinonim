@@ -32,10 +32,14 @@ export async function getCatalogProducts(options?: {
   sort?: string;
 }): Promise<Product[]> {
   if (isAdvantShopConfigured()) {
-    return getCachedAdvantShopCatalog(
-      options?.category ?? "all",
-      options?.sort ?? "default"
-    );
+    try {
+      return await getCachedAdvantShopCatalog(
+        options?.category ?? "all",
+        options?.sort ?? "default"
+      );
+    } catch (error) {
+      console.error("AdvantShop catalog unavailable:", error);
+    }
   }
 
   let products = [...PRODUCTS];
@@ -68,7 +72,12 @@ export async function getProductDetails(
   slug: string
 ): Promise<ProductDetails | undefined> {
   if (isAdvantShopConfigured()) {
-    return fetchAdvantShopProductDetails(slug);
+    try {
+      const product = await fetchAdvantShopProductDetails(slug);
+      if (product) return product;
+    } catch (error) {
+      console.error(`AdvantShop product "${slug}" unavailable:`, error);
+    }
   }
 
   return getStaticProductDetails(slug);

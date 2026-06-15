@@ -77,6 +77,23 @@ function parseStoneWeight(properties: AdvantShopProperty[]): number {
   return 0.2;
 }
 
+function parseWeightGrams(properties: AdvantShopProperty[]): string | undefined {
+  const fromProperty = parseProperty(properties, ["вес, гр", "вес гр"]);
+  if (fromProperty?.trim()) return fromProperty.trim();
+
+  for (const property of properties) {
+    const name = (property.propertyName ?? property.name ?? "").toLowerCase();
+    const value = (property.propertyValue ?? property.value ?? "").trim();
+    if (!value) continue;
+
+    if (name === "вес, гр." || (name.includes("вес") && name.includes("гр"))) {
+      return value;
+    }
+  }
+
+  return undefined;
+}
+
 function parseProperty(
   properties: AdvantShopProperty[],
   keywords: string[]
@@ -226,5 +243,6 @@ export function mapProductDetails(
     stoneVariants,
     artNo: artNo || undefined,
     sizeArtNos,
+    weightGrams: parseWeightGrams(properties),
   };
 }

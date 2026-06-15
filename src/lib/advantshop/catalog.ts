@@ -6,6 +6,7 @@ import type {
   AdvantShopCatalogResponse,
   AdvantShopCategoriesResponse,
   AdvantShopProductDetails,
+  AdvantShopProperty,
   AdvantShopPropertiesResponse,
 } from "./types";
 
@@ -20,6 +21,16 @@ function isMissingCategoryError(error: unknown): boolean {
   return (
     error instanceof Error && error.message.includes("Категория не найдена")
   );
+}
+
+function flattenAdvantShopProperties(
+  response: AdvantShopPropertiesResponse
+): AdvantShopProperty[] {
+  if (Array.isArray(response)) {
+    return response.flatMap((group) => group.properties ?? []);
+  }
+
+  return response.properties ?? [];
 }
 
 function getCategorySlugByUrl(url: string): CategorySlug | undefined {
@@ -163,10 +174,10 @@ export async function fetchAdvantShopProductDetails(
     advantshopClientFetch<AdvantShopPropertiesResponse>(
       `/api/products/${summary.id}/properties`,
       { searchParams: { type: "inDetails" } }
-    ).catch(() => ({ properties: [] })),
+    ).catch(() => [] as AdvantShopPropertiesResponse),
   ]);
 
-  const properties = propertiesResponse.properties ?? [];
+  const properties = flattenAdvantShopProperties(propertiesResponse);
   const product = mapProductDetails(
     details,
     summaryCategory,
