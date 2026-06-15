@@ -11,5 +11,5 @@ build:
   additionalCommands: npm ci --include=dev && npm run build
 
 run:
-  command: node .next/standalone/server.js
+  command: node scripts/start-server.mjs
   containerPort: 80
