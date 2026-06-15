@@ -5,6 +5,7 @@ import {
   FeaturedProducts,
   FeaturedProductsFallback,
 } from "@/components/FeaturedProducts";
+import { ScrollReveal } from "@/components/ScrollReveal";
 
 const CATEGORIES = [
   {
@@ -59,21 +60,23 @@ export function Categories() {
         </div>
 
         <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 md:gap-6 mb-16 md:mb-20">
-          {CATEGORIES.map((cat) => (
+          {CATEGORIES.map((cat, index) => (
             <Link
               key={cat.href}
               href={cat.href}
               className="group relative bg-brand-surface rounded-xl overflow-hidden shadow-sm hover:shadow-md transition-shadow"
             >
-              <div className="aspect-[4/5] relative overflow-hidden bg-brand-sand/50">
-                <Image
-                  src={cat.image}
-                  alt={cat.title}
-                  fill
-                  className="object-cover group-hover:scale-105 transition-transform duration-500"
-                  sizes="(max-width: 768px) 50vw, 25vw"
-                />
-              </div>
+              <ScrollReveal delayMs={index * 90} className="block">
+                <div className="aspect-[4/5] relative overflow-hidden bg-brand-sand/50">
+                  <Image
+                    src={cat.image}
+                    alt={cat.title}
+                    fill
+                    className="object-cover group-hover:scale-105 transition-transform duration-500"
+                    sizes="(max-width: 768px) 50vw, 25vw"
+                  />
+                </div>
+              </ScrollReveal>
               <div className="p-4 md:p-5">
                 <h3 className="font-heading text-xl md:text-2xl mb-1 text-brand-olive-dark">
                   {cat.title}

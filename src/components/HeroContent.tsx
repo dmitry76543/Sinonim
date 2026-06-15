@@ -9,13 +9,13 @@ export function HeroContent({ className = "" }: HeroContentProps) {
     <div className={className}>
       <p
         className="hero-unroll text-brand-sand/90 text-sm tracking-[0.25em] uppercase mb-4"
-        style={{ animationDelay: "0.1s" }}
+        style={{ animationDelay: "0ms" }}
       >
         Лабораторные бриллианты · Серебро 925
       </p>
       <h1
         className="hero-unroll font-heading text-4xl md:text-5xl lg:text-6xl leading-[1.1] mb-6"
-        style={{ animationDelay: "0.35s" }}
+        style={{ animationDelay: "120ms" }}
       >
         Красота бриллианта.
         <br />
@@ -23,14 +23,14 @@ export function HeroContent({ className = "" }: HeroContentProps) {
       </h1>
       <p
         className="hero-unroll text-white/80 text-base md:text-lg max-w-md leading-relaxed mb-8"
-        style={{ animationDelay: "0.65s" }}
+        style={{ animationDelay: "240ms" }}
       >
         Украшения с выращенными бриллиантами в серебре — та же сияющая
         огранка, сертификат качества и забота об экологии.
       </p>
       <div
         className="hero-unroll flex flex-wrap gap-4"
-        style={{ animationDelay: "0.95s" }}
+        style={{ animationDelay: "360ms" }}
       >
         <Link
           href="/shop"
@@ -47,7 +47,7 @@ export function HeroContent({ className = "" }: HeroContentProps) {
       </div>
       <div
         className="hero-unroll flex flex-wrap gap-6 mt-10 text-sm text-white/70"
-        style={{ animationDelay: "1.25s" }}
+        style={{ animationDelay: "480ms" }}
       >
         <span>от 12 900 ₽</span>
         <span className="w-px h-4 bg-white/30 hidden sm:block" />
