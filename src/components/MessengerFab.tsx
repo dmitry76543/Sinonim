@@ -5,18 +5,11 @@ import { MESSENGERS } from "@/lib/contacts";
 
 function IconMax() {
   return (
-    <svg width="22" height="22" viewBox="0 0 24 24" fill="none" aria-hidden>
+    <svg width="28" height="28" viewBox="0 0 1000 1000" fill="currentColor" aria-hidden>
       <path
-        d="M6 14.5 10.5 9.5 14 12.5 18 7.5"
-        stroke="currentColor"
-        strokeWidth="2"
-        strokeLinecap="round"
-        strokeLinejoin="round"
-      />
-      <path
-        d="M5 19h14a2 2 0 0 0 2-2V7a2 2 0 0 0-2-2H5a2 2 0 0 0-2 2v10a2 2 0 0 0 2 2Z"
-        stroke="currentColor"
-        strokeWidth="1.5"
+        fillRule="evenodd"
+        clipRule="evenodd"
+        d="M506.532 801.271C446.865 801.271 419.136 792.551 370.937 757.673C340.45 796.911 243.908 827.575 239.698 775.112C239.698 735.728 230.987 702.448 221.115 666.116C209.356 621.356 196 571.508 196 499.281C196 326.777 337.402 197 504.935 197C672.614 197 803.998 333.172 803.998 500.879C804.561 665.993 671.473 800.39 506.532 801.271ZM509 346.106C427.411 341.891 363.824 398.424 349.742 487.073C338.128 560.463 358.743 649.84 376.309 654.49C384.729 656.525 405.925 639.376 419.136 626.151C440.981 641.258 466.419 650.331 492.885 652.456C577.425 656.526 649.661 592.099 655.338 507.564C658.642 422.851 593.551 351.099 509 346.251L509 346.106Z"
       />
     </svg>
   );
@@ -70,11 +63,10 @@ const ICONS = {
   whatsapp: IconWhatsApp,
 } as const;
 
-const COLORS = {
-  max: "bg-[#6C5CE7] hover:bg-[#5B4BD6]",
-  telegram: "bg-[#2AABEE] hover:bg-[#229ED9]",
-  whatsapp: "bg-[#25D366] hover:bg-[#20BD5A]",
-} as const;
+const ICON_CLASS = "text-brand-olive-dark drop-shadow-sm";
+
+const MESSENGER_BUTTON_BG =
+  "bg-[url('/images/logo-sinonim.png')] bg-cover bg-center bg-no-repeat";
 
 export function MessengerFab() {
   const [open, setOpen] = useState(false);
@@ -111,12 +103,14 @@ export function MessengerFab() {
         className={`flex flex-col items-end gap-2 transition-all duration-300 ${
           open
             ? "opacity-100 translate-y-0 pointer-events-auto"
-            : "opacity-0 translate-y-3 pointer-events-none"
+            : "opacity-0 translate-y-4 pointer-events-none"
         }`}
         aria-hidden={!open}
       >
         {MESSENGERS.map((messenger, index) => {
           const Icon = ICONS[messenger.id];
+          const closeDelay = `${(MESSENGERS.length - 1 - index) * 40}ms`;
+          const openDelay = `${index * 50}ms`;
 
           return (
             <a
@@ -124,21 +118,24 @@ export function MessengerFab() {
               href={messenger.href}
               target="_blank"
               rel="noopener noreferrer"
-              className="group flex items-center gap-3"
-              style={{ transitionDelay: open ? `${index * 50}ms` : "0ms" }}
+              className="group flex items-center gap-3 origin-bottom-right"
               onClick={() => setOpen(false)}
             >
               <span
-                className={`rounded-full bg-brand-surface px-3 py-1.5 text-sm text-brand-olive-dark shadow-md border border-brand-olive/10 transition-all duration-200 ${
+                className={`rounded-full bg-brand-surface px-3 py-1.5 text-sm text-brand-olive-dark shadow-md border border-brand-olive/10 transition-all duration-300 ${
                   open
                     ? "opacity-100 translate-x-0"
-                    : "opacity-0 translate-x-2 group-hover:opacity-100 group-hover:translate-x-0 group-focus-visible:opacity-100 group-focus-visible:translate-x-0"
+                    : "opacity-0 translate-x-2"
                 }`}
+                style={{ transitionDelay: open ? openDelay : closeDelay }}
               >
                 {messenger.label}
               </span>
               <span
-                className={`flex h-12 w-12 items-center justify-center rounded-full text-white shadow-lg transition-transform duration-200 group-hover:scale-105 ${COLORS[messenger.id]}`}
+                className={`flex h-12 w-12 origin-bottom-right items-center justify-center rounded-full shadow-lg transition-all duration-300 group-hover:scale-105 ${
+                  open ? "scale-100 opacity-100" : "scale-0 opacity-0"
+                } ${MESSENGER_BUTTON_BG} ${ICON_CLASS}`}
+                style={{ transitionDelay: open ? openDelay : closeDelay }}
                 aria-label={messenger.label}
               >
                 <Icon />
