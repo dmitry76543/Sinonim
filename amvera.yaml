@@ -8,7 +8,7 @@ meta:
     version: "20"
 
 build:
-  additionalCommands: npm ci && npm run build
+  additionalCommands: npm ci --include=dev && npm run build
 
 run:
   command: node .next/standalone/server.js
