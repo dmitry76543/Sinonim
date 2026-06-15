@@ -1,18 +1,14 @@
+import { AutoplayVideo } from "./AutoplayVideo";
 import { HeroContent } from "./HeroContent";
 
 export function HeroVideoBanner() {
   return (
     <section className="relative min-h-[88vh] md:min-h-[92vh] flex items-center overflow-hidden">
-      <video
-        autoPlay
-        loop
-        muted
-        playsInline
+      <AutoplayVideo
+        src="/images/vdeo-banner.mp4"
         className="absolute inset-0 h-full w-full object-cover"
         aria-hidden
-      >
-        <source src="/images/vdeo-banner.mp4" type="video/mp4" />
-      </video>
+      />
 
       <div className="pointer-events-none absolute inset-0 bg-gradient-to-r from-black/40 via-black/10 to-transparent md:from-black/35 md:via-transparent md:to-transparent" />
 
