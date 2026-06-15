@@ -57,7 +57,7 @@ async function fetchWithTimeout(
 async function fetchWithRetry(
   url: string,
   options: RequestInit,
-  attempts = 2
+  attempts = 3
 ): Promise<Response> {
   let lastError: unknown;
 
@@ -66,10 +66,8 @@ async function fetchWithRetry(
       return await fetchWithTimeout(url, options);
     } catch (error) {
       lastError = error;
-      const isTimeout =
-        error instanceof Error &&
-        error.message.includes("не ответил вовремя");
-      if (!isTimeout || attempt === attempts) {
+      const retryable = isRetryableFetchError(error);
+      if (!retryable || attempt === attempts) {
         throw error;
       }
       await new Promise((resolve) => setTimeout(resolve, attempt * 1000));
@@ -77,6 +75,30 @@ async function fetchWithRetry(
   }
 
   throw lastError;
+}
+
+function isRetryableFetchError(error: unknown): boolean {
+  if (!(error instanceof Error)) return false;
+
+  const message = error.message.toLowerCase();
+  if (
+    message.includes("fetch failed") ||
+    message.includes("не ответил вовремя") ||
+    message.includes("econnreset") ||
+    message.includes("econnrefused") ||
+    message.includes("etimedout") ||
+    message.includes("socket hang up")
+  ) {
+    return true;
+  }
+
+  const cause = error.cause;
+  if (cause && typeof cause === "object" && "code" in cause) {
+    const code = String(cause.code);
+    return code === "ECONNRESET" || code === "ECONNREFUSED" || code === "ETIMEDOUT";
+  }
+
+  return false;
 }
 
 function buildAdvantShopUrl(base: string, path: string): URL {
