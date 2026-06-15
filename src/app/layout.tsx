@@ -12,9 +12,18 @@ import { MessengerFab } from "@/components/MessengerFab";
 import "./globals.css";
 
 export const metadata: Metadata = {
+  metadataBase: new URL("https://synonym-jewelry.ru"),
   title: "Синоним — выращенные бриллианты в серебре",
   description:
     "Ювелирные украшения из серебра 925 с лабораторными бриллиантами. Шоурум в Москве.",
+  icons: {
+    icon: [{ url: "/favicon.ico", type: "image/x-icon" }],
+    shortcut: "/favicon.ico",
+    apple: "/favicon.ico",
+  },
+  alternates: {
+    canonical: "https://synonym-jewelry.ru",
+  },
 };
 
 export default function RootLayout({
