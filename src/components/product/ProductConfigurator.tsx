@@ -5,6 +5,7 @@ import Link from "next/link";
 import { CompareButton } from "@/components/compare/CompareButton";
 import { FavoriteButton } from "@/components/favorites/FavoriteButton";
 import { useCart } from "@/context/CartContext";
+import { trackAddToCart } from "@/lib/analytics/metrika";
 import { formatPrice, type ProductDetails } from "@/lib/products";
 import { useProductSelection } from "./ProductSelectionContext";
 
@@ -28,6 +29,13 @@ export function ProductConfigurator({ product }: ProductConfiguratorProps) {
   const { addItem } = useCart();
 
   const handleAddToCart = () => {
+    const variant = [
+      defaultVariant.label,
+      selectedSize != null ? `размер ${selectedSize}` : null,
+    ]
+      .filter(Boolean)
+      .join(", ");
+
     addItem({
       productSlug: product.slug,
       name: product.name,
@@ -37,6 +45,13 @@ export function ProductConfigurator({ product }: ProductConfiguratorProps) {
       stoneLabel: defaultVariant.label,
       size: selectedSize,
       artNo,
+    });
+    trackAddToCart({
+      id: artNo ?? product.slug,
+      name: product.name,
+      price: displayPrice,
+      category: product.category,
+      variant: variant || undefined,
     });
     setAdded(true);
     setTimeout(() => setAdded(false), 3000);

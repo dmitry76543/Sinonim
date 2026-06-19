@@ -1,0 +1,225 @@
+import type { CartItem } from "@/lib/cart";
+import type { Order } from "@/lib/checkout";
+import type { CategorySlug } from "@/lib/products";
+
+export const METRIKA_ID = 110000084;
+
+const BRAND = "Синоним";
+const TRACKED_PURCHASES_KEY = "sinonim-metrika-purchases";
+const TRACKED_ORDERS_KEY = "sinonim-metrika-orders";
+
+type EcommerceProduct = {
+  id: string;
+  name: string;
+  price: number;
+  brand?: string;
+  category?: string;
+  quantity?: number;
+  variant?: string;
+};
+
+type YandexMetrikaFn = (
+  counterId: number,
+  method: string,
+  ...args: unknown[]
+) => void;
+
+declare global {
+  interface Window {
+    dataLayer?: Record<string, unknown>[];
+    ym?: YandexMetrikaFn;
+  }
+}
+
+function pushDataLayer(payload: Record<string, unknown>) {
+  if (typeof window === "undefined") return;
+  window.dataLayer = window.dataLayer || [];
+  window.dataLayer.push(payload);
+}
+
+function reachGoal(goal: string, params?: Record<string, unknown>) {
+  if (typeof window === "undefined" || typeof window.ym !== "function") return;
+  window.ym(METRIKA_ID, "reachGoal", goal, params);
+}
+
+function toMetrikaProduct(product: EcommerceProduct) {
+  return {
+    id: product.id,
+    name: product.name,
+    price: product.price,
+    brand: product.brand ?? BRAND,
+    category: product.category,
+    quantity: product.quantity ?? 1,
+    variant: product.variant,
+  };
+}
+
+function pushEcommerce(
+  action: "detail" | "add" | "checkout" | "purchase",
+  products: EcommerceProduct[],
+  actionField?: Record<string, unknown>
+) {
+  const ecommerce: Record<string, unknown> = { currencyCode: "RUB" };
+
+  if (action === "purchase") {
+    ecommerce.purchase = {
+      actionField: actionField ?? {},
+      products: products.map(toMetrikaProduct),
+    };
+  } else if (action === "checkout") {
+    ecommerce.checkout = {
+      actionField: actionField ?? { step: 1 },
+      products: products.map(toMetrikaProduct),
+    };
+  } else {
+    ecommerce[action] = { products: products.map(toMetrikaProduct) };
+  }
+
+  pushDataLayer({ ecommerce: null });
+  pushDataLayer({ ecommerce });
+}
+
+function mapCartItemToEcommerce(
+  item: CartItem,
+  category?: CategorySlug
+): EcommerceProduct {
+  const variant = [item.stoneLabel, item.size != null ? `размер ${item.size}` : null]
+    .filter(Boolean)
+    .join(", ");
+
+  return {
+    id: item.artNo ?? item.productSlug,
+    name: item.name,
+    price: item.price,
+    category,
+    quantity: item.quantity,
+    variant: variant || undefined,
+  };
+}
+
+function mapOrderItems(order: Order): EcommerceProduct[] {
+  return order.items.map((item) => mapCartItemToEcommerce(item));
+}
+
+function readTrackedIds(storageKey: string): Set<string> {
+  if (typeof window === "undefined") return new Set();
+
+  try {
+    const raw = sessionStorage.getItem(storageKey);
+    const parsed = raw ? (JSON.parse(raw) as string[]) : [];
+    return new Set(Array.isArray(parsed) ? parsed : []);
+  } catch {
+    return new Set();
+  }
+}
+
+function markTrackedId(storageKey: string, id: string) {
+  if (typeof window === "undefined") return;
+
+  const tracked = readTrackedIds(storageKey);
+  tracked.add(id);
+  sessionStorage.setItem(storageKey, JSON.stringify([...tracked]));
+}
+
+function trackOnce(
+  storageKey: string,
+  id: string,
+  callback: () => void
+) {
+  const tracked = readTrackedIds(storageKey);
+  if (tracked.has(id)) return;
+
+  callback();
+  markTrackedId(storageKey, id);
+}
+
+export function trackViewItem(input: {
+  id: string;
+  name: string;
+  price: number;
+  category: CategorySlug;
+  variant?: string;
+}) {
+  pushEcommerce("detail", [
+    {
+      id: input.id,
+      name: input.name,
+      price: input.price,
+      category: input.category,
+      variant: input.variant,
+    },
+  ]);
+  reachGoal("view_item", { product_id: input.id });
+}
+
+export function trackAddToCart(input: {
+  id: string;
+  name: string;
+  price: number;
+  category: CategorySlug;
+  quantity?: number;
+  variant?: string;
+}) {
+  pushEcommerce("add", [
+    {
+      id: input.id,
+      name: input.name,
+      price: input.price,
+      category: input.category,
+      quantity: input.quantity ?? 1,
+      variant: input.variant,
+    },
+  ]);
+  reachGoal("add_to_cart", { product_id: input.id });
+}
+
+export function trackBeginCheckout(items: CartItem[]) {
+  if (!items.length) return;
+
+  pushEcommerce(
+    "checkout",
+    items.map((item) => mapCartItemToEcommerce(item)),
+    { step: 1 }
+  );
+  reachGoal("begin_checkout");
+}
+
+export function trackOrderSubmit(order: Order) {
+  trackOnce(TRACKED_ORDERS_KEY, order.id, () => {
+    reachGoal("order_submit", {
+      order_id: order.advantshopOrderNumber ?? order.id,
+      order_price: order.total,
+      currency: "RUB",
+    });
+  });
+}
+
+export function trackPurchase(order: Order) {
+  trackOnce(TRACKED_PURCHASES_KEY, order.id, () => {
+    pushEcommerce("purchase", mapOrderItems(order), {
+      id: order.advantshopOrderNumber ?? order.id,
+      revenue: order.total,
+    });
+    reachGoal("purchase", {
+      order_id: order.advantshopOrderNumber ?? order.id,
+      order_price: order.total,
+      currency: "RUB",
+    });
+  });
+}
+
+export function trackContactTelegram() {
+  reachGoal("contact_telegram");
+}
+
+export function trackContactWhatsapp() {
+  reachGoal("contact_whatsapp");
+}
+
+export function trackContactPhone() {
+  reachGoal("contact_phone");
+}
+
+export function trackShowroomMapClick() {
+  reachGoal("showroom_map_click");
+}

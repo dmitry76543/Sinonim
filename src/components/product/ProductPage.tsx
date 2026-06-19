@@ -1,7 +1,9 @@
 import Link from "next/link";
+import { ProductViewTracker } from "@/components/analytics/ProductViewTracker";
 import { CATEGORIES, type ProductDetails } from "@/lib/products";
 import type { Product } from "@/lib/products";
-import { getProductCaratWeightLabel } from "@/lib/product-weight";import { ProductCard } from "@/components/catalog/ProductCard";
+import { getProductCaratWeightLabel } from "@/lib/product-weight";
+import { ProductCard } from "@/components/catalog/ProductCard";
 import { ProductConfigurator } from "./ProductConfigurator";
 import { ProductDescription } from "./ProductDescription";
 import { ProductGallery } from "./ProductGallery";
@@ -18,6 +20,13 @@ export function ProductPage({ product, relatedProducts }: ProductPageProps) {
   const diamondWeight = getProductCaratWeightLabel(product);
   return (
     <section className="py-8 md:py-12">
+      <ProductViewTracker
+        id={product.artNo ?? product.slug}
+        name={product.name}
+        price={product.price}
+        category={product.category}
+        variant={`${diamondWeight} карат`}
+      />
       <div className="mx-auto max-w-7xl px-4 md:px-6 lg:px-10">
         <nav className="text-sm text-brand-muted mb-6" aria-label="Хлебные крошки">
           <ol className="flex flex-wrap items-center gap-2">

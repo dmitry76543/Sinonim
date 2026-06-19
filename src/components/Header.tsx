@@ -6,6 +6,7 @@ import Link from "next/link";
 import { CartLink } from "@/components/cart/CartLink";
 import { CompareLink } from "@/components/compare/CompareLink";
 import { FavoritesLink } from "@/components/favorites/FavoritesLink";
+import { MetrikaPhoneLink } from "@/components/analytics/MetrikaPhoneLink";
 import { SearchForm } from "@/components/search/SearchForm";
 import { SITE_PHONE, SITE_PHONE_TEL } from "@/lib/contacts";
 
@@ -145,9 +146,12 @@ export function Header() {
             Шоурум
           </Link>
         </div>
-        <Link href={SITE_PHONE_TEL} className="hover:text-brand-olive transition-colors">
+        <MetrikaPhoneLink
+          href={SITE_PHONE_TEL}
+          className="hover:text-brand-olive transition-colors"
+        >
           {SITE_PHONE}
-        </Link>
+        </MetrikaPhoneLink>
       </div>
 
       <div className="px-4 md:px-6 lg:px-10 py-4">
@@ -241,13 +245,13 @@ export function Header() {
                 >
                   Шоурум
                 </Link>
-                <Link
+                <MetrikaPhoneLink
                   href={SITE_PHONE_TEL}
                   className="font-medium text-brand-olive-dark hover:text-brand-olive transition-colors"
                   onClick={closeMenu}
                 >
                   {SITE_PHONE}
-                </Link>
+                </MetrikaPhoneLink>
               </div>
               </div>
             </nav>

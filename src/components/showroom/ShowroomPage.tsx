@@ -1,5 +1,7 @@
 import Image from "next/image";
 import Link from "next/link";
+import { MetrikaMapLink } from "@/components/analytics/MetrikaMapLink";
+import { MetrikaPhoneLink } from "@/components/analytics/MetrikaPhoneLink";
 import {
   SHOWROOM,
   SHOWROOM_MAP_EMBED_URL,
@@ -71,12 +73,12 @@ export function ShowroomPage() {
                 >
                   Смотреть каталог
                 </Link>
-                <a
+                <MetrikaPhoneLink
                   href={SITE_PHONE_TEL}
                   className="inline-flex items-center justify-center px-8 py-3.5 border border-brand-olive/30 text-brand-olive-dark hover:border-brand-olive text-sm tracking-widest uppercase transition-colors"
                 >
                   Записаться
-                </a>
+                </MetrikaPhoneLink>
               </div>
             </div>
 
@@ -108,26 +110,24 @@ export function ShowroomPage() {
               <p className="text-brand-olive-dark leading-relaxed">
                 {SHOWROOM.address}
               </p>
-              <a
+              <MetrikaMapLink
                 href={SHOWROOM_MAP_LINK}
-                target="_blank"
-                rel="noopener noreferrer"
                 className="inline-block mt-4 text-sm text-brand-terracotta hover:text-brand-terracotta-logo transition-colors"
               >
                 Открыть в Яндекс Картах →
-              </a>
+              </MetrikaMapLink>
             </div>
 
             <div className="rounded-xl border border-brand-olive/15 bg-brand-sand/30 p-6 md:p-8 text-center md:text-left">
               <p className="text-brand-olive text-xs tracking-[0.2em] uppercase mb-3">
                 Телефон
               </p>
-              <a
+              <MetrikaPhoneLink
                 href={SITE_PHONE_TEL}
                 className="font-heading text-xl md:text-2xl text-brand-olive-dark hover:text-brand-olive transition-colors"
               >
                 {SITE_PHONE}
-              </a>
+              </MetrikaPhoneLink>
               <p className="text-brand-muted text-sm mt-3">
                 Позвоните, чтобы уточнить наличие или договориться о визите
               </p>

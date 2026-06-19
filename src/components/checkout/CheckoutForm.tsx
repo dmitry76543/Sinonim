@@ -3,8 +3,13 @@
 import { ProductImage } from "@/components/catalog/ProductImage";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { useCart } from "@/context/CartContext";
+import {
+  trackBeginCheckout,
+  trackOrderSubmit,
+  trackPurchase,
+} from "@/lib/analytics/metrika";
 import {
   formatPhoneInput,
   generateOrderId,
@@ -42,6 +47,7 @@ export function CheckoutForm() {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [completedOrder, setCompletedOrder] = useState<Order | null>(null);
   const [yookassaEnabled, setYookassaEnabled] = useState(false);
+  const checkoutTrackedRef = useRef(false);
 
   const deliveryFee = useMemo(
     () => getDeliveryFee(form.deliveryMethod, total),
@@ -68,6 +74,12 @@ export function CheckoutForm() {
       })
       .catch(() => setYookassaEnabled(false));
   }, []);
+
+  useEffect(() => {
+    if (!isReady || items.length === 0 || checkoutTrackedRef.current) return;
+    checkoutTrackedRef.current = true;
+    trackBeginCheckout(items);
+  }, [isReady, items]);
 
   const updateField = <K extends keyof CheckoutFormData>(
     key: K,
@@ -151,6 +163,7 @@ export function CheckoutForm() {
       };
 
       if (data.paymentUrl && data.paymentId) {
+        trackOrderSubmit(order);
         sessionStorage.setItem(PENDING_ORDER_STORAGE_KEY, JSON.stringify(order));
         sessionStorage.setItem(PENDING_PAYMENT_STORAGE_KEY, data.paymentId);
         window.location.href = data.paymentUrl;
@@ -158,6 +171,8 @@ export function CheckoutForm() {
       }
 
       saveOrder(order);
+      trackOrderSubmit(order);
+      trackPurchase(order);
       clearCart();
       setCompletedOrder(order);
     } catch (submitError) {

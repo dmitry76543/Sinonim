@@ -2,6 +2,10 @@
 
 import { useEffect, useRef, useState } from "react";
 import { MESSENGERS } from "@/lib/contacts";
+import {
+  trackContactTelegram,
+  trackContactWhatsapp,
+} from "@/lib/analytics/metrika";
 
 function IconMax() {
   return (
@@ -65,6 +69,12 @@ const ICONS = {
 
 const ICON_CLASS = "text-brand-olive-dark drop-shadow-sm";
 
+const MESSENGER_GOALS = {
+  max: null,
+  telegram: trackContactTelegram,
+  whatsapp: trackContactWhatsapp,
+} as const;
+
 const MESSENGER_BUTTON_BG =
   "bg-[url('/images/logo-sinonim.png')] bg-cover bg-center bg-no-repeat";
 
@@ -119,7 +129,10 @@ export function MessengerFab() {
               target="_blank"
               rel="noopener noreferrer"
               className="group flex items-center gap-3 origin-bottom-right"
-              onClick={() => setOpen(false)}
+              onClick={() => {
+                MESSENGER_GOALS[messenger.id]?.();
+                setOpen(false);
+              }}
             >
               <span
                 className={`rounded-full bg-brand-surface px-3 py-1.5 text-sm text-brand-olive-dark shadow-md border border-brand-olive/10 transition-all duration-300 ${

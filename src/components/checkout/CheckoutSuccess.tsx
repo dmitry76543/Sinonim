@@ -2,8 +2,9 @@
 
 import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useCart } from "@/context/CartContext";
+import { trackPurchase } from "@/lib/analytics/metrika";
 import {
   PENDING_ORDER_STORAGE_KEY,
   PENDING_PAYMENT_STORAGE_KEY,
@@ -22,6 +23,7 @@ export function CheckoutSuccess() {
   const [order, setOrder] = useState<Order | null>(null);
   const [status, setStatus] = useState<PaymentStatus>("loading");
   const [error, setError] = useState<string | null>(null);
+  const purchaseTrackedRef = useRef(false);
 
   useEffect(() => {
     const orderId = searchParams.get("orderId");
@@ -127,6 +129,12 @@ export function CheckoutSuccess() {
       if (intervalId) window.clearInterval(intervalId);
     };
   }, [clearCart, router, searchParams]);
+
+  useEffect(() => {
+    if (status !== "succeeded" || !order || purchaseTrackedRef.current) return;
+    purchaseTrackedRef.current = true;
+    trackPurchase(order);
+  }, [status, order]);
 
   if (status === "loading" || status === "pending") {
     return (

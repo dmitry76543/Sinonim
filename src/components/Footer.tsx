@@ -1,5 +1,6 @@
 import Image from "next/image";
 import Link from "next/link";
+import { MetrikaPhoneLink } from "@/components/analytics/MetrikaPhoneLink";
 import { SITE_PHONE, SITE_PHONE_TEL, SHOWROOM } from "@/lib/contacts";
 
 const FOOTER_LINKS = {
@@ -85,12 +86,12 @@ export function Footer() {
             <p className="text-sm text-white/60 mb-3 leading-relaxed">
               {SHOWROOM.address}
             </p>
-            <a
+            <MetrikaPhoneLink
               href={SITE_PHONE_TEL}
               className="block text-sm text-brand-sand hover:text-white transition-colors mb-4"
             >
               {SITE_PHONE}
-            </a>
+            </MetrikaPhoneLink>
             <p className="text-sm text-white/60">
               {SHOWROOM.hours}
             </p>
