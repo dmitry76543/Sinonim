@@ -115,6 +115,7 @@ function DiamondGiftGuide() {
       eyebrow="Гид покупателя"
       title="Как выбрать подарок с лабораторным бриллиантом"
       intro="Подарок с бриллиантом не обязан быть огромным по каратности. Важнее стиль, повод и удобство носки — особенно если украшение выбирается до примерки."
+      primaryCta={{ label: "Идеи для подарка", href: "/shop/gifts" }}
     >
       <h2 className="font-heading text-xl text-brand-olive-dark">С чего начать</h2>
       <p>

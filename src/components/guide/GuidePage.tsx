@@ -6,9 +6,19 @@ type GuidePageProps = {
   title: string;
   intro: string;
   children: ReactNode;
+  primaryCta?: {
+    label: string;
+    href: string;
+  };
 };
 
-export function GuidePage({ eyebrow, title, intro, children }: GuidePageProps) {
+export function GuidePage({
+  eyebrow,
+  title,
+  intro,
+  children,
+  primaryCta = { label: "Смотреть каталог", href: "/shop" },
+}: GuidePageProps) {
   return (
     <>
       <section className="py-10 md:py-14">
@@ -35,10 +45,10 @@ export function GuidePage({ eyebrow, title, intro, children }: GuidePageProps) {
         <div className="mx-auto max-w-3xl px-4 md:px-6 lg:px-10 text-center">
           <div className="flex flex-wrap justify-center gap-4">
             <Link
-              href="/shop"
+              href={primaryCta.href}
               className="inline-flex items-center justify-center px-8 py-3.5 bg-brand-terracotta hover:bg-brand-terracotta-logo text-white text-sm tracking-widest uppercase transition-colors"
             >
-              Смотреть каталог
+              {primaryCta.label}
             </Link>
             <Link
               href="/guide"
