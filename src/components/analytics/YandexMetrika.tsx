@@ -1,5 +1,5 @@
 import Script from "next/script";
-import { METRIKA_ID } from "@/lib/analytics/metrika";
+import { METRIKA_ID, METRIKA_READY_EVENT } from "@/lib/analytics/metrika";
 
 export function YandexMetrika() {
   return (
@@ -13,7 +13,7 @@ export function YandexMetrika() {
       />
       <Script
         id="yandex-metrika"
-        strategy="beforeInteractive"
+        strategy="afterInteractive"
         dangerouslySetInnerHTML={{
           __html: `
 (function(m,e,t,r,i,k,a){
@@ -23,7 +23,15 @@ export function YandexMetrika() {
     k=e.createElement(t),a=e.getElementsByTagName(t)[0],k.async=1,k.src=r,a.parentNode.insertBefore(k,a)
 })(window, document,'script','https://mc.yandex.ru/metrika/tag.js?id=${METRIKA_ID}', 'ym');
 
-ym(${METRIKA_ID}, 'init', {ssr:true, webvisor:true, clickmap:true, ecommerce:"dataLayer", referrer: document.referrer, url: location.href, accurateTrackBounce:true, trackLinks:true});
+ym(${METRIKA_ID}, 'init', {
+  clickmap:true,
+  trackLinks:true,
+  accurateTrackBounce:true,
+  webvisor:true,
+  ecommerce:'dataLayer'
+});
+
+window.dispatchEvent(new Event('${METRIKA_READY_EVENT}'));
           `.trim(),
         }}
       />

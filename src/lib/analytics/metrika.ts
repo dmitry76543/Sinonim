@@ -3,10 +3,12 @@ import type { Order } from "@/lib/checkout";
 import type { CategorySlug } from "@/lib/products";
 
 export const METRIKA_ID = 110000084;
+export const METRIKA_READY_EVENT = "sinonim:metrika-ready";
 
 const BRAND = "Синоним";
 const TRACKED_PURCHASES_KEY = "sinonim-metrika-purchases";
 const TRACKED_ORDERS_KEY = "sinonim-metrika-orders";
+const METRIKA_WAIT_MS = 15_000;
 
 type EcommerceProduct = {
   id: string;
@@ -31,6 +33,73 @@ declare global {
   }
 }
 
+const pendingCalls: Array<() => void> = [];
+let metrikaReadyWatcherStarted = false;
+
+function isMetrikaAvailable() {
+  return typeof window !== "undefined" && typeof window.ym === "function";
+}
+
+function flushPendingCalls() {
+  if (!isMetrikaAvailable()) return;
+
+  while (pendingCalls.length) {
+    pendingCalls.shift()?.();
+  }
+}
+
+function startMetrikaReadyWatcher() {
+  if (typeof window === "undefined" || metrikaReadyWatcherStarted) return;
+  metrikaReadyWatcherStarted = true;
+
+  const tryFlush = () => {
+    flushPendingCalls();
+    return pendingCalls.length === 0;
+  };
+
+  if (isMetrikaAvailable()) {
+    tryFlush();
+  }
+
+  window.addEventListener(METRIKA_READY_EVENT, tryFlush);
+
+  const startedAt = Date.now();
+  const intervalId = window.setInterval(() => {
+    if (isMetrikaAvailable()) {
+      tryFlush();
+    }
+
+    if (pendingCalls.length === 0 || Date.now() - startedAt >= METRIKA_WAIT_MS) {
+      window.clearInterval(intervalId);
+    }
+  }, 100);
+}
+
+/** Called from YandexMetrika after counter init. */
+export function notifyMetrikaReady() {
+  if (typeof window === "undefined") return;
+  flushPendingCalls();
+  window.dispatchEvent(new Event(METRIKA_READY_EVENT));
+}
+
+function runWhenMetrikaReady(callback: () => void) {
+  if (typeof window === "undefined") return;
+
+  if (isMetrikaAvailable()) {
+    callback();
+    return;
+  }
+
+  pendingCalls.push(callback);
+  startMetrikaReadyWatcher();
+}
+
+function callMetrika(method: string, ...args: unknown[]) {
+  runWhenMetrikaReady(() => {
+    window.ym?.(METRIKA_ID, method, ...args);
+  });
+}
+
 function pushDataLayer(payload: Record<string, unknown>) {
   if (typeof window === "undefined") return;
   window.dataLayer = window.dataLayer || [];
@@ -38,8 +107,12 @@ function pushDataLayer(payload: Record<string, unknown>) {
 }
 
 function reachGoal(goal: string, params?: Record<string, unknown>) {
-  if (typeof window === "undefined" || typeof window.ym !== "function") return;
-  window.ym(METRIKA_ID, "reachGoal", goal, params);
+  if (params) {
+    callMetrika("reachGoal", goal, params);
+    return;
+  }
+
+  callMetrika("reachGoal", goal);
 }
 
 function toMetrikaProduct(product: EcommerceProduct) {
@@ -59,24 +132,26 @@ function pushEcommerce(
   products: EcommerceProduct[],
   actionField?: Record<string, unknown>
 ) {
-  const ecommerce: Record<string, unknown> = { currencyCode: "RUB" };
+  runWhenMetrikaReady(() => {
+    const ecommerce: Record<string, unknown> = { currencyCode: "RUB" };
 
-  if (action === "purchase") {
-    ecommerce.purchase = {
-      actionField: actionField ?? {},
-      products: products.map(toMetrikaProduct),
-    };
-  } else if (action === "checkout") {
-    ecommerce.checkout = {
-      actionField: actionField ?? { step: 1 },
-      products: products.map(toMetrikaProduct),
-    };
-  } else {
-    ecommerce[action] = { products: products.map(toMetrikaProduct) };
-  }
+    if (action === "purchase") {
+      ecommerce.purchase = {
+        actionField: actionField ?? {},
+        products: products.map(toMetrikaProduct),
+      };
+    } else if (action === "checkout") {
+      ecommerce.checkout = {
+        actionField: actionField ?? { step: 1 },
+        products: products.map(toMetrikaProduct),
+      };
+    } else {
+      ecommerce[action] = { products: products.map(toMetrikaProduct) };
+    }
 
-  pushDataLayer({ ecommerce: null });
-  pushDataLayer({ ecommerce });
+    pushDataLayer({ ecommerce: null });
+    pushDataLayer({ ecommerce });
+  });
 }
 
 function mapCartItemToEcommerce(
