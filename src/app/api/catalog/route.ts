@@ -1,7 +1,10 @@
 import { NextResponse } from "next/server";
 import { CATALOG_REVALIDATE_SECONDS } from "@/lib/advantshop/config";
 import { isValidCategory } from "@/lib/products";
-import { getCatalogProducts } from "@/lib/products-service";
+import {
+  getCatalogProducts,
+  getGiftCatalogCacheSeconds,
+} from "@/lib/products-service";
 
 export async function GET(request: Request) {
   const { searchParams } = new URL(request.url);
@@ -13,11 +16,16 @@ export async function GET(request: Request) {
 
   try {
     const products = await getCatalogProducts({ category, sort });
+    const cacheSeconds =
+      category === "gifts"
+        ? getGiftCatalogCacheSeconds()
+        : CATALOG_REVALIDATE_SECONDS;
+
     return NextResponse.json(
       { products },
       {
         headers: {
-          "Cache-Control": `public, s-maxage=${CATALOG_REVALIDATE_SECONDS}, stale-while-revalidate=600`,
+          "Cache-Control": `public, s-maxage=${cacheSeconds}, stale-while-revalidate=600`,
         },
       }
     );

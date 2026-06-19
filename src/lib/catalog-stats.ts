@@ -1,4 +1,3 @@
-import { pickGiftProducts } from "@/lib/gift-products";
 import {
   CATALOG_CATEGORY_SLUGS,
   CATEGORIES,
@@ -35,11 +34,11 @@ function formatModelCount(count: number): string {
   return `${count} моделей`;
 }
 
-function buildStats(products: Product[]): CategoryStat[] {
+function buildStats(products: Product[], giftProducts: Product[]): CategoryStat[] {
   return CATALOG_CATEGORY_SLUGS.map((slug) => {
     const categoryProducts =
       slug === "gifts"
-        ? pickGiftProducts(products)
+        ? giftProducts
         : products.filter((product) => product.category === slug);
     const count = categoryProducts.length;
     const minPrice = categoryProducts.reduce(
@@ -63,9 +62,12 @@ function buildStats(products: Product[]): CategoryStat[] {
 
 export async function getCategoryStats(): Promise<CategoryStat[]> {
   try {
-    const products = await getCatalogProducts();
-    return buildStats(products);
+    const [products, giftProducts] = await Promise.all([
+      getCatalogProducts(),
+      getCatalogProducts({ category: "gifts" }),
+    ]);
+    return buildStats(products, giftProducts);
   } catch {
-    return buildStats([]);
+    return buildStats([], []);
   }
 }

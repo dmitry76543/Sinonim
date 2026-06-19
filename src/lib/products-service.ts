@@ -9,6 +9,8 @@ import {
 } from "@/lib/advantshop/config";
 import {
   GIFT_SOURCE_CATEGORIES,
+  getGiftPeriodId,
+  getSecondsUntilNextGiftRefresh,
   pickGiftProducts,
 } from "@/lib/gift-products";
 import {
@@ -31,17 +33,33 @@ const getCachedAdvantShopCatalog = unstable_cache(
   { revalidate: CATALOG_REVALIDATE_SECONDS, tags: ["catalog"] }
 );
 
-async function getGiftCatalogProducts(sort: string): Promise<Product[]> {
-  if (isAdvantShopConfigured()) {
-    const lists = await Promise.all(
-      GIFT_SOURCE_CATEGORIES.map((category) =>
-        getCachedAdvantShopCatalog(category, sort)
-      )
-    );
-    return pickGiftProducts(lists.flat(), sort);
-  }
+const getCachedGiftCatalog = unstable_cache(
+  async (periodId: string, sort: string) => {
+    if (isAdvantShopConfigured()) {
+      const lists = await Promise.all(
+        GIFT_SOURCE_CATEGORIES.map((category) =>
+          getCachedAdvantShopCatalog(category, "default")
+        )
+      );
+      return pickGiftProducts(lists.flat(), sort, periodId);
+    }
 
-  return pickGiftProducts(PRODUCTS, sort);
+    return pickGiftProducts(PRODUCTS, sort, periodId);
+  },
+  ["gift-catalog"],
+  {
+    revalidate: 86_400,
+    tags: ["gift-catalog"],
+  }
+);
+
+async function getGiftCatalogProducts(sort: string): Promise<Product[]> {
+  const periodId = getGiftPeriodId();
+  return getCachedGiftCatalog(periodId, sort);
+}
+
+export function getGiftCatalogCacheSeconds(): number {
+  return getSecondsUntilNextGiftRefresh();
 }
 
 export async function getCatalogProducts(options?: {
