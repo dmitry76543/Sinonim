@@ -30,6 +30,11 @@ export const SHOWROOM = {
   mapQuery: "129110, Москва, ул. Гиляровского 40, офис 13",
 };
 
+export const SHOWROOM_GEO = {
+  latitude: 55.7798,
+  longitude: 37.6375,
+} as const;
+
 export const SHOWROOM_MAP_EMBED_URL = `https://yandex.ru/map-widget/v1/?text=${encodeURIComponent(SHOWROOM.mapQuery)}&z=17&l=map`;
 
 export const SHOWROOM_MAP_LINK = `https://yandex.ru/maps/?text=${encodeURIComponent(SHOWROOM.mapQuery)}`;

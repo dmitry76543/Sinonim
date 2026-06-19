@@ -1,17 +1,22 @@
 import { Footer } from "@/components/Footer";
 import { Header } from "@/components/Header";
 import { ShowroomPage } from "@/components/showroom/ShowroomPage";
+import { JsonLd } from "@/components/seo/JsonLd";
 import { buildPageMetadata } from "@/lib/metadata";
+import { buildShowroomJsonLd } from "@/lib/showroom-schema";
 
 export const metadata = buildPageMetadata({
   title: "Шоурум — Синоним",
   description:
     "Шоурум Синоним в Москве: 129110, ул. Гиляровского 40, офис 13. Примерьте украшения с лабораторными бриллиантами.",
   path: "/showroom",
+  ogImage: "/images/showroom.jpg",
 });
+
 export default function ShowroomRoute() {
   return (
     <>
+      <JsonLd data={buildShowroomJsonLd()} />
       <Header />
       <main>
         <ShowroomPage />

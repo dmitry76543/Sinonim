@@ -6,6 +6,13 @@ export function YandexMetrika() {
   return (
     <>
       <Script
+        id="data-layer"
+        strategy="beforeInteractive"
+        dangerouslySetInnerHTML={{
+          __html: "window.dataLayer = window.dataLayer || [];",
+        }}
+      />
+      <Script
         id="yandex-metrika"
         strategy="beforeInteractive"
         dangerouslySetInnerHTML={{
