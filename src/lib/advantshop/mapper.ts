@@ -1,6 +1,8 @@
 import type { CategorySlug, Product, ProductDetails, StoneVariant } from "@/lib/products";
 import { RING_BRACELET_SIZES } from "@/lib/products";
-import { parseCaratWeightFromDescription } from "@/lib/product-weight";import { resolveProductImageUrl, resolveProductImages } from "./images";
+import { parseCaratWeightFromDescription } from "@/lib/product-weight";
+import { buildSeoProductSlug } from "@/lib/product-slug";
+import { resolveProductImageUrl, resolveProductImages } from "./images";
 import type {
   AdvantShopCatalogProduct,
   AdvantShopPhoto,
@@ -182,10 +184,18 @@ export function mapCatalogProduct(
   const stoneWeight = description
     ? (parseCaratWeightFromDescription(description) ?? 0.2)
     : 0.2;
+  const legacySlug = item.urlPath;
 
   return {
     id: String(item.productId),
-    slug: item.urlPath,
+    slug: buildSeoProductSlug({
+      name: item.name,
+      category,
+      stoneWeight,
+      legacySlug,
+      productId: String(item.productId),
+    }),
+    urlPath: legacySlug,
     name: item.name,
     category,
     price,
@@ -240,10 +250,18 @@ export function mapProductDetails(
     category === "rings" || category === "bracelets" || sizes.length > 0;
   const artNo = pickDefaultArtNo(item);
   const sizeArtNos = buildSizeArtNos(item);
+  const legacySlug = item.urlPath;
 
   return {
     id: String(item.productId),
-    slug: item.urlPath,
+    slug: buildSeoProductSlug({
+      name: item.name,
+      category,
+      stoneWeight,
+      legacySlug,
+      productId: String(item.productId),
+    }),
+    urlPath: legacySlug,
     name: item.name,
     category,
     price: basePrice,

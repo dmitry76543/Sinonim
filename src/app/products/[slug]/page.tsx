@@ -1,10 +1,11 @@
-import { notFound } from "next/navigation";
+import { notFound, permanentRedirect } from "next/navigation";
 import { Footer } from "@/components/Footer";
 import { Header } from "@/components/Header";
 import { ProductPage } from "@/components/product/ProductPage";
 import { JsonLd } from "@/components/seo/JsonLd";
 import { buildPageMetadata } from "@/lib/metadata";
 import { buildProductMetaDescription } from "@/lib/product-metadata";
+import { isLegacyProductSlug } from "@/lib/product-slug";
 import { buildProductJsonLd } from "@/lib/product-schema";
 import {
   getProductDetails,
@@ -22,10 +23,12 @@ export async function generateMetadata({ params }: PageProps) {
   const product = await getProductDetails(slug);
   if (!product) return {};
 
+  const canonicalSlug = product.slug;
+
   return buildPageMetadata({
     title: `${product.name} — купить в Синоним`,
     description: buildProductMetaDescription(product),
-    path: `/products/${slug}`,
+    path: `/products/${canonicalSlug}`,
     ogImage: product.images[0] ?? product.image,
   });
 }
@@ -38,11 +41,15 @@ export default async function ProductRoute({ params }: PageProps) {
     notFound();
   }
 
+  if (isLegacyProductSlug(slug, product)) {
+    permanentRedirect(`/products/${product.slug}`);
+  }
+
   const relatedProducts = await getRelatedProducts(product);
 
   return (
     <>
-      <JsonLd data={buildProductJsonLd(product, slug)} />
+      <JsonLd data={buildProductJsonLd(product, product.slug)} />
       <Header />
       <main>
         <ProductPage product={product} relatedProducts={relatedProducts} />

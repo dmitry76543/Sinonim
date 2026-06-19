@@ -7,6 +7,7 @@ type PageMetadataOptions = {
   description: string;
   path: string;
   noIndex?: boolean;
+  robotsFollow?: boolean;
   ogImage?: string;
   ogType?: "website" | "article";
 };
@@ -16,6 +17,7 @@ export function buildPageMetadata({
   description,
   path,
   noIndex = false,
+  robotsFollow = false,
   ogImage,
   ogType = "website",
 }: PageMetadataOptions): Metadata {
@@ -54,7 +56,7 @@ export function buildPageMetadata({
     ...(noIndex && {
       robots: {
         index: false,
-        follow: false,
+        follow: robotsFollow,
       },
     }),
   };

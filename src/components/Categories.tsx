@@ -6,39 +6,11 @@ import {
   FeaturedProductsFallback,
 } from "@/components/FeaturedProducts";
 import { ScrollReveal } from "@/components/ScrollReveal";
+import { getCategoryStats } from "@/lib/catalog-stats";
 
-const CATEGORIES = [
-  {
-    title: "Кольца",
-    href: "/shop/rings",
-    image: "/images/categories/rings.jpg",
-    count: "24 модели",
-    priceFrom: "от 14 900 ₽",
-  },
-  {
-    title: "Серьги",
-    href: "/shop/earrings",
-    image: "/images/categories/earrings.jpg",
-    count: "18 моделей",
-    priceFrom: "от 12 900 ₽",
-  },
-  {
-    title: "Колье",
-    href: "/shop/pendants",
-    image: "/images/categories/pendants.jpg",
-    count: "32 модели",
-    priceFrom: "от 9 900 ₽",
-  },
-  {
-    title: "Браслеты",
-    href: "/shop/bracelets",
-    image: "/images/categories/bracelets.jpg",
-    count: "12 моделей",
-    priceFrom: "от 18 500 ₽",
-  },
-];
+export async function Categories() {
+  const categories = await getCategoryStats();
 
-export function Categories() {
   return (
     <section className="py-14 md:py-20">
       <div className="mx-auto max-w-7xl px-4 md:px-6 lg:px-10">
@@ -59,8 +31,8 @@ export function Categories() {
           </Link>
         </div>
 
-        <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 md:gap-6 mb-16 md:mb-20">
-          {CATEGORIES.map((cat, index) => (
+        <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-4 md:gap-6 mb-16 md:mb-20">
+          {categories.map((cat, index) => (
             <Link
               key={cat.href}
               href={cat.href}
@@ -73,7 +45,7 @@ export function Categories() {
                     alt={cat.title}
                     fill
                     className="object-cover group-hover:scale-105 transition-transform duration-500"
-                    sizes="(max-width: 768px) 50vw, 25vw"
+                    sizes="(max-width: 768px) 50vw, 20vw"
                   />
                 </div>
               </ScrollReveal>
@@ -81,8 +53,8 @@ export function Categories() {
                 <h3 className="font-heading text-xl md:text-2xl mb-1 text-brand-olive-dark">
                   {cat.title}
                 </h3>
-                <p className="text-xs md:text-sm text-brand-muted">{cat.count}</p>
-                <p className="text-sm text-brand-olive-dark mt-1">{cat.priceFrom}</p>
+                <p className="text-xs md:text-sm text-brand-muted">{cat.countLabel}</p>
+                <p className="text-sm text-brand-olive-dark mt-1">{cat.priceFromLabel}</p>
               </div>
             </Link>
           ))}

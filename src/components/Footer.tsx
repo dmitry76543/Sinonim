@@ -8,9 +8,11 @@ const FOOTER_LINKS = {
     { label: "Серьги", href: "/shop/earrings" },
     { label: "Колье", href: "/shop/pendants" },
     { label: "Браслеты", href: "/shop/bracelets" },
+    { label: "Подарки", href: "/shop/gifts" },
   ],
   info: [
     { label: "О бренде", href: "/about" },
+    { label: "Гид покупателя", href: "/guide" },
     { label: "Шоурум", href: "/showroom" },
     { label: "Доставка и оплата", href: "/shipping" },
     { label: "Гарантия", href: "/warranty" },

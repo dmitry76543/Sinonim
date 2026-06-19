@@ -157,7 +157,9 @@ export async function fetchAdvantShopProductDetails(
   let summaryCategory: CategorySlug | undefined;
 
   for (const list of lists) {
-    const match = list.products.find((product) => product.slug === slug);
+    const match = list.products.find(
+      (product) => product.slug === slug || product.urlPath === slug
+    );
     if (match) {
       summary = match;
       summaryCategory = list.category;
@@ -223,7 +225,9 @@ export async function fetchAdvantShopProductsBySlugs(
   );
 
   const merged = lists.flat();
-  return merged.filter((product) => slugSet.has(product.slug));
+  return merged.filter(
+    (product) => slugSet.has(product.slug) || slugSet.has(product.urlPath ?? "")
+  );
 }
 
 export function resolveCategorySlugFromAdvantShopUrl(

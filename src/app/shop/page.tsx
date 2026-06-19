@@ -2,20 +2,38 @@ import { Suspense } from "react";
 import { Footer } from "@/components/Footer";
 import { Header } from "@/components/Header";
 import { CatalogView } from "@/components/catalog/CatalogView";
+import { JsonLd } from "@/components/seo/JsonLd";
+import { buildBreadcrumbJsonLd } from "@/lib/breadcrumb-schema";
+import { hasCatalogFilterParams } from "@/lib/catalog-utils";
 import { buildPageMetadata } from "@/lib/metadata";
 import { getCatalogProducts } from "@/lib/products-service";
 import type { Product } from "@/lib/products";
 
-export const metadata = buildPageMetadata({
-  title: "Каталог — Синоним",
-  description:
-    "Каталог украшений из серебра 925 с лабораторными бриллиантами. Кольца, серьги, колье, браслеты.",
-  path: "/shop",
-});
-
 type PageProps = {
-  searchParams: Promise<{ sort?: string }>;
+  searchParams: Promise<{ sort?: string; price?: string | string[]; size?: string | string[] }>;
 };
+
+export async function generateMetadata({ searchParams }: PageProps) {
+  const params = await searchParams;
+  const query = new URLSearchParams();
+
+  if (params.sort) query.set("sort", params.sort);
+  const prices = Array.isArray(params.price) ? params.price : params.price ? [params.price] : [];
+  prices.forEach((value) => query.append("price", value));
+  const sizes = Array.isArray(params.size) ? params.size : params.size ? [params.size] : [];
+  sizes.forEach((value) => query.append("size", value));
+
+  const filtered = hasCatalogFilterParams(query);
+
+  return buildPageMetadata({
+    title: "Каталог — Синоним",
+    description:
+      "Каталог украшений из серебра 925 с лабораторными бриллиантами. Кольца, серьги, колье, браслеты, подарки.",
+    path: "/shop",
+    noIndex: filtered,
+    robotsFollow: filtered,
+  });
+}
 
 function CatalogFallback() {
   return (
@@ -36,6 +54,12 @@ export default async function ShopPage({ searchParams }: PageProps) {
 
   return (
     <>
+      <JsonLd
+        data={buildBreadcrumbJsonLd([
+          { name: "Главная", path: "/" },
+          { name: "Каталог", path: "/shop" },
+        ])}
+      />
       <Header />
       <main>
         <Suspense fallback={<CatalogFallback />}>

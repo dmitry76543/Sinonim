@@ -62,7 +62,9 @@ export async function getCatalogProducts(options?: {
 export async function getProductBySlug(slug: string): Promise<Product | undefined> {
   if (isAdvantShopConfigured()) {
     const products = await getCatalogProducts();
-    return products.find((item) => item.slug === slug);
+    return products.find(
+      (item) => item.slug === slug || item.urlPath === slug
+    );
   }
 
   return getStaticProductBySlug(slug);
@@ -72,9 +74,19 @@ export async function getProductDetails(
   slug: string
 ): Promise<ProductDetails | undefined> {
   if (isAdvantShopConfigured()) {
+    const summary = await getProductBySlug(slug);
+    if (!summary) return undefined;
+
     try {
-      const product = await fetchAdvantShopProductDetails(slug);
-      if (product) return product;
+      const product = await fetchAdvantShopProductDetails(summary.slug);
+      if (!product) return undefined;
+
+      return {
+        ...product,
+        slug: summary.slug,
+        urlPath: summary.urlPath,
+        price: summary.price,
+      };
     } catch (error) {
       console.error(`AdvantShop product "${slug}" unavailable:`, error);
     }

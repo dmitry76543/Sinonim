@@ -10,6 +10,8 @@ import {
   resolveCategorySlugFromAdvantShopUrl,
 } from "./catalog";
 import { resolveProductImageUrl } from "./images";
+import { buildSeoProductSlug } from "@/lib/product-slug";
+import { parseCaratWeightFromDescription } from "@/lib/product-weight";
 import { mapCatalogProduct } from "./mapper";
 import type {
   AdvantShopCatalogProduct,
@@ -63,6 +65,7 @@ function buildCategoryLookup(products: Product[]) {
 
   for (const product of products) {
     bySlug.set(product.slug, product.category);
+    if (product.urlPath) bySlug.set(product.urlPath, product.category);
     byId.set(product.id, product.category);
   }
 
@@ -93,22 +96,35 @@ function pickAutocompleteImage(item: AdvantShopCatalogProduct): string {
 }
 
 function mapAutocompleteProduct(
-  item: AdvantShopCatalogProduct
+  item: AdvantShopCatalogProduct,
+  category: CategorySlug = "rings"
 ): SearchAutocompleteProduct {
   const price =
     item.priceWithDiscount && item.priceWithDiscount > 0
       ? item.priceWithDiscount
       : item.price;
+  const description = item.briefDescription || undefined;
+  const stoneWeight = description
+    ? (parseCaratWeightFromDescription(description) ?? 0.2)
+    : 0.2;
+  const legacySlug = item.urlPath;
+  const slug = buildSeoProductSlug({
+    name: item.name,
+    category,
+    stoneWeight,
+    legacySlug,
+    productId: String(item.productId),
+  });
 
   return {
     type: "product",
     id: String(item.productId),
-    slug: item.urlPath,
+    slug,
     name: item.name,
     price,
     image: pickAutocompleteImage(item),
     artNo: item.artNo,
-    href: `/products/${item.urlPath}`,
+    href: `/products/${slug}`,
   };
 }
 
@@ -147,9 +163,17 @@ export async function fetchAdvantShopSearchAutocomplete(
     .filter((item): item is SearchAutocompleteCategory => item !== null)
     .slice(0, MAX_AUTOCOMPLETE_CATEGORIES);
 
-  const products = (response.products ?? [])
+  const rawProducts = response.products ?? [];
+  const knownProducts = await fetchAdvantShopProductsBySlugs(
+    rawProducts.map((item) => item.urlPath)
+  );
+  const lookup = buildCategoryLookup(knownProducts);
+
+  const products = rawProducts
     .slice(0, MAX_AUTOCOMPLETE_PRODUCTS)
-    .map(mapAutocompleteProduct);
+    .map((item) =>
+      mapAutocompleteProduct(item, resolveSearchProductCategory(item, lookup))
+    );
 
   return { products, categories };
 }

@@ -98,6 +98,36 @@ export function ProductPage({ product, relatedProducts }: ProductPageProps) {
             </dl>
           </div>
           </div>
+
+          <div className="rounded-xl border border-brand-olive/15 bg-brand-sand/20 p-6 md:p-8">
+            <h2 className="font-heading text-xl text-brand-olive-dark mb-4">
+              Полезно перед покупкой
+            </h2>
+            <ul className="space-y-2 text-sm md:text-base">
+              {(product.category === "rings" || product.category === "bracelets") && (
+                <li>
+                  <Link href="/how-size-ring" className="text-brand-terracotta hover:underline">
+                    Как определить размер кольца или браслета
+                  </Link>
+                </li>
+              )}
+              <li>
+                <Link href="/warranty" className="text-brand-terracotta hover:underline">
+                  Гарантия и сертификация
+                </Link>
+              </li>
+              <li>
+                <Link href="/guide/lab-grown-diamonds" className="text-brand-terracotta hover:underline">
+                  Лабораторный vs природный бриллиант
+                </Link>
+              </li>
+              <li>
+                <Link href="/showroom" className="text-brand-terracotta hover:underline">
+                  Примерить в шоуруме в Москве
+                </Link>
+              </li>
+            </ul>
+          </div>
         </ProductSelectionProvider>
 
         {related.length > 0 && (

@@ -20,6 +20,10 @@ const STATIC_PAGES: { path: string; changeFrequency: MetadataRoute.Sitemap[numbe
   { path: "/shipping", changeFrequency: "yearly", priority: 0.5 },
   { path: "/privacy", changeFrequency: "yearly", priority: 0.3 },
   { path: "/terms", changeFrequency: "yearly", priority: 0.3 },
+  { path: "/guide", changeFrequency: "monthly", priority: 0.55 },
+  { path: "/guide/lab-grown-diamonds", changeFrequency: "yearly", priority: 0.5 },
+  { path: "/guide/silver-care", changeFrequency: "yearly", priority: 0.5 },
+  { path: "/guide/diamond-gift", changeFrequency: "yearly", priority: 0.5 },
 ];
 
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {

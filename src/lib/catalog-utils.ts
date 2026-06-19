@@ -101,6 +101,14 @@ export function countActiveFilters(filters: CatalogFilters): number {
   return filters.priceRanges.length + filters.sizes.length;
 }
 
+export function hasCatalogFilterParams(params: URLSearchParams): boolean {
+  return (
+    params.has("price") ||
+    params.has("size") ||
+    (params.has("sort") && params.get("sort") !== "default")
+  );
+}
+
 export function shouldShowSizeFilter(category?: CategorySlug): boolean {
   return !category || category === "rings" || category === "bracelets";
 }

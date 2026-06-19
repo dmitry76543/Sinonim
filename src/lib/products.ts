@@ -18,6 +18,7 @@ export type Product = {
   sizes?: number[];
   artNo?: string;
   sizeArtNos?: Record<string, string>;
+  urlPath?: string;
 };
 
 export type StoneVariant = {

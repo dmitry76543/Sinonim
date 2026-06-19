@@ -22,7 +22,8 @@ export function ProductGallery({ images, name }: ProductGalleryProps) {
           className="object-cover"
           sizes="(max-width: 1024px) 100vw, 50vw"
           priority
-        />      </div>
+        />
+      </div>
 
       {uniqueImages.length > 1 && (
         <div className="flex gap-3">
@@ -37,7 +38,14 @@ export function ProductGallery({ images, name }: ProductGalleryProps) {
                   : "border-transparent opacity-70 hover:opacity-100"
               }`}
             >
-              <ProductImage src={src} alt="" fill className="object-cover" sizes="80px" />            </button>
+              <ProductImage
+                src={src}
+                alt={`${name} — фото ${index + 1}`}
+                fill
+                className="object-cover"
+                sizes="80px"
+              />
+            </button>
           ))}
         </div>
       )}
