@@ -321,8 +321,8 @@ export function getProductDetails(slug: string): ProductDetails | undefined {
       product.description ??
       `${product.name} — украшение из серебра 925 пробы с лабораторным бриллиантом. Камень сертифицирован, огранка круглая brillant. Идеально для повседневной носки и особых моментов.`,
     images,
-    color: product.color ?? "F (бесцветный)",
-    clarity: product.clarity ?? "VS1",
+    color: product.color ?? "2",
+    clarity: product.clarity ?? "5",
     metal: product.metal ?? "Серебро 925, родиевое покрытие",
     sizes: product.sizes ?? (hasSizes ? [...DEFAULT_SIZES] : []),
     stoneVariants,

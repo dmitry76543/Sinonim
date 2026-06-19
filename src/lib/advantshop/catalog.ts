@@ -181,12 +181,15 @@ export async function fetchAdvantShopProductDetails(
   const product = mapProductDetails(
     details,
     summaryCategory,
-    properties
+    properties,
+    summary.price,
   );
 
   return {
     ...product,
-    stoneWeight: parseStoneWeightFromProperties(properties) || product.stoneWeight,
+    price: summary.price,
+    stoneWeight:
+      parseStoneWeightFromProperties(properties) || product.stoneWeight,
   };
 }
 

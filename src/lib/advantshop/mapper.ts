@@ -206,13 +206,15 @@ export function mapCatalogProduct(
 export function mapProductDetails(
   item: AdvantShopProductDetails,
   category: CategorySlug,
-  properties: AdvantShopProperty[] = []
+  properties: AdvantShopProperty[] = [],
+  catalogPrice?: number,
 ): ProductDetails {
-  const basePrice = Math.round(
+  const offerPrice = Math.round(
     item.offers?.find((offer) => offer.isMain)?.price ??
       item.offers?.[0]?.price ??
-      0
+      0,
   );
+  const basePrice = catalogPrice ?? offerPrice;
 
   const description =
     item.description ||
@@ -227,7 +229,10 @@ export function mapProductDetails(
   const stoneVariants: StoneVariant[] = STONE_VARIANT_WEIGHTS.map((weight) => ({
     weight,
     label: weight >= 1 ? "1 карат" : `${weight} карат`,
-    price: Math.round(basePrice * (weight / Math.max(stoneWeight, 0.1))),
+    price:
+      Math.abs(weight - stoneWeight) < 0.001
+        ? basePrice
+        : Math.round(basePrice * (weight / Math.max(stoneWeight, 0.1))),
   }));
 
   const sizes = extractProductSizes(item, category);
@@ -248,8 +253,8 @@ export function mapProductDetails(
     isNew: Boolean(item.newProduct),
     description,
     images: images.length ? images : [fallbackImage],
-    color: parseProperty(properties, ["цвет", "color"]) ?? "F (бесцветный)",
-    clarity: parseProperty(properties, ["чистот", "clarity"]) ?? "VS1",
+    color: "2",
+    clarity: "5",
     metal:
       parseProperty(properties, ["металл", "проба", "silver"]) ??
       "Серебро 925, родиевое покрытие",

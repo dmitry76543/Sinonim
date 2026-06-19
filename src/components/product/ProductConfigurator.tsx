@@ -19,9 +19,10 @@ type ProductConfiguratorProps = {
 
 export function ProductConfigurator({ product }: ProductConfiguratorProps) {
   const defaultVariant = product.stoneVariants.find(
-    (v) => v.weight === product.stoneWeight
+    (variant) => Math.abs(variant.weight - product.stoneWeight) < 0.001,
   ) ?? product.stoneVariants[0];
 
+  const displayPrice = product.price;
   const { selectedSize, setSelectedSize, artNo } = useProductSelection();
   const [added, setAdded] = useState(false);
   const { addItem } = useCart();
@@ -31,8 +32,8 @@ export function ProductConfigurator({ product }: ProductConfiguratorProps) {
       productSlug: product.slug,
       name: product.name,
       image: product.image,
-      price: defaultVariant.price,
-      stoneWeight: defaultVariant.weight,
+      price: displayPrice,
+      stoneWeight: product.stoneWeight,
       stoneLabel: defaultVariant.label,
       size: selectedSize,
       artNo,
@@ -46,7 +47,7 @@ export function ProductConfigurator({ product }: ProductConfiguratorProps) {
       <div>
         <div className="flex flex-wrap items-center gap-3 mb-2">
           <p className="font-heading text-3xl md:text-4xl text-brand-olive-dark">
-            {formatPrice(defaultVariant.price)}
+            {formatPrice(displayPrice)}
           </p>
           {product.badge && (
             <span className="px-2.5 py-1 bg-brand-terracotta text-white text-[10px] tracking-widest uppercase">
