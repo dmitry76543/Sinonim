@@ -8,6 +8,10 @@ import {
   isAdvantShopConfigured,
 } from "@/lib/advantshop/config";
 import {
+  GIFT_SOURCE_CATEGORIES,
+  pickGiftProducts,
+} from "@/lib/gift-products";
+import {
   PRODUCTS,
   getProductBySlug as getStaticProductBySlug,
   getProductDetails as getStaticProductDetails,
@@ -27,15 +31,39 @@ const getCachedAdvantShopCatalog = unstable_cache(
   { revalidate: CATALOG_REVALIDATE_SECONDS, tags: ["catalog"] }
 );
 
+async function getGiftCatalogProducts(sort: string): Promise<Product[]> {
+  if (isAdvantShopConfigured()) {
+    const lists = await Promise.all(
+      GIFT_SOURCE_CATEGORIES.map((category) =>
+        getCachedAdvantShopCatalog(category, sort)
+      )
+    );
+    return pickGiftProducts(lists.flat(), sort);
+  }
+
+  return pickGiftProducts(PRODUCTS, sort);
+}
+
 export async function getCatalogProducts(options?: {
   category?: CategorySlug;
   sort?: string;
 }): Promise<Product[]> {
+  const sort = options?.sort ?? "default";
+
+  if (options?.category === "gifts") {
+    try {
+      return await getGiftCatalogProducts(sort);
+    } catch (error) {
+      console.error("Gift catalog unavailable:", error);
+      return pickGiftProducts(PRODUCTS, sort);
+    }
+  }
+
   if (isAdvantShopConfigured()) {
     try {
       return await getCachedAdvantShopCatalog(
         options?.category ?? "all",
-        options?.sort ?? "default"
+        sort
       );
     } catch (error) {
       console.error("AdvantShop catalog unavailable:", error);
@@ -48,11 +76,11 @@ export async function getCatalogProducts(options?: {
     products = products.filter((product) => product.category === options.category);
   }
 
-  if (options?.sort === "price-asc") {
+  if (sort === "price-asc") {
     products.sort((a, b) => a.price - b.price);
-  } else if (options?.sort === "price-desc") {
+  } else if (sort === "price-desc") {
     products.sort((a, b) => b.price - a.price);
-  } else if (options?.sort === "new") {
+  } else if (sort === "new") {
     products.sort((a, b) => Number(b.isNew) - Number(a.isNew));
   }
 

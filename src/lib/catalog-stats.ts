@@ -1,3 +1,4 @@
+import { pickGiftProducts } from "@/lib/gift-products";
 import {
   CATALOG_CATEGORY_SLUGS,
   CATEGORIES,
@@ -36,7 +37,10 @@ function formatModelCount(count: number): string {
 
 function buildStats(products: Product[]): CategoryStat[] {
   return CATALOG_CATEGORY_SLUGS.map((slug) => {
-    const categoryProducts = products.filter((product) => product.category === slug);
+    const categoryProducts =
+      slug === "gifts"
+        ? pickGiftProducts(products)
+        : products.filter((product) => product.category === slug);
     const count = categoryProducts.length;
     const minPrice = categoryProducts.reduce(
       (min, product) => Math.min(min, product.price),

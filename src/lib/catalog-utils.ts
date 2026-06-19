@@ -34,7 +34,7 @@ export function filterProducts(
 ): Product[] {
   let result = [...products];
 
-  if (filters.category) {
+  if (filters.category && filters.category !== "gifts") {
     result = result.filter((p) => p.category === filters.category);
   }
 
