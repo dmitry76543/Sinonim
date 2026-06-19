@@ -212,6 +212,10 @@ export function trackContactTelegram() {
   reachGoal("contact_telegram");
 }
 
+export function trackContactMax() {
+  reachGoal("contact_max");
+}
+
 export function trackContactWhatsapp() {
   reachGoal("contact_whatsapp");
 }

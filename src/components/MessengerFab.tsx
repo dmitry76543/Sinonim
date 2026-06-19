@@ -3,6 +3,7 @@
 import { useEffect, useRef, useState } from "react";
 import { MESSENGERS } from "@/lib/contacts";
 import {
+  trackContactMax,
   trackContactTelegram,
   trackContactWhatsapp,
 } from "@/lib/analytics/metrika";
@@ -70,7 +71,7 @@ const ICONS = {
 const ICON_CLASS = "text-brand-olive-dark drop-shadow-sm";
 
 const MESSENGER_GOALS = {
-  max: null,
+  max: trackContactMax,
   telegram: trackContactTelegram,
   whatsapp: trackContactWhatsapp,
 } as const;
