@@ -1,7 +1,7 @@
 import Link from "next/link";
 import { CATEGORIES, type ProductDetails } from "@/lib/products";
 import type { Product } from "@/lib/products";
-import { ProductCard } from "@/components/catalog/ProductCard";
+import { getProductCaratWeightLabel } from "@/lib/product-weight";import { ProductCard } from "@/components/catalog/ProductCard";
 import { ProductConfigurator } from "./ProductConfigurator";
 import { ProductDescription } from "./ProductDescription";
 import { ProductGallery } from "./ProductGallery";
@@ -15,7 +15,7 @@ type ProductPageProps = {
 export function ProductPage({ product, relatedProducts }: ProductPageProps) {
   const related = relatedProducts;
   const categoryTitle = CATEGORIES[product.category].title;
-
+  const diamondWeight = getProductCaratWeightLabel(product);
   return (
     <section className="py-8 md:py-12">
       <div className="mx-auto max-w-7xl px-4 md:px-6 lg:px-10">
@@ -85,7 +85,7 @@ export function ProductPage({ product, relatedProducts }: ProductPageProps) {
               </div>
               <div className="flex justify-between gap-4 border-b border-brand-sand pb-3">
                 <dt className="text-brand-muted">Вес бриллианта</dt>
-                <dd className="text-brand-text text-right">{product.stoneWeight} карат</dd>
+                <dd className="text-brand-text text-right">{diamondWeight} карат</dd>
               </div>
               <div className="flex justify-between gap-4 border-b border-brand-sand pb-3">
                 <dt className="text-brand-muted">Цвет</dt>

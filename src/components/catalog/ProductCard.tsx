@@ -4,6 +4,7 @@ import { CompareButton } from "@/components/compare/CompareButton";
 import { FavoriteButton } from "@/components/favorites/FavoriteButton";
 import { ScrollReveal } from "@/components/ScrollReveal";
 import { formatPrice, type Product } from "@/lib/products";
+import { getProductCaratWeightLabel } from "@/lib/product-weight";
 
 type ProductCardProps = {
   product: Product;
@@ -54,7 +55,7 @@ export function ProductCard({
           {product.name}
         </h3>
         <p className="mt-1 text-xs text-brand-muted">
-          {product.stoneWeight} карат · серебро 925
+          {getProductCaratWeightLabel(product)} карат · серебро 925
         </p>
         <p className="mt-1.5 font-heading text-brand-olive-dark text-lg">
           {formatPrice(product.price)}

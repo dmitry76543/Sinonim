@@ -1,6 +1,6 @@
 import type { CategorySlug, Product, ProductDetails, StoneVariant } from "@/lib/products";
 import { RING_BRACELET_SIZES } from "@/lib/products";
-import { resolveProductImageUrl, resolveProductImages } from "./images";
+import { parseCaratWeightFromDescription } from "@/lib/product-weight";import { resolveProductImageUrl, resolveProductImages } from "./images";
 import type {
   AdvantShopCatalogProduct,
   AdvantShopPhoto,
@@ -59,9 +59,16 @@ function collectImages(photos?: AdvantShopPhoto[] | null): string[] {
     .filter((src): src is string => Boolean(src));
 }
 
-function parseStoneWeight(properties: AdvantShopProperty[]): number {
-  for (const property of properties) {
-    const name = (property.propertyName ?? property.name ?? "").toLowerCase();
+function parseStoneWeight(
+  properties: AdvantShopProperty[],
+  description?: string,
+): number {
+  if (description) {
+    const fromDescription = parseCaratWeightFromDescription(description);
+    if (fromDescription !== undefined) return fromDescription;
+  }
+
+  for (const property of properties) {    const name = (property.propertyName ?? property.name ?? "").toLowerCase();
     const value = property.propertyValue ?? property.value ?? "";
 
     if (
@@ -171,6 +178,11 @@ export function mapCatalogProduct(
   const price = Math.round(item.priceWithDiscount ?? item.price);
   const sizes = extractProductSizes(item, category);
 
+  const description = item.briefDescription || undefined;
+  const stoneWeight = description
+    ? (parseCaratWeightFromDescription(description) ?? 0.2)
+    : 0.2;
+
   return {
     id: String(item.productId),
     slug: item.urlPath,
@@ -178,10 +190,10 @@ export function mapCatalogProduct(
     category,
     price,
     image: resolveProductImageUrl(pickImage(item)),
-    stoneWeight: 0.2,
+    stoneWeight,
     badge: mapBadge(item),
     isNew: Boolean(item.newProduct),
-    description: item.briefDescription || undefined,
+    description,
     images: resolveProductImages(collectImages(item.photos)),
     sizes: resolveCatalogSizes(sizes, category),
     artNo:
@@ -202,7 +214,12 @@ export function mapProductDetails(
       0
   );
 
-  const stoneWeight = parseStoneWeight(properties);
+  const description =
+    item.description ||
+    item.briefDescription ||
+    `${item.name} — украшение из серебра 925 пробы с лабораторным бриллиантом.`;
+
+  const stoneWeight = parseStoneWeight(properties, description);
   const rawImages = collectImages(item.photos);
   const images = resolveProductImages(rawImages);
   const fallbackImage = images[0] ?? DEFAULT_IMAGE;
@@ -229,10 +246,7 @@ export function mapProductDetails(
     stoneWeight,
     badge: mapBadge(item),
     isNew: Boolean(item.newProduct),
-    description:
-      item.description ||
-      item.briefDescription ||
-      `${item.name} — украшение из серебра 925 пробы с лабораторным бриллиантом.`,
+    description,
     images: images.length ? images : [fallbackImage],
     color: parseProperty(properties, ["цвет", "color"]) ?? "F (бесцветный)",
     clarity: parseProperty(properties, ["чистот", "clarity"]) ?? "VS1",
