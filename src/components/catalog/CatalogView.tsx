@@ -19,6 +19,8 @@ const CLIENT_CATALOG_TIMEOUT_MS = 50_000;
 
 type CatalogViewProps = {
   category?: CategorySlug;
+  initialProducts: Product[];
+  initialError?: string;
 };
 
 async function fetchCatalog(
@@ -41,13 +43,16 @@ async function fetchCatalog(
   return { products: data.products ?? [] };
 }
 
-export function CatalogView({ category }: CatalogViewProps) {
+export function CatalogView({
+  category,
+  initialProducts,
+  initialError,
+}: CatalogViewProps) {
   const searchParams = useSearchParams();
   const [filtersOpen, setFiltersOpen] = useState(false);
-  const [catalogProducts, setCatalogProducts] = useState<Product[]>([]);
-  const [catalogError, setCatalogError] = useState<string | undefined>();
-  const [loading, setLoading] = useState(true);
-  const [reloadKey, setReloadKey] = useState(0);
+  const [catalogProducts, setCatalogProducts] = useState(initialProducts);
+  const [catalogError, setCatalogError] = useState(initialError);
+  const [loading, setLoading] = useState(false);
 
   const basePath = category ? `/shop/${category}` : "/shop";
   const filters = parseFiltersFromSearchParams(
@@ -55,11 +60,13 @@ export function CatalogView({ category }: CatalogViewProps) {
     category
   );
 
-  const retryLoad = useCallback(() => {
-    setReloadKey((key) => key + 1);
-  }, []);
-
   useEffect(() => {
+    setCatalogProducts(initialProducts);
+    setCatalogError(initialError);
+    setLoading(false);
+  }, [initialProducts, initialError]);
+
+  const retryLoad = useCallback(() => {
     const params = new URLSearchParams();
     if (category) params.set("category", category);
     if (filters.sort !== "default") params.set("sort", filters.sort);
@@ -69,13 +76,11 @@ export function CatalogView({ category }: CatalogViewProps) {
       controller.abort();
     }, CLIENT_CATALOG_TIMEOUT_MS);
 
-    let cancelled = false;
     setLoading(true);
     setCatalogError(undefined);
 
     fetchCatalog(params, controller.signal)
       .then(({ products, error }) => {
-        if (cancelled) return;
         if (error) {
           setCatalogError(error);
           setCatalogProducts([]);
@@ -85,7 +90,6 @@ export function CatalogView({ category }: CatalogViewProps) {
         setCatalogProducts(products);
       })
       .catch((error: unknown) => {
-        if (cancelled) return;
         if (error instanceof Error && error.name === "AbortError") {
           setCatalogError(
             "Загрузка каталога заняла слишком много времени. Нажмите «Попробовать снова»."
@@ -97,17 +101,9 @@ export function CatalogView({ category }: CatalogViewProps) {
       })
       .finally(() => {
         window.clearTimeout(timeoutId);
-        if (!cancelled) {
-          setLoading(false);
-        }
+        setLoading(false);
       });
-
-    return () => {
-      cancelled = true;
-      controller.abort();
-      window.clearTimeout(timeoutId);
-    };
-  }, [category, filters.sort, reloadKey]);
+  }, [category, filters.sort]);
 
   const products = filterProducts(filters, catalogProducts);
   const activeFilterCount = countActiveFilters(filters);

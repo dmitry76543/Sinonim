@@ -2,11 +2,14 @@ import { Suspense } from "react";
 import { Footer } from "@/components/Footer";
 import { Header } from "@/components/Header";
 import { CheckoutSuccess } from "@/components/checkout/CheckoutSuccess";
+import { buildPageMetadata } from "@/lib/metadata";
 
-export const metadata = {
+export const metadata = buildPageMetadata({
   title: "Оплата заказа — Синоним",
   description: "Подтверждение оплаты заказа в интернет-магазине Синоним",
-};
+  path: "/checkout/success",
+  noIndex: true,
+});
 
 function CheckoutSuccessFallback() {
   return (

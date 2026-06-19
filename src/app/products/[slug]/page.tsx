@@ -2,6 +2,10 @@ import { notFound } from "next/navigation";
 import { Footer } from "@/components/Footer";
 import { Header } from "@/components/Header";
 import { ProductPage } from "@/components/product/ProductPage";
+import { JsonLd } from "@/components/seo/JsonLd";
+import { buildPageMetadata } from "@/lib/metadata";
+import { buildProductMetaDescription } from "@/lib/product-metadata";
+import { buildProductJsonLd } from "@/lib/product-schema";
 import {
   getProductDetails,
   getRelatedProducts,
@@ -18,10 +22,12 @@ export async function generateMetadata({ params }: PageProps) {
   const product = await getProductDetails(slug);
   if (!product) return {};
 
-  return {
+  return buildPageMetadata({
     title: `${product.name} — купить в Синоним`,
-    description: product.description,
-  };
+    description: buildProductMetaDescription(product),
+    path: `/products/${slug}`,
+    ogImage: product.images[0] ?? product.image,
+  });
 }
 
 export default async function ProductRoute({ params }: PageProps) {
@@ -36,6 +42,7 @@ export default async function ProductRoute({ params }: PageProps) {
 
   return (
     <>
+      <JsonLd data={buildProductJsonLd(product, slug)} />
       <Header />
       <main>
         <ProductPage product={product} relatedProducts={relatedProducts} />

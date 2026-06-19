@@ -1,15 +1,17 @@
-import type { Metadata } from "next";
 import { Categories } from "@/components/Categories";
 import { Footer } from "@/components/Footer";
 import { Header } from "@/components/Header";
 import { HeroVideoBanner } from "@/components/HeroVideoBanner";
 import { TrustBar } from "@/components/TrustBar";
+import { buildPageMetadata } from "@/lib/metadata";
 
-export const metadata: Metadata = {
+export const metadata = buildPageMetadata({
   title: "Синоним — вариант с видео",
   description:
     "Украшения с лабораторными бриллиантами в серебре 925. Альтернативная главная страница.",
-};
+  path: "/v2",
+  noIndex: true,
+});
 
 export default function HomeVariantPage() {
   return (

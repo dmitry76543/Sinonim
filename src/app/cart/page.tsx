@@ -1,11 +1,14 @@
 import { Footer } from "@/components/Footer";
 import { Header } from "@/components/Header";
 import { CartView } from "@/components/cart/CartView";
+import { buildPageMetadata } from "@/lib/metadata";
 
-export const metadata = {
+export const metadata = buildPageMetadata({
   title: "Корзина — Синоним",
   description: "Ваша корзина покупок в интернет-магазине Синоним",
-};
+  path: "/cart",
+  noIndex: true,
+});
 
 export default function CartPage() {
   return (

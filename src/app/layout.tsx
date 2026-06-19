@@ -9,20 +9,22 @@ import { CartProvider } from "@/context/CartContext";
 import { CompareProvider } from "@/context/CompareContext";
 import { FavoritesProvider } from "@/context/FavoritesContext";
 import { MessengerFab } from "@/components/MessengerFab";
+import { YandexMetrika } from "@/components/analytics/YandexMetrika";
+import { getSiteUrl } from "@/lib/site-url";
 import "./globals.css";
 
 export const metadata: Metadata = {
-  metadataBase: new URL("https://synonym-jewelry.ru"),
-  title: "Синоним — выращенные бриллианты в серебре",
+  metadataBase: new URL(getSiteUrl()),
+  title: {
+    default: "Синоним — выращенные бриллианты в серебре",
+    template: "%s",
+  },
   description:
     "Ювелирные украшения из серебра 925 с лабораторными бриллиантами. Шоурум в Москве.",
   icons: {
     icon: [{ url: "/favicon.ico", type: "image/x-icon" }],
     shortcut: "/favicon.ico",
     apple: "/favicon.ico",
-  },
-  alternates: {
-    canonical: "https://synonym-jewelry.ru",
   },
 };
 
@@ -34,6 +36,7 @@ export default function RootLayout({
   return (
     <html lang="ru" className="h-full antialiased">
       <body className="min-h-full flex flex-col font-body">
+        <YandexMetrika />
         <CartProvider>
           <CompareProvider>
             <FavoritesProvider>

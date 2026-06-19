@@ -3,7 +3,16 @@ import { Footer } from "@/components/Footer";
 import { Header } from "@/components/Header";
 import { Hero } from "@/components/Hero";
 import { TrustBar } from "@/components/TrustBar";
+import { buildPageMetadata } from "@/lib/metadata";
+
 export const revalidate = 300;
+
+export const metadata = buildPageMetadata({
+  title: "Синоним — выращенные бриллианты в серебре",
+  description:
+    "Ювелирные украшения из серебра 925 с лабораторными бриллиантами. Шоурум в Москве.",
+  path: "/",
+});
 
 export default function HomePage() {
   return (

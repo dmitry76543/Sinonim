@@ -2,12 +2,15 @@ import { Suspense } from "react";
 import { Footer } from "@/components/Footer";
 import { Header } from "@/components/Header";
 import { SearchView } from "@/components/search/SearchView";
+import { buildPageMetadata } from "@/lib/metadata";
 
-export const metadata = {
+export const metadata = buildPageMetadata({
   title: "Поиск — Синоним",
   description:
     "Поиск украшений из серебра 925 с лабораторными бриллиантами в каталоге Синоним.",
-};
+  path: "/search",
+  noIndex: true,
+});
 
 function SearchFallback() {
   return (
