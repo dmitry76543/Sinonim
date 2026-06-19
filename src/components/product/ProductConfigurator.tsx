@@ -55,9 +55,7 @@ export function ProductConfigurator({ product }: ProductConfiguratorProps) {
             </span>
           )}
         </div>
-        <p className="text-sm text-brand-muted">
-          Лабораторный бриллиант · Сертификат качества
-        </p>
+        <p className="text-sm text-brand-muted">Лабораторный бриллиант</p>
         {product.weightGrams ? (
           <p className="mt-1 text-sm text-brand-muted">
             Вес изделия: {formatWeightGrams(product.weightGrams)}
