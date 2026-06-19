@@ -19,7 +19,7 @@ export function HeroContent({ className = "" }: HeroContentProps) {
       >
         Красота бриллианта.
         <br />
-        <span className="text-brand-sand">Честная цена.</span>
+        <span className="text-brand-sand">Сияние без компромиссов.</span>
       </h1>
       <p
         className="hero-unroll text-white/80 text-base md:text-lg max-w-md leading-relaxed mb-8"
