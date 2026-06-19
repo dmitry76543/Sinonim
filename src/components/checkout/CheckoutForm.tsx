@@ -11,12 +11,15 @@ import {
   getDeliveryFee,
   DELIVERY_FEE,
   FREE_DELIVERY_THRESHOLD,
+  PENDING_ORDER_STORAGE_KEY,
+  PENDING_PAYMENT_STORAGE_KEY,
   saveOrder,
   SHOWROOM,
   validateCheckoutForm,
   type CheckoutFormData,
   type DeliveryMethod,
   type Order,
+  type PaymentMethod,
 } from "@/lib/checkout";
 import { formatPrice } from "@/lib/products";
 
@@ -24,6 +27,7 @@ const initialForm: CheckoutFormData = {
   name: "",
   phone: "",
   deliveryMethod: "pickup",
+  paymentMethod: "on_receipt",
   city: "Москва",
   address: "",
   apartment: "",
@@ -37,6 +41,7 @@ export function CheckoutForm() {
   const [error, setError] = useState<string | null>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [completedOrder, setCompletedOrder] = useState<Order | null>(null);
+  const [yookassaEnabled, setYookassaEnabled] = useState(false);
 
   const deliveryFee = useMemo(
     () => getDeliveryFee(form.deliveryMethod, total),
@@ -50,6 +55,19 @@ export function CheckoutForm() {
       router.replace("/cart");
     }
   }, [isReady, items.length, completedOrder, router]);
+
+  useEffect(() => {
+    fetch("/api/payments/yookassa/config")
+      .then((response) => response.json())
+      .then((data: { enabled?: boolean }) => {
+        const enabled = Boolean(data.enabled);
+        setYookassaEnabled(enabled);
+        if (enabled) {
+          setForm((prev) => ({ ...prev, paymentMethod: "yookassa" }));
+        }
+      })
+      .catch(() => setYookassaEnabled(false));
+  }, []);
 
   const updateField = <K extends keyof CheckoutFormData>(
     key: K,
@@ -65,6 +83,10 @@ export function CheckoutForm() {
 
   const handleDeliveryMethod = (method: DeliveryMethod) => {
     updateField("deliveryMethod", method);
+  };
+
+  const handlePaymentMethod = (method: PaymentMethod) => {
+    updateField("paymentMethod", method);
   };
 
   const handleSubmit = async (event: React.FormEvent) => {
@@ -104,6 +126,9 @@ export function CheckoutForm() {
         total?: number;
         advantshopOrderId?: number;
         advantshopOrderNumber?: string;
+        paymentId?: string;
+        paymentUrl?: string;
+        paymentMethod?: PaymentMethod;
         error?: string;
       };
 
@@ -121,7 +146,16 @@ export function CheckoutForm() {
         total: data.total ?? orderTotal,
         advantshopOrderId: data.advantshopOrderId,
         advantshopOrderNumber: data.advantshopOrderNumber,
+        paymentId: data.paymentId,
+        paymentStatus: data.paymentUrl ? "pending" : undefined,
       };
+
+      if (data.paymentUrl && data.paymentId) {
+        sessionStorage.setItem(PENDING_ORDER_STORAGE_KEY, JSON.stringify(order));
+        sessionStorage.setItem(PENDING_PAYMENT_STORAGE_KEY, data.paymentId);
+        window.location.href = data.paymentUrl;
+        return;
+      }
 
       saveOrder(order);
       clearCart();
@@ -398,6 +432,51 @@ export function CheckoutForm() {
                 )}
 
                 <div>
+                  <h3 className="font-heading text-lg text-brand-olive-dark mb-3">
+                    Способ оплаты
+                  </h3>
+                  <div className={`grid gap-3 ${yookassaEnabled ? "sm:grid-cols-2" : ""}`}>
+                    {yookassaEnabled && (
+                      <button
+                        type="button"
+                        onClick={() => handlePaymentMethod("yookassa")}
+                        className={`text-left p-4 rounded-xl border transition-colors ${
+                          form.paymentMethod === "yookassa"
+                            ? "border-brand-olive bg-brand-olive/10"
+                            : "border-brand-olive/20 hover:border-brand-olive/50"
+                        }`}
+                      >
+                        <p className="font-heading text-brand-olive-dark mb-1">
+                          Картой онлайн
+                        </p>
+                        <p className="text-sm text-brand-muted">
+                          Visa, Mastercard, Мир · ЮKassa
+                        </p>
+                      </button>
+                    )}
+
+                    <button
+                      type="button"
+                      onClick={() => handlePaymentMethod("on_receipt")}
+                      className={`text-left p-4 rounded-xl border transition-colors ${
+                        form.paymentMethod === "on_receipt"
+                          ? "border-brand-olive bg-brand-olive/10"
+                          : "border-brand-olive/20 hover:border-brand-olive/50"
+                      }`}
+                    >
+                      <p className="font-heading text-brand-olive-dark mb-1">
+                        При получении
+                      </p>
+                      <p className="text-sm text-brand-muted">
+                        {form.deliveryMethod === "pickup"
+                          ? "В шоуруме при примерке"
+                          : "Курьеру или по ссылке от менеджера"}
+                      </p>
+                    </button>
+                  </div>
+                </div>
+
+                <div>
                   <label
                     htmlFor="checkout-comment"
                     className="block text-xs tracking-[0.15em] uppercase text-brand-muted mb-2"
@@ -479,7 +558,11 @@ export function CheckoutForm() {
                   disabled={isSubmitting}
                   className="w-full px-6 py-3.5 bg-brand-terracotta hover:bg-brand-terracotta-logo disabled:opacity-60 text-white text-sm tracking-widest uppercase transition-colors"
                 >
-                  {isSubmitting ? "Отправка…" : "Подтвердить заказ"}
+                  {isSubmitting
+                    ? "Отправка…"
+                    : form.paymentMethod === "yookassa"
+                      ? "Перейти к оплате"
+                      : "Подтвердить заказ"}
                 </button>
 
                 <Link
@@ -490,7 +573,9 @@ export function CheckoutForm() {
                 </Link>
 
                 <p className="text-xs text-brand-muted leading-relaxed">
-                  Оплата при получении или по ссылке после подтверждения менеджером.
+                  {form.paymentMethod === "yookassa"
+                    ? "После подтверждения вы перейдёте на защищённую страницу оплаты ЮKassa."
+                    : "Оплата при получении или по ссылке после подтверждения менеджером."}{" "}
                   Данные используются только для обработки заказа.
                 </p>
               </div>

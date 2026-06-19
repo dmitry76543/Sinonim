@@ -45,16 +45,6 @@ export function HeroContent({ className = "" }: HeroContentProps) {
           Примерить в шоуруме
         </Link>
       </div>
-      <div
-        className="hero-unroll flex flex-wrap gap-6 mt-10 text-sm text-white/70"
-        style={{ animationDelay: "480ms" }}
-      >
-        <span>от 12 900 ₽</span>
-        <span className="w-px h-4 bg-white/30 hidden sm:block" />
-        <span>Сертификат на камни</span>
-        <span className="w-px h-4 bg-white/30 hidden sm:block" />
-        <span>Бесплатная полировка</span>
-      </div>
     </div>
   );
 }

@@ -4,10 +4,13 @@ export { SHOWROOM } from "@/lib/contacts";
 
 export type DeliveryMethod = "pickup" | "delivery";
 
+export type PaymentMethod = "yookassa" | "on_receipt";
+
 export type CheckoutFormData = {
   name: string;
   phone: string;
   deliveryMethod: DeliveryMethod;
+  paymentMethod: PaymentMethod;
   city: string;
   address: string;
   apartment: string;
@@ -24,7 +27,12 @@ export type Order = {
   total: number;
   advantshopOrderId?: number;
   advantshopOrderNumber?: string;
+  paymentId?: string;
+  paymentStatus?: "pending" | "succeeded" | "canceled";
 };
+
+export const PENDING_ORDER_STORAGE_KEY = "sinonim-pending-order";
+export const PENDING_PAYMENT_STORAGE_KEY = "sinonim-pending-payment-id";
 
 export const ORDERS_STORAGE_KEY = "sinonim-orders";
 export const FREE_DELIVERY_THRESHOLD = 30_000;
