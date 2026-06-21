@@ -1,6 +1,11 @@
 import {
+  getGiftPeriodId,
+  pickGiftProducts,
+} from "@/lib/gift-products";
+import {
   CATALOG_CATEGORY_SLUGS,
   CATEGORIES,
+  PRODUCTS,
   formatPrice,
   type CategorySlug,
   type Product,
@@ -34,40 +39,63 @@ function formatModelCount(count: number): string {
   return `${count} моделей`;
 }
 
-function buildStats(products: Product[], giftProducts: Product[]): CategoryStat[] {
+function getMinPrice(products: Product[]): number {
+  return products.reduce(
+    (min, product) => Math.min(min, product.price),
+    Number.POSITIVE_INFINITY,
+  );
+}
+
+function buildCategoryStat(
+  slug: CategorySlug,
+  categoryProducts: Product[],
+): CategoryStat {
+  const count = categoryProducts.length;
+  const minPrice = getMinPrice(categoryProducts);
+
+  return {
+    slug,
+    title: CATEGORIES[slug].title,
+    countLabel: count > 0 ? formatModelCount(count) : "Скоро в каталоге",
+    priceFromLabel:
+      count > 0 && Number.isFinite(minPrice)
+        ? `от ${formatPrice(minPrice)}`
+        : "Уточняйте цену",
+    href: `/shop/${slug}`,
+    image: CATEGORY_IMAGES[slug],
+  };
+}
+
+async function loadGiftProducts(catalogProducts: Product[]): Promise<Product[]> {
+  try {
+    const gifts = await getCatalogProducts({ category: "gifts" });
+    if (gifts.length > 0) return gifts;
+  } catch (error) {
+    console.error("Gift catalog unavailable for category stats:", error);
+  }
+
+  const periodId = getGiftPeriodId();
+  const sourceProducts = catalogProducts.length > 0 ? catalogProducts : PRODUCTS;
+  return pickGiftProducts(sourceProducts, "default", periodId);
+}
+
+export async function getCategoryStats(): Promise<CategoryStat[]> {
+  let catalogProducts: Product[] = [];
+
+  try {
+    catalogProducts = await getCatalogProducts();
+  } catch (error) {
+    console.error("Catalog unavailable for category stats:", error);
+  }
+
+  const giftProducts = await loadGiftProducts(catalogProducts);
+
   return CATALOG_CATEGORY_SLUGS.map((slug) => {
     const categoryProducts =
       slug === "gifts"
         ? giftProducts
-        : products.filter((product) => product.category === slug);
-    const count = categoryProducts.length;
-    const minPrice = categoryProducts.reduce(
-      (min, product) => Math.min(min, product.price),
-      Number.POSITIVE_INFINITY
-    );
+        : catalogProducts.filter((product) => product.category === slug);
 
-    return {
-      slug,
-      title: CATEGORIES[slug].title,
-      countLabel: count > 0 ? formatModelCount(count) : "Скоро в каталоге",
-      priceFromLabel:
-        count > 0 && Number.isFinite(minPrice)
-          ? `от ${formatPrice(minPrice)}`
-          : "Уточняйте цену",
-      href: `/shop/${slug}`,
-      image: CATEGORY_IMAGES[slug],
-    };
+    return buildCategoryStat(slug, categoryProducts);
   });
-}
-
-export async function getCategoryStats(): Promise<CategoryStat[]> {
-  try {
-    const [products, giftProducts] = await Promise.all([
-      getCatalogProducts(),
-      getCatalogProducts({ category: "gifts" }),
-    ]);
-    return buildStats(products, giftProducts);
-  } catch {
-    return buildStats([], []);
-  }
 }

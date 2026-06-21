@@ -90,7 +90,7 @@ export function ProductPage({ product, relatedProducts }: ProductPageProps) {
               </div>
               <div className="flex justify-between gap-4 border-b border-brand-sand pb-3">
                 <dt className="text-brand-muted">Огранка</dt>
-                <dd className="text-brand-text text-right">Круглая (57 граней)</dd>
+                <dd className="text-brand-text text-right">{product.cut}</dd>
               </div>
               <div className="flex justify-between gap-4 border-b border-brand-sand pb-3">
                 <dt className="text-brand-muted">Вес бриллианта</dt>

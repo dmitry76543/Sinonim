@@ -26,7 +26,7 @@ export function HeroContent({ className = "" }: HeroContentProps) {
         style={{ animationDelay: "240ms" }}
       >
         Украшения с выращенными бриллиантами в серебре — та же сияющая
-        огранка, сертификат качества и забота об экологии.
+        огранка и забота об экологии.
       </p>
       <div
         className="hero-unroll flex flex-wrap gap-4"

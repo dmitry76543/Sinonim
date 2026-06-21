@@ -14,6 +14,7 @@ export type Product = {
   images?: string[];
   color?: string;
   clarity?: string;
+  cut?: string;
   metal?: string;
   sizes?: number[];
   artNo?: string;
@@ -32,6 +33,7 @@ export type ProductDetails = Product & {
   images: string[];
   color: string;
   clarity: string;
+  cut: string;
   metal: string;
   sizes: number[];
   stoneVariants: StoneVariant[];
@@ -324,6 +326,7 @@ export function getProductDetails(slug: string): ProductDetails | undefined {
     images,
     color: product.color ?? "2",
     clarity: product.clarity ?? "5",
+    cut: product.cut ?? "Круглая (57 граней)",
     metal: product.metal ?? "Серебро 925, родиевое покрытие",
     sizes: product.sizes ?? (hasSizes ? [...DEFAULT_SIZES] : []),
     stoneVariants,

@@ -110,7 +110,8 @@ function parseProperty(
   for (const property of properties) {
     const name = (property.propertyName ?? property.name ?? "").toLowerCase();
     if (keywords.some((keyword) => name.includes(keyword))) {
-      return property.propertyValue ?? property.value;
+      const value = (property.propertyValue ?? property.value)?.trim();
+      if (value) return value;
     }
   }
 
@@ -271,8 +272,11 @@ export function mapProductDetails(
     isNew: Boolean(item.newProduct),
     description,
     images: images.length ? images : [fallbackImage],
-    color: "2",
-    clarity: "5",
+    cut:
+      parseProperty(properties, ["огранк", "cut", "brilliant", "гранен"]) ??
+      "Круглая (57 граней)",
+    color: parseProperty(properties, ["цвет", "color"]) ?? "2",
+    clarity: parseProperty(properties, ["чистот", "clarity"]) ?? "5",
     metal:
       parseProperty(properties, ["металл", "проба", "silver"]) ??
       "Серебро 925, родиевое покрытие",

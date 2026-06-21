@@ -56,7 +56,7 @@ function buildRows(products: ProductDetails[]): CompareRow[] {
     },
     {
       label: "Огранка",
-      values: products.map(() => "Круглая (57 граней)"),
+      values: products.map((p) => p.cut),
     },
     {
       label: "Размеры",
