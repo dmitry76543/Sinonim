@@ -161,28 +161,6 @@ export function ProductConfigurator({ product }: ProductConfiguratorProps) {
           </Link>
         </p>
       )}
-
-      <div className="flex items-start gap-3 p-4 bg-brand-surface rounded-xl text-sm text-brand-muted">
-        <svg
-          className="shrink-0 mt-0.5 text-brand-olive"
-          width="18"
-          height="18"
-          viewBox="0 0 24 24"
-          fill="none"
-          aria-hidden
-        >
-          <path
-            d="M12 2l2.4 7.4H22l-6 4.6 2.3 7L12 17l-6.3 4 2.3-7-6-4.6h7.6L12 2Z"
-            stroke="currentColor"
-            strokeWidth="1.5"
-            strokeLinejoin="round"
-          />
-        </svg>
-        <p>
-          Подлинность лабораторного бриллианта подтверждена сертификатом
-          геммологической лаборатории. Бесплатная полировка и чистка — навсегда.
-        </p>
-      </div>
     </div>
   );
 }
