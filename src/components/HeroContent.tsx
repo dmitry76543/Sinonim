@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { SparkleWord } from "@/components/SparkleWord";
 
 type HeroContentProps = {
   className?: string;
@@ -17,7 +18,7 @@ export function HeroContent({ className = "" }: HeroContentProps) {
         className="hero-unroll font-heading text-4xl md:text-5xl lg:text-6xl leading-[1.1] mb-6"
         style={{ animationDelay: "120ms" }}
       >
-        Лабораторные бриллианты
+        Лабораторные <SparkleWord>бриллианты</SparkleWord>
         <br />
         <span className="text-brand-sand">в серебре 925</span>
       </h1>
