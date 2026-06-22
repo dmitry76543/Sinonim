@@ -10,7 +10,7 @@ export const metadata = buildPageMetadata({
   description:
     "Шоурум Синоним в Москве: 129110, ул. Гиляровского 40, офис 13. Примерьте украшения с лабораторными бриллиантами.",
   path: "/showroom",
-  ogImage: "/images/showroom.jpg",
+  ogImage: "/images/show_room_2.jpg",
 });
 
 export default function ShowroomRoute() {

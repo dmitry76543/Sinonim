@@ -19,7 +19,7 @@ export function buildShowroomJsonLd(): Record<string, unknown> {
     description:
       "Шоурум ювелирного бренда Синоним в Москве. Примерка украшений из серебра 925 с лабораторными бриллиантами.",
     url: `${siteUrl}/showroom`,
-    image: absoluteImageUrl("/images/showroom.jpg"),
+    image: absoluteImageUrl("/images/show_room_2.jpg"),
     telephone: phone,
     priceRange: "₽₽",
     address: {

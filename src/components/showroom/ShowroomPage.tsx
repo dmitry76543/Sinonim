@@ -16,7 +16,7 @@ export function ShowroomPage() {
       <section className="relative overflow-hidden bg-brand-olive-dark">
         <div className="absolute inset-0">
           <Image
-            src="/images/showroom.jpg"
+            src="/images/show_room_2.jpg"
             alt="Интерьер ювелирного шоурума Синоним"
             fill
             className="object-cover opacity-50"
@@ -85,7 +85,7 @@ export function ShowroomPage() {
             <div className="relative aspect-[4/3] w-full">
               <div className="absolute -inset-3 rounded-2xl bg-brand-olive/10 blur-xl" />
               <Image
-                src="/images/showroom.jpg"
+                src="/images/show_room_2.jpg"
                 alt="Интерьер шоурума с витринами украшений"
                 fill
                 className="object-cover rounded-2xl shadow-lg"
