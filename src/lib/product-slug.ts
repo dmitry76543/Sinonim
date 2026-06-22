@@ -1,4 +1,4 @@
-import type { CategorySlug } from "@/lib/products";
+import type { CategorySlug, Product } from "@/lib/products";
 
 const CYRILLIC_TO_LATIN: Record<string, string> = {
   а: "a",
@@ -91,11 +91,40 @@ export function buildSeoProductSlug({
   const baseName =
     nameSlug && nameSlug !== fallback ? nameSlug : `${fallback}-s-brilliantom`;
 
-  const slug = `${baseName}-${formatWeightSlug(stoneWeight)}-serebro-925`
+  const slug = `${baseName}-${formatWeightSlug(stoneWeight)}-serebro-925-${productId}`
     .replace(/-{2,}/g, "-")
-    .slice(0, 96);
+    .slice(0, 120);
 
   return slug || `${fallback}-${productId}`;
+}
+
+export function findProductBySlug(
+  products: Product[],
+  slug: string,
+): Product | undefined {
+  const normalized = slug.trim();
+  if (!normalized) return undefined;
+
+  const exactSlugMatches = products.filter((item) => item.slug === normalized);
+  if (exactSlugMatches.length === 1) return exactSlugMatches[0];
+  if (exactSlugMatches.length > 1) {
+    const byIdSuffix = exactSlugMatches.find((item) =>
+      normalized.endsWith(`-${item.id}`),
+    );
+    return byIdSuffix ?? exactSlugMatches[0];
+  }
+
+  const legacyMatches = products.filter((item) => item.urlPath === normalized);
+  if (legacyMatches.length === 1) return legacyMatches[0];
+  if (legacyMatches.length > 1) {
+    const legacyIdMatch = legacyMatches.find((item) => {
+      const suffix = item.urlPath?.match(/-(\d+)$/);
+      return suffix?.[1] === item.id;
+    });
+    return legacyIdMatch ?? legacyMatches[0];
+  }
+
+  return undefined;
 }
 
 export function isLegacyProductSlug(

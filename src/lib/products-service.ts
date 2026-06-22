@@ -1,8 +1,9 @@
 import { unstable_cache } from "next/cache";
 import {
-  fetchAdvantShopProductDetails,
   fetchAdvantShopProducts,
+  loadAdvantShopProductDetails,
 } from "@/lib/advantshop/catalog";
+import { findProductBySlug } from "@/lib/product-slug";
 import {
   CATALOG_REVALIDATE_SECONDS,
   isAdvantShopConfigured,
@@ -108,9 +109,7 @@ export async function getCatalogProducts(options?: {
 export async function getProductBySlug(slug: string): Promise<Product | undefined> {
   if (isAdvantShopConfigured()) {
     const products = await getCatalogProducts();
-    return products.find(
-      (item) => item.slug === slug || item.urlPath === slug
-    );
+    return findProductBySlug(products, slug);
   }
 
   return getStaticProductBySlug(slug);
@@ -124,15 +123,10 @@ export async function getProductDetails(
     if (!summary) return undefined;
 
     try {
-      const product = await fetchAdvantShopProductDetails(summary.slug);
+      const product = await loadAdvantShopProductDetails(summary);
       if (!product) return undefined;
 
-      return {
-        ...product,
-        slug: summary.slug,
-        urlPath: summary.urlPath,
-        price: summary.price,
-      };
+      return product;
     } catch (error) {
       console.error(`AdvantShop product "${slug}" unavailable:`, error);
     }

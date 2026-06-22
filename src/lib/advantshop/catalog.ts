@@ -1,4 +1,5 @@
 import type { CategorySlug, Product, ProductDetails } from "@/lib/products";
+import { findProductBySlug } from "@/lib/product-slug";
 import { advantshopClientFetch, advantshopFetch } from "./client";
 import { getCategoryUrlMap } from "./config";
 import { mapCatalogProduct, mapProductDetails } from "./mapper";
@@ -140,6 +141,37 @@ export async function fetchAdvantShopProducts(options?: {
   return Array.from(merged.values());
 }
 
+export async function loadAdvantShopProductDetails(
+  summary: Product,
+): Promise<ProductDetails | undefined> {
+  const [details, propertiesResponse] = await Promise.all([
+    advantshopClientFetch<AdvantShopProductDetails>(
+      `/api/products/${summary.id}`,
+    ),
+    advantshopClientFetch<AdvantShopPropertiesResponse>(
+      `/api/products/${summary.id}/properties`,
+      { searchParams: { type: "inDetails" } },
+    ).catch(() => [] as AdvantShopPropertiesResponse),
+  ]);
+
+  const properties = flattenAdvantShopProperties(propertiesResponse);
+  const product = mapProductDetails(
+    details,
+    summary.category,
+    properties,
+    summary.price,
+  );
+
+  return {
+    ...product,
+    slug: summary.slug,
+    urlPath: summary.urlPath,
+    price: summary.price,
+    stoneWeight:
+      parseStoneWeightFromProperties(properties) || product.stoneWeight,
+  };
+}
+
 export async function fetchAdvantShopProductDetails(
   slug: string
 ): Promise<ProductDetails | undefined> {
@@ -154,45 +186,18 @@ export async function fetchAdvantShopProductDetails(
   );
 
   let summary: Product | undefined;
-  let summaryCategory: CategorySlug | undefined;
 
   for (const list of lists) {
-    const match = list.products.find(
-      (product) => product.slug === slug || product.urlPath === slug
-    );
+    const match = findProductBySlug(list.products, slug);
     if (match) {
       summary = match;
-      summaryCategory = list.category;
       break;
     }
   }
 
-  if (!summary || !summaryCategory) return undefined;
+  if (!summary) return undefined;
 
-  const [details, propertiesResponse] = await Promise.all([
-    advantshopClientFetch<AdvantShopProductDetails>(
-      `/api/products/${summary.id}`
-    ),
-    advantshopClientFetch<AdvantShopPropertiesResponse>(
-      `/api/products/${summary.id}/properties`,
-      { searchParams: { type: "inDetails" } }
-    ).catch(() => [] as AdvantShopPropertiesResponse),
-  ]);
-
-  const properties = flattenAdvantShopProperties(propertiesResponse);
-  const product = mapProductDetails(
-    details,
-    summaryCategory,
-    properties,
-    summary.price,
-  );
-
-  return {
-    ...product,
-    price: summary.price,
-    stoneWeight:
-      parseStoneWeightFromProperties(properties) || product.stoneWeight,
-  };
+  return loadAdvantShopProductDetails(summary);
 }
 
 function parseStoneWeightFromProperties(
