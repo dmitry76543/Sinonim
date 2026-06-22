@@ -11,13 +11,15 @@ export function Hero() {
           <HeroContent className="text-white order-2 lg:order-1" />
 
           <div className="relative order-1 lg:order-2 flex justify-center lg:justify-end">
-            <div className="relative w-full max-w-md lg:max-w-lg aspect-square">
+            <div className="relative w-full max-w-md lg:max-w-lg">
               <div className="absolute -inset-4 rounded-full bg-brand-sand/10 blur-2xl" />
-              <AutoplayVideo
-                src="/images/video_hero_2_1.mp4"
-                className="absolute inset-0 h-full w-full object-cover rounded-2xl shadow-2xl"
-                aria-label="Кольцо с лабораторным бриллиантом в серебре"
-              />
+              <div className="relative aspect-square overflow-hidden rounded-2xl shadow-2xl">
+                <AutoplayVideo
+                  src="/images/video_hero_2_1.mp4"
+                  className="absolute inset-0 h-full w-full object-cover object-center scale-125"
+                  aria-label="Кольцо с лабораторным бриллиантом в серебре"
+                />
+              </div>
             </div>
           </div>
         </div>

@@ -22,7 +22,7 @@ export function CompareLink() {
   return (
     <Link
       href="/compare"
-      className="hidden sm:flex p-2.5 text-brand-olive-dark hover:text-brand-olive transition-colors relative"
+      className="flex p-2 sm:p-2.5 text-brand-olive-dark hover:text-brand-olive transition-colors relative"
       aria-label={count > 0 ? `Сравнение: ${count} товаров` : "Сравнение товаров"}
     >
       <IconCompare />

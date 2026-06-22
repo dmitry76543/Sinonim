@@ -22,7 +22,7 @@ export function FavoritesLink() {
   return (
     <Link
       href="/favorites"
-      className="hidden sm:flex p-2.5 text-brand-olive-dark hover:text-brand-terracotta transition-colors relative"
+      className="flex p-2 sm:p-2.5 text-brand-olive-dark hover:text-brand-terracotta transition-colors relative"
       aria-label={count > 0 ? `Избранное: ${count} товаров` : "Избранное"}
     >
       <IconHeart />
