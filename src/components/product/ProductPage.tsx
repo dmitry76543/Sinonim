@@ -10,6 +10,8 @@ import { ProductDescription } from "./ProductDescription";
 import { ProductGallery } from "./ProductGallery";
 import { ProductSelectionProvider } from "./ProductSelectionContext";
 import { ProductTryOn } from "./ProductTryOn";
+import { getPhottaApiKey } from "@/lib/photta/server";
+import { absoluteImageUrl } from "@/lib/seo-images";
 
 type ProductPageProps = {
   product: ProductDetails;
@@ -25,6 +27,8 @@ export function ProductPage({
   const related = relatedProducts;
   const categoryTitle = CATEGORIES[product.category].title;
   const diamondWeight = getProductCaratWeightLabel(product);
+  const phottaApiKey = getPhottaApiKey();
+  const phottaProductImage = absoluteImageUrl(product.images[0] ?? product.image);
   return (
     <section className="py-8 md:py-12">
       <ProductViewTracker
@@ -76,7 +80,12 @@ export function ProductPage({
                 {product.name}
               </h1>
               <ProductConfigurator product={product} />
-              {product.category !== "gifts" && <ProductTryOn />}
+              {product.category !== "gifts" && phottaApiKey ? (
+                <ProductTryOn
+                  apiKey={phottaApiKey}
+                  productImage={phottaProductImage}
+                />
+              ) : null}
             </div>
           </div>
 

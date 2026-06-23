@@ -131,6 +131,7 @@ export function ProductConfigurator({ product }: ProductConfiguratorProps) {
       <div className="flex flex-col sm:flex-row gap-3">
         <button
           type="button"
+          data-add-to-cart
           onClick={handleAddToCart}
           className="flex-1 px-6 py-3.5 bg-brand-terracotta hover:bg-brand-terracotta-logo text-white text-sm tracking-widest uppercase transition-colors"
         >
