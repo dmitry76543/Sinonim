@@ -9,6 +9,7 @@ import { ProductConfigurator } from "./ProductConfigurator";
 import { ProductDescription } from "./ProductDescription";
 import { ProductGallery } from "./ProductGallery";
 import { ProductSelectionProvider } from "./ProductSelectionContext";
+import { ProductTryOn } from "./ProductTryOn";
 
 type ProductPageProps = {
   product: ProductDetails;
@@ -75,6 +76,7 @@ export function ProductPage({
                 {product.name}
               </h1>
               <ProductConfigurator product={product} />
+              {product.category !== "gifts" && <ProductTryOn />}
             </div>
           </div>
 
