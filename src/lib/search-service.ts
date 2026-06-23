@@ -3,6 +3,14 @@ import {
   fetchAdvantShopSearch,
   fetchAdvantShopSearchAutocomplete,
 } from "@/lib/advantshop/search";
+import { loadAdvantShopProductDetails } from "@/lib/advantshop/catalog";
+import {
+  findMatchingArtNo,
+  mergeAutocompleteResults,
+  productMatchesArtQuery,
+  searchCatalogByArtNo,
+  searchCatalogProductsByArtNo,
+} from "@/lib/art-search";
 import {
   CATALOG_REVALIDATE_SECONDS,
   isAdvantShopConfigured,
@@ -15,6 +23,7 @@ import {
   type Product,
 } from "@/lib/products";
 import type { SearchAutocompleteResult } from "@/lib/search-types";
+import { getCatalogProducts } from "@/lib/products-service";
 
 const getCachedAdvantShopSearch = unstable_cache(
   async (query: string, sort: string) => fetchAdvantShopSearch(query, { sort }),
@@ -80,6 +89,85 @@ function getStaticAutocomplete(query: string): SearchAutocompleteResult {
   return { products, categories };
 }
 
+async function searchModificationArtProducts(
+  catalog: Product[],
+  query: string,
+): Promise<Product[]> {
+  const normalized = query.trim().toLowerCase();
+  if (!normalized.includes("-")) {
+    return [];
+  }
+
+  const direct = searchCatalogProductsByArtNo(catalog, query);
+  if (
+    direct.some((product) =>
+      findMatchingArtNo(product, query)?.toLowerCase() === normalized,
+    )
+  ) {
+    return direct;
+  }
+
+  const base = normalized.replace(/-\d+$/, "");
+  const candidates = catalog
+    .filter((product) =>
+      [product.artNo, ...(product.offerArtNos ?? [])].some((artNo) =>
+        artNo?.toLowerCase().startsWith(base),
+      ),
+    )
+    .slice(0, 8);
+
+  const products: Product[] = [];
+  for (const candidate of candidates) {
+    const details = await loadAdvantShopProductDetails(candidate);
+    if (!details) continue;
+
+    if (productMatchesArtQuery(details, query)) {
+      products.push(details);
+    }
+  }
+
+  return products;
+}
+
+async function searchModificationArtInCatalog(
+  catalog: Product[],
+  query: string,
+  limit = 6,
+): Promise<SearchAutocompleteResult> {
+  const normalized = query.trim().toLowerCase();
+  if (!normalized.includes("-")) {
+    return { products: [], categories: [] };
+  }
+
+  const direct = searchCatalogByArtNo(catalog, query, limit);
+  if (direct.products.some((product) => product.artNo?.toLowerCase() === normalized)) {
+    return direct;
+  }
+
+  const base = normalized.replace(/-\d+$/, "");
+  const candidates = catalog
+    .filter((product) =>
+      [product.artNo, ...(product.offerArtNos ?? [])].some((artNo) =>
+        artNo?.toLowerCase().startsWith(base),
+      ),
+    )
+    .slice(0, 8);
+
+  const products = [];
+  for (const candidate of candidates) {
+    const details = await loadAdvantShopProductDetails(candidate);
+    if (!details) continue;
+
+    const match = searchCatalogByArtNo([details], query, 1);
+    if (match.products[0]) {
+      products.push(match.products[0]);
+    }
+    if (products.length >= limit) break;
+  }
+
+  return { products, categories: [] };
+}
+
 export async function getSearchAutocomplete(
   query: string
 ): Promise<SearchAutocompleteResult> {
@@ -89,7 +177,27 @@ export async function getSearchAutocomplete(
   }
 
   if (isAdvantShopConfigured()) {
-    return fetchAdvantShopSearchAutocomplete(trimmed);
+    const catalog = await getCatalogProducts();
+    const localMatches = searchCatalogByArtNo(catalog, trimmed);
+    const modificationMatches = localMatches.products.some(
+      (product) => product.artNo?.toLowerCase() === trimmed.toLowerCase(),
+    )
+      ? { products: [], categories: [] }
+      : await searchModificationArtInCatalog(catalog, trimmed);
+
+    try {
+      const remote = await fetchAdvantShopSearchAutocomplete(trimmed);
+      return mergeAutocompleteResults(
+        mergeAutocompleteResults(localMatches, modificationMatches),
+        remote,
+      );
+    } catch (error) {
+      const fallback = mergeAutocompleteResults(localMatches, modificationMatches);
+      if (fallback.products.length) {
+        return fallback;
+      }
+      throw error;
+    }
   }
 
   return getStaticAutocomplete(trimmed);
@@ -105,7 +213,16 @@ export async function getSearchProducts(
   const sort = options?.sort ?? "default";
 
   if (isAdvantShopConfigured()) {
-    return getCachedAdvantShopSearch(trimmed, sort);
+    const catalog = await getCatalogProducts();
+    const localMatches = searchCatalogProductsByArtNo(catalog, trimmed);
+    const modificationMatches = await searchModificationArtProducts(catalog, trimmed);
+    const remoteMatches = await getCachedAdvantShopSearch(trimmed, sort);
+
+    const merged = new Map<string, Product>();
+    for (const product of [...localMatches, ...modificationMatches, ...remoteMatches]) {
+      merged.set(product.id, product);
+    }
+    return [...merged.values()];
   }
 
   return searchStaticProducts(trimmed, sort);

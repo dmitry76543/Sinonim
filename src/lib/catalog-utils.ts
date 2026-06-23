@@ -1,4 +1,5 @@
 import {
+  numericSizesFromOptions,
   PRICE_RANGES,
   type CategorySlug,
   type Product,
@@ -12,7 +13,9 @@ export type CatalogFilters = {
 };
 
 function getProductSizes(product: Product): number[] {
-  if (product.sizes?.length) return product.sizes;
+  if (product.sizeOptions?.length) {
+    return numericSizesFromOptions(product.sizeOptions);
+  }
   return [];
 }
 

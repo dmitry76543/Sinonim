@@ -18,8 +18,8 @@ type CompareRow = {
 
 function buildRows(products: ProductDetails[]): CompareRow[] {
   const formatSizes = (product: ProductDetails) =>
-    product.sizes.length > 0
-      ? `${product.sizes[0]}–${product.sizes[product.sizes.length - 1]}`
+    product.sizeOptions.length > 0
+      ? `${product.sizeOptions[0].label}–${product.sizeOptions[product.sizeOptions.length - 1].label}`
       : "—";
 
   const formatVariants = (product: ProductDetails) => {

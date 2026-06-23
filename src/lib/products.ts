@@ -1,5 +1,12 @@
 export type CategorySlug = "rings" | "earrings" | "pendants" | "bracelets" | "gifts";
 
+export type ProductSizeOption = {
+  /** Ключ размера из AdvantShop, например «16.0+4». */
+  value: string;
+  /** Подпись в интерфейсе — как в AdvantShop. */
+  label: string;
+};
+
 export type Product = {
   id: string;
   slug: string;
@@ -16,10 +23,13 @@ export type Product = {
   clarity?: string;
   cut?: string;
   metal?: string;
-  sizes?: number[];
+  sizeOptions?: ProductSizeOption[];
   artNo?: string;
+  offerArtNos?: string[];
   sizeArtNos?: Record<string, string>;
   urlPath?: string;
+  /** Номер комплекта из AdvantShop (например «1» для «Комплект №1»). */
+  complectNumber?: string;
 };
 
 export type StoneVariant = {
@@ -35,7 +45,7 @@ export type ProductDetails = Product & {
   clarity: string;
   cut: string;
   metal: string;
-  sizes: number[];
+  sizeOptions: ProductSizeOption[];
   stoneVariants: StoneVariant[];
   weightGrams?: string;
 };
@@ -284,7 +294,33 @@ export const RING_BRACELET_SIZES = [
   15, 15.5, 16, 16.5, 17, 17.5, 18, 18.5, 19, 19.5, 20, 20.5, 21,
 ] as const;
 
-const DEFAULT_SIZES = RING_BRACELET_SIZES;
+export function defaultRingBraceletSizeOptions(): ProductSizeOption[] {
+  return RING_BRACELET_SIZES.map((size) => ({
+    value: String(size),
+    label: String(size),
+  }));
+}
+
+export function numericSizesFromOptions(
+  options: ProductSizeOption[],
+): number[] {
+  return options
+    .map((option) => Number.parseFloat(option.value.replace(",", ".")))
+    .filter((size) => !Number.isNaN(size));
+}
+
+export function getProductSizeLabel(
+  product: Pick<Product, "sizeOptions">,
+  sizeValue: string | null,
+): string | undefined {
+  if (!sizeValue) return undefined;
+  return (
+    product.sizeOptions?.find((option) => option.value === sizeValue)?.label ??
+    sizeValue
+  );
+}
+
+const DEFAULT_SIZE_OPTIONS = defaultRingBraceletSizeOptions();
 
 const CATEGORY_IMAGES: Record<CategorySlug, string[]> = {
   rings: ["/images/product-bracelet.webp", "/images/product-ring.webp"],
@@ -328,7 +364,7 @@ export function getProductDetails(slug: string): ProductDetails | undefined {
     clarity: product.clarity ?? "5",
     cut: product.cut ?? "Круглая (57 граней)",
     metal: product.metal ?? "Серебро 925, родиевое покрытие",
-    sizes: product.sizes ?? (hasSizes ? [...DEFAULT_SIZES] : []),
+    sizeOptions: product.sizeOptions ?? (hasSizes ? [...DEFAULT_SIZE_OPTIONS] : []),
     stoneVariants,
   };
 }

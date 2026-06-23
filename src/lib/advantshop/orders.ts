@@ -70,7 +70,7 @@ function splitCustomerName(fullName: string): { firstName: string; lastName?: st
 
 function buildItemComment(item: CartItem): string {
   const parts = [item.stoneLabel];
-  if (item.size !== null) parts.push(`размер ${item.size}`);
+  if (item.size) parts.push(`размер ${item.size}`);
   return parts.join(", ");
 }
 
@@ -88,8 +88,8 @@ async function resolveArtNo(item: CartItem): Promise<string> {
 
   const details = await getProductDetails(item.productSlug);
   if (details) {
-    if (item.size !== null && details.sizeArtNos?.[String(item.size)]) {
-      return details.sizeArtNos[String(item.size)];
+    if (item.size && details.sizeArtNos?.[item.size]) {
+      return details.sizeArtNos[item.size];
     }
     if (details.artNo?.trim()) return details.artNo.trim();
   }

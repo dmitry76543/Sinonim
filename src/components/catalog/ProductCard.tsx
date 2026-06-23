@@ -10,13 +10,16 @@ type ProductCardProps = {
   product: Product;
   revealImageOnScroll?: boolean;
   revealDelayMs?: number;
+  badgeLabel?: string;
 };
 
 export function ProductCard({
   product,
   revealImageOnScroll = false,
   revealDelayMs = 0,
+  badgeLabel,
 }: ProductCardProps) {
+  const displayBadge = badgeLabel ?? product.badge;
   const imageBlock = (
     <div className="aspect-square relative overflow-hidden bg-brand-sand/30">
       <Link href={`/products/${product.slug}`} className="absolute inset-0">
@@ -28,9 +31,9 @@ export function ProductCard({
           sizes="(max-width: 768px) 50vw, 25vw"
         />
       </Link>
-      {product.badge && (
+      {displayBadge && (
         <span className="absolute top-3 left-3 px-2.5 py-1 bg-brand-terracotta text-white text-[10px] tracking-widest uppercase">
-          {product.badge}
+          {displayBadge}
         </span>
       )}
       <div className="absolute top-3 right-3 z-10 flex flex-col gap-2">

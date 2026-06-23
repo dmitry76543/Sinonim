@@ -14,6 +14,7 @@ import {
   getSecondsUntilNextGiftRefresh,
   pickGiftProducts,
 } from "@/lib/gift-products";
+import { getComplectSiblings } from "@/lib/product-complect";
 import {
   PRODUCTS,
   getProductBySlug as getStaticProductBySlug,
@@ -109,7 +110,8 @@ export async function getCatalogProducts(options?: {
 export async function getProductBySlug(slug: string): Promise<Product | undefined> {
   if (isAdvantShopConfigured()) {
     const products = await getCatalogProducts();
-    return findProductBySlug(products, slug);
+    const fromShop = findProductBySlug(products, slug);
+    if (fromShop) return fromShop;
   }
 
   return getStaticProductBySlug(slug);
@@ -119,16 +121,16 @@ export async function getProductDetails(
   slug: string
 ): Promise<ProductDetails | undefined> {
   if (isAdvantShopConfigured()) {
-    const summary = await getProductBySlug(slug);
-    if (!summary) return undefined;
+    const products = await getCatalogProducts();
+    const summary = findProductBySlug(products, slug);
 
-    try {
-      const product = await loadAdvantShopProductDetails(summary);
-      if (!product) return undefined;
-
-      return product;
-    } catch (error) {
-      console.error(`AdvantShop product "${slug}" unavailable:`, error);
+    if (summary) {
+      try {
+        const product = await loadAdvantShopProductDetails(summary);
+        if (product) return product;
+      } catch (error) {
+        console.error(`AdvantShop product "${slug}" unavailable:`, error);
+      }
     }
   }
 
@@ -141,6 +143,16 @@ export async function getRelatedProducts(
 ): Promise<Product[]> {
   const catalog = await getCatalogProducts({ category: product.category });
   return catalog.filter((item) => item.id !== product.id).slice(0, limit);
+}
+
+export async function getComplectProducts(
+  product: Product,
+  limit = 3
+): Promise<Product[]> {
+  if (!product.complectNumber) return [];
+
+  const catalog = await getCatalogProducts();
+  return getComplectSiblings(product, catalog, limit);
 }
 
 export async function getProductsBySlugs(slugs: string[]): Promise<Product[]> {

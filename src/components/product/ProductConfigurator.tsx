@@ -24,14 +24,15 @@ export function ProductConfigurator({ product }: ProductConfiguratorProps) {
   ) ?? product.stoneVariants[0];
 
   const displayPrice = product.price;
-  const { selectedSize, setSelectedSize, artNo } = useProductSelection();
+  const { selectedSize, setSelectedSize, selectedSizeLabel, artNo } =
+    useProductSelection();
   const [added, setAdded] = useState(false);
   const { addItem } = useCart();
 
   const handleAddToCart = () => {
     const variant = [
       defaultVariant.label,
-      selectedSize != null ? `размер ${selectedSize}` : null,
+      selectedSizeLabel != null ? `размер ${selectedSizeLabel}` : null,
     ]
       .filter(Boolean)
       .join(", ");
@@ -79,7 +80,7 @@ export function ProductConfigurator({ product }: ProductConfiguratorProps) {
       </div>
 
       <div className="space-y-4">
-        {product.sizes.length > 0 && (
+        {product.sizeOptions.length > 0 && (
           <div>
             <label
               htmlFor="size-select"
@@ -91,12 +92,14 @@ export function ProductConfigurator({ product }: ProductConfiguratorProps) {
               <select
                 id="size-select"
                 value={selectedSize ?? ""}
-                onChange={(e) => setSelectedSize(Number(e.target.value))}
+                onChange={(e) =>
+                  setSelectedSize(e.target.value ? e.target.value : null)
+                }
                 className="w-full appearance-none bg-brand-surface border border-brand-olive/20 rounded-lg pl-4 pr-10 py-3 text-sm text-brand-text focus:outline-none focus:border-brand-olive cursor-pointer"
               >
-                {product.sizes.map((size) => (
-                  <option key={size} value={size}>
-                    {size}
+                {product.sizeOptions.map((size) => (
+                  <option key={size.value} value={size.value}>
+                    {size.label}
                   </option>
                 ))}
               </select>

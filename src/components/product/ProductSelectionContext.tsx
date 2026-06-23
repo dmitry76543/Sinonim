@@ -7,11 +7,12 @@ import {
   useState,
   type ReactNode,
 } from "react";
-import type { ProductDetails } from "@/lib/products";
+import { getProductSizeLabel, type ProductDetails } from "@/lib/products";
 
 type ProductSelectionContextValue = {
-  selectedSize: number | null;
-  setSelectedSize: (size: number | null) => void;
+  selectedSize: string | null;
+  setSelectedSize: (size: string | null) => void;
+  selectedSizeLabel: string | null;
   artNo?: string;
 };
 
@@ -21,10 +22,10 @@ const ProductSelectionContext = createContext<ProductSelectionContextValue | nul
 
 function resolveArtNo(
   product: ProductDetails,
-  selectedSize: number | null
+  selectedSize: string | null
 ): string | undefined {
-  if (selectedSize !== null && product.sizeArtNos?.[String(selectedSize)]) {
-    return product.sizeArtNos[String(selectedSize)];
+  if (selectedSize && product.sizeArtNos?.[selectedSize]) {
+    return product.sizeArtNos[selectedSize];
   }
   return product.artNo;
 }
@@ -36,14 +37,17 @@ export function ProductSelectionProvider({
   product: ProductDetails;
   children: ReactNode;
 }) {
-  const [selectedSize, setSelectedSize] = useState<number | null>(
-    product.sizes.length > 0 ? (product.sizes[3] ?? product.sizes[0]) : null
+  const [selectedSize, setSelectedSize] = useState<string | null>(
+    product.sizeOptions.length > 0
+      ? (product.sizeOptions[3] ?? product.sizeOptions[0]).value
+      : null
   );
 
   const value = useMemo(
     () => ({
       selectedSize,
       setSelectedSize,
+      selectedSizeLabel: getProductSizeLabel(product, selectedSize) ?? null,
       artNo: resolveArtNo(product, selectedSize),
     }),
     [product, selectedSize]

@@ -1,6 +1,7 @@
-import type { CategorySlug, Product, ProductDetails, StoneVariant } from "@/lib/products";
-import { RING_BRACELET_SIZES } from "@/lib/products";
+import type { CategorySlug, Product, ProductDetails, ProductSizeOption, StoneVariant } from "@/lib/products";
+import { defaultRingBraceletSizeOptions } from "@/lib/products";
 import { parseCaratWeightFromDescription } from "@/lib/product-weight";
+import { resolveComplectNumber } from "@/lib/product-complect";
 import { buildSeoProductSlug } from "@/lib/product-slug";
 import { resolveProductImageUrl, resolveProductImages } from "./images";
 import type {
@@ -10,22 +11,42 @@ import type {
   AdvantShopProperty,
 } from "./types";
 
-export function extractProductSizes(
-  item: Pick<AdvantShopProductDetails, "sizeColorPicker">,
-  category: CategorySlug
-): number[] {
-  const sizes =
-    item.sizeColorPicker?.sizes
-      ?.map((size) => Number.parseFloat(size.name.replace(",", ".")))
-      .filter((size) => !Number.isNaN(size)) ?? [];
+function collectOfferArtNos(
+  item: Pick<AdvantShopCatalogProduct, "artNo" | "offers">,
+): string[] {
+  const artNos = new Set<string>();
+  const add = (value?: string | null) => {
+    const trimmed = value?.trim();
+    if (trimmed) artNos.add(trimmed);
+  };
 
-  if (sizes.length) return sizes;
-
-  if (category === "rings" || category === "bracelets") {
-    return [];
+  add(item.artNo);
+  for (const offer of item.offers ?? []) {
+    add(offer.artNo);
   }
 
-  return [];
+  return [...artNos];
+}
+
+export function extractProductSizeOptions(
+  item: Pick<AdvantShopProductDetails, "sizeColorPicker">,
+): ProductSizeOption[] {
+  return (
+    item.sizeColorPicker?.sizes?.map((size) => {
+      const label = size.name.trim();
+      return { value: label, label };
+    }) ?? []
+  );
+}
+
+/** @deprecated Используйте extractProductSizeOptions */
+export function extractProductSizes(
+  item: Pick<AdvantShopProductDetails, "sizeColorPicker">,
+  _category: CategorySlug
+): number[] {
+  return extractProductSizeOptions(item)
+    .map((option) => Number.parseFloat(option.value.replace(",", ".")))
+    .filter((size) => !Number.isNaN(size));
 }
 
 const DEFAULT_IMAGE = "/images/product-ring.webp";
@@ -140,12 +161,12 @@ function buildSizeArtNos(
   const fallbackArtNo = pickDefaultArtNo(item);
 
   for (const size of item.sizeColorPicker.sizes) {
-    const sizeValue = Number.parseFloat(size.name.replace(",", "."));
-    if (Number.isNaN(sizeValue)) continue;
+    const sizeKey = size.name.trim();
+    if (!sizeKey) continue;
 
     const offer = item.offers.find((entry) => entry.sizeId === size.id);
     const artNo = offer?.artNo ?? fallbackArtNo;
-    if (artNo) map[String(sizeValue)] = artNo;
+    if (artNo) map[sizeKey] = artNo;
   }
 
   return Object.keys(map).length ? map : undefined;
@@ -160,32 +181,37 @@ function mapBadge(
   return undefined;
 }
 
-function resolveCatalogSizes(
-  sizes: number[],
+function resolveCatalogSizeOptions(
+  sizeOptions: ProductSizeOption[],
   category: CategorySlug
-): number[] | undefined {
+): ProductSizeOption[] | undefined {
   const needsSizes =
-    category === "rings" || category === "bracelets" || sizes.length > 0;
+    category === "rings" || category === "bracelets" || sizeOptions.length > 0;
   if (!needsSizes) return undefined;
-  if (sizes.length) return sizes;
+  if (sizeOptions.length) return sizeOptions;
   if (category === "rings" || category === "bracelets") {
-    return [...RING_BRACELET_SIZES];
+    return defaultRingBraceletSizeOptions();
   }
   return undefined;
 }
 
 export function mapCatalogProduct(
   item: AdvantShopCatalogProduct,
-  category: CategorySlug
+  category: CategorySlug,
+  complectNumber?: string,
 ): Product {
   const price = Math.round(item.priceWithDiscount ?? item.price);
-  const sizes = extractProductSizes(item, category);
+  const sizeOptions = extractProductSizeOptions(item);
 
   const description = item.briefDescription || undefined;
   const stoneWeight = description
     ? (parseCaratWeightFromDescription(description) ?? 0.2)
     : 0.2;
   const legacySlug = item.urlPath;
+  const artNo =
+    item.artNo ??
+    item.offers?.find((offer) => offer.isMain)?.artNo ??
+    item.offers?.[0]?.artNo;
 
   return {
     id: String(item.productId),
@@ -206,14 +232,12 @@ export function mapCatalogProduct(
     isNew: Boolean(item.newProduct),
     description,
     images: resolveProductImages(collectImages(item.photos)),
-    sizes: resolveCatalogSizes(sizes, category),
-    artNo:
-      item.artNo ??
-      item.offers?.find((offer) => offer.isMain)?.artNo ??
-      item.offers?.[0]?.artNo,
+    sizeOptions: resolveCatalogSizeOptions(sizeOptions, category),
+    artNo,
+    offerArtNos: collectOfferArtNos(item),
+    complectNumber,
   };
 }
-
 export function mapProductDetails(
   item: AdvantShopProductDetails,
   category: CategorySlug,
@@ -246,12 +270,13 @@ export function mapProductDetails(
         : Math.round(basePrice * (weight / Math.max(stoneWeight, 0.1))),
   }));
 
-  const sizes = extractProductSizes(item, category);
+  const sizeOptions = extractProductSizeOptions(item);
   const hasSizes =
-    category === "rings" || category === "bracelets" || sizes.length > 0;
+    category === "rings" || category === "bracelets" || sizeOptions.length > 0;
   const artNo = pickDefaultArtNo(item);
   const sizeArtNos = buildSizeArtNos(item);
   const legacySlug = item.urlPath;
+  const complectNumber = resolveComplectNumber(properties);
 
   return {
     id: String(item.productId),
@@ -280,10 +305,12 @@ export function mapProductDetails(
     metal:
       parseProperty(properties, ["металл", "проба", "silver"]) ??
       "Серебро 925, родиевое покрытие",
-    sizes: hasSizes ? sizes : [],
+    sizeOptions: hasSizes ? sizeOptions : [],
     stoneVariants,
     artNo: artNo || undefined,
     sizeArtNos,
+    offerArtNos: collectOfferArtNos(item),
     weightGrams: parseWeightGrams(properties),
+    complectNumber,
   };
 }

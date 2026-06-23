@@ -24,7 +24,7 @@ type AddToCartInput = {
   price: number;
   stoneWeight: number;
   stoneLabel: string;
-  size: number | null;
+  size: string | null;
   artNo?: string;
 };
 

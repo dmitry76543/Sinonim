@@ -1,6 +1,6 @@
 "use client";
 
-import Image from "next/image";
+import { ProductImage } from "@/components/catalog/ProductImage";
 import Link from "next/link";
 import {
   flattenAutocompleteSuggestions,
@@ -152,7 +152,7 @@ export function SearchAutocompleteList({
                     }`}
                   >
                     <div className="relative h-10 w-10 shrink-0 overflow-hidden rounded-md bg-brand-sand">
-                      <Image
+                      <ProductImage
                         src={product.image}
                         alt=""
                         fill

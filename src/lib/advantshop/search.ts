@@ -99,10 +99,11 @@ function mapAutocompleteProduct(
   item: AdvantShopCatalogProduct,
   category: CategorySlug = "rings"
 ): SearchAutocompleteProduct {
-  const price =
+  const price = Math.round(
     item.priceWithDiscount && item.priceWithDiscount > 0
       ? item.priceWithDiscount
-      : item.price;
+      : item.price ?? 0,
+  );
   const description = item.briefDescription || undefined;
   const stoneWeight = description
     ? (parseCaratWeightFromDescription(description) ?? 0.2)

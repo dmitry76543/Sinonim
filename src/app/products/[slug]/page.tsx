@@ -8,6 +8,7 @@ import { buildProductMetaDescription } from "@/lib/product-metadata";
 import { isLegacyProductSlug } from "@/lib/product-slug";
 import { buildProductJsonLd } from "@/lib/product-schema";
 import {
+  getComplectProducts,
   getProductDetails,
   getRelatedProducts,
 } from "@/lib/products-service";
@@ -45,14 +46,21 @@ export default async function ProductRoute({ params }: PageProps) {
     permanentRedirect(`/products/${product.slug}`);
   }
 
-  const relatedProducts = await getRelatedProducts(product);
+  const [relatedProducts, complectProducts] = await Promise.all([
+    getRelatedProducts(product),
+    getComplectProducts(product),
+  ]);
 
   return (
     <>
       <JsonLd data={buildProductJsonLd(product, product.slug)} />
       <Header />
       <main>
-        <ProductPage product={product} relatedProducts={relatedProducts} />
+        <ProductPage
+          product={product}
+          relatedProducts={relatedProducts}
+          complectProducts={complectProducts}
+        />
       </main>
       <Footer />
     </>

@@ -1,7 +1,9 @@
+import { unstable_cache } from "next/cache";
 import type { CategorySlug, Product, ProductDetails } from "@/lib/products";
 import { findProductBySlug } from "@/lib/product-slug";
+import { parseComplectNumberFromProperties } from "@/lib/product-complect";
 import { advantshopClientFetch, advantshopFetch } from "./client";
-import { getCategoryUrlMap } from "./config";
+import { getCategoryUrlMap, CATALOG_REVALIDATE_SECONDS } from "./config";
 import { mapCatalogProduct, mapProductDetails } from "./mapper";
 import type {
   AdvantShopCatalogResponse,
@@ -74,6 +76,80 @@ async function fetchAllCatalogProducts(body: Record<string, unknown>) {
   return products;
 }
 
+async function fetchProductProperties(productId: number): Promise<AdvantShopProperty[]> {
+  const response = await advantshopClientFetch<AdvantShopPropertiesResponse>(
+    `/api/products/${productId}/properties`,
+    { searchParams: { type: "inDetails" } },
+  ).catch(() => [] as AdvantShopPropertiesResponse);
+
+  return flattenAdvantShopProperties(response);
+}
+
+async function mapPool<T, R>(
+  items: T[],
+  concurrency: number,
+  worker: (item: T) => Promise<R>,
+): Promise<R[]> {
+  const results: R[] = new Array(items.length);
+  let index = 0;
+
+  async function run() {
+    while (index < items.length) {
+      const current = index++;
+      results[current] = await worker(items[current]);
+    }
+  }
+
+  await Promise.all(Array.from({ length: concurrency }, run));
+  return results;
+}
+
+const getCachedComplectMap = unstable_cache(
+  async (): Promise<Record<string, string>> => {
+    const categoryMap = getCategoryUrlMap();
+    const productIds = new Set<number>();
+
+    for (const url of Object.values(categoryMap)) {
+      const items = await fetchAllCatalogProducts({
+        url,
+        sorting: "NoSorting",
+      });
+      for (const item of items) {
+        productIds.add(item.productId);
+      }
+    }
+
+    const complectMap: Record<string, string> = {};
+    const ids = [...productIds];
+
+    await mapPool(ids, 8, async (productId) => {
+      const properties = await fetchProductProperties(productId);
+      const complectNumber = parseComplectNumberFromProperties(properties);
+      if (complectNumber) {
+        complectMap[String(productId)] = complectNumber;
+      }
+    });
+
+    return complectMap;
+  },
+  ["advantshop-complect-map"],
+  { revalidate: CATALOG_REVALIDATE_SECONDS, tags: ["catalog"] },
+);
+
+async function mapCatalogItems(
+  items: NonNullable<AdvantShopCatalogResponse["products"]>,
+  category: CategorySlug,
+  complectMap: Record<string, string>,
+): Promise<Product[]> {
+  return items.map((item) =>
+    mapCatalogProduct(
+      item,
+      category,
+      complectMap[String(item.productId)],
+    ),
+  );
+}
+
 export async function fetchAdvantShopCategories() {
   return advantshopFetch<AdvantShopCategoriesResponse>("/api/categories", {
     searchParams: { parentCategoryId: 0, extended: true },
@@ -86,6 +162,7 @@ export async function fetchAdvantShopProducts(options?: {
 }): Promise<Product[]> {
   const categoryMap = getCategoryUrlMap();
   const sort = SORT_MAP[options?.sort ?? "default"] ?? "NoSorting";
+  const complectMap = await getCachedComplectMap();
 
   if (options?.category) {
     const categoryUrl = categoryMap[options.category];
@@ -96,7 +173,7 @@ export async function fetchAdvantShopProducts(options?: {
         url: categoryUrl,
         sorting: sort,
       });
-      return items.map((item) => mapCatalogProduct(item, options.category!));
+      return mapCatalogItems(items, options.category, complectMap);
     } catch (error) {
       if (isMissingCategoryError(error)) {
         console.warn(
@@ -118,7 +195,7 @@ export async function fetchAdvantShopProducts(options?: {
 
       try {
         const items = await fetchAllCatalogProducts({ url, sorting: sort });
-        return items.map((item) => mapCatalogProduct(item, slug));
+        return mapCatalogItems(items, slug, complectMap);
       } catch (error) {
         if (isMissingCategoryError(error)) {
           console.warn(

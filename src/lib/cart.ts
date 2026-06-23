@@ -6,7 +6,7 @@ export type CartItem = {
   price: number;
   stoneWeight: number;
   stoneLabel: string;
-  size: number | null;
+  size: string | null;
   quantity: number;
   artNo?: string;
 };
@@ -16,7 +16,7 @@ export const CART_STORAGE_KEY = "sinonim-cart";
 export function buildCartItemId(
   slug: string,
   stoneWeight: number,
-  size: number | null
+  size: string | null
 ): string {
   return `${slug}-${stoneWeight}-${size ?? "none"}`;
 }

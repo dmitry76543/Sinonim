@@ -4,6 +4,7 @@ import { CATEGORIES, type ProductDetails } from "@/lib/products";
 import type { Product } from "@/lib/products";
 import { getProductCaratWeightLabel } from "@/lib/product-weight";
 import { ProductCard } from "@/components/catalog/ProductCard";
+import { ProductComplectSection } from "./ProductComplectSection";
 import { ProductConfigurator } from "./ProductConfigurator";
 import { ProductDescription } from "./ProductDescription";
 import { ProductGallery } from "./ProductGallery";
@@ -12,9 +13,14 @@ import { ProductSelectionProvider } from "./ProductSelectionContext";
 type ProductPageProps = {
   product: ProductDetails;
   relatedProducts: Product[];
+  complectProducts: Product[];
 };
 
-export function ProductPage({ product, relatedProducts }: ProductPageProps) {
+export function ProductPage({
+  product,
+  relatedProducts,
+  complectProducts,
+}: ProductPageProps) {
   const related = relatedProducts;
   const categoryTitle = CATEGORIES[product.category].title;
   const diamondWeight = getProductCaratWeightLabel(product);
@@ -139,8 +145,15 @@ export function ProductPage({ product, relatedProducts }: ProductPageProps) {
           </div>
         </ProductSelectionProvider>
 
+        {complectProducts.length > 0 && product.complectNumber && (
+          <ProductComplectSection
+            complectNumber={product.complectNumber}
+            products={complectProducts}
+          />
+        )}
+
         {related.length > 0 && (
-          <div>
+          <div className={complectProducts.length > 0 ? "mt-16 md:mt-20" : ""}>
             <p className="text-brand-olive text-sm tracking-[0.2em] uppercase mb-2">
               Похожие
             </p>
