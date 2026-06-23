@@ -10,7 +10,12 @@ import { getCatalogProducts } from "@/lib/products-service";
 import type { Product } from "@/lib/products";
 
 type PageProps = {
-  searchParams: Promise<{ sort?: string; price?: string | string[]; size?: string | string[] }>;
+  searchParams: Promise<{
+    sort?: string;
+    price?: string | string[];
+    size?: string | string[];
+    complect?: string;
+  }>;
 };
 
 export async function generateMetadata({ searchParams }: PageProps) {
@@ -22,6 +27,7 @@ export async function generateMetadata({ searchParams }: PageProps) {
   prices.forEach((value) => query.append("price", value));
   const sizes = Array.isArray(params.size) ? params.size : params.size ? [params.size] : [];
   sizes.forEach((value) => query.append("size", value));
+  if (params.complect) query.set("complect", params.complect);
 
   const filtered = hasCatalogFilterParams(query);
 

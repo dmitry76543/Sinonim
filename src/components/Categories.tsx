@@ -9,7 +9,9 @@ import { ScrollReveal } from "@/components/ScrollReveal";
 import { getCategoryStats } from "@/lib/catalog-stats";
 
 export async function Categories() {
-  const categories = await getCategoryStats();
+  const categories = (await getCategoryStats()).filter(
+    (category) => category.slug !== "gifts",
+  );
 
   return (
     <section className="py-14 md:py-20">
@@ -31,7 +33,7 @@ export async function Categories() {
           </Link>
         </div>
 
-        <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-4 md:gap-6 mb-16 md:mb-20">
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-4 md:gap-6 mb-16 md:mb-20">
           {categories.map((cat, index) => (
             <Link
               key={cat.href}

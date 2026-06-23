@@ -107,6 +107,9 @@ export function CatalogFilters({ filters, basePath, onClose }: CatalogFiltersPro
     return buildFilterQuery(filters, { sizes: next });
   };
 
+  const toggleComplects = () =>
+    buildFilterQuery(filters, { complectsOnly: !filters.complectsOnly });
+
   const categoryHref = (slug: CategorySlug | null) => {
     const path = slug ? `/shop/${slug}` : "/shop";
     const query = buildFilterQuery(
@@ -151,6 +154,17 @@ export function CatalogFilters({ filters, basePath, onClose }: CatalogFiltersPro
               href={categoryHref(slug)}
             />
           ))}
+        </div>
+      </FilterSection>
+
+      <FilterSection title="Комплекты">
+        <div className="space-y-1">
+          <CheckboxItem
+            id="complects"
+            label="Комплекты"
+            checked={filters.complectsOnly}
+            href={`${basePath}${toggleComplects()}`}
+          />
         </div>
       </FilterSection>
 

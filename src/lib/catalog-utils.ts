@@ -9,6 +9,7 @@ export type CatalogFilters = {
   category?: CategorySlug;
   priceRanges: string[];
   sizes: string[];
+  complectsOnly: boolean;
   sort: string;
 };
 
@@ -54,6 +55,10 @@ export function filterProducts(
     );
   }
 
+  if (filters.complectsOnly) {
+    result = result.filter((product) => Boolean(product.complectNumber));
+  }
+
   switch (filters.sort) {
     case "price-asc":
       result.sort((a, b) => a.price - b.price);
@@ -79,6 +84,7 @@ export function parseFiltersFromSearchParams(
     category,
     priceRanges: params.getAll("price"),
     sizes: params.getAll("size"),
+    complectsOnly: params.get("complect") === "1",
     sort: params.get("sort") ?? "default",
   };
 }
@@ -92,6 +98,9 @@ export function buildFilterQuery(
 
   next.priceRanges.forEach((p) => query.append("price", p));
   next.sizes.forEach((size) => query.append("size", size));
+  if (next.complectsOnly) {
+    query.set("complect", "1");
+  }
   if (next.sort && next.sort !== "default") {
     query.set("sort", next.sort);
   }
@@ -101,13 +110,18 @@ export function buildFilterQuery(
 }
 
 export function countActiveFilters(filters: CatalogFilters): number {
-  return filters.priceRanges.length + filters.sizes.length;
+  return (
+    filters.priceRanges.length +
+    filters.sizes.length +
+    (filters.complectsOnly ? 1 : 0)
+  );
 }
 
 export function hasCatalogFilterParams(params: URLSearchParams): boolean {
   return (
     params.has("price") ||
     params.has("size") ||
+    params.has("complect") ||
     (params.has("sort") && params.get("sort") !== "default")
   );
 }

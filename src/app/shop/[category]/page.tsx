@@ -12,13 +12,19 @@ import { getCatalogProducts } from "@/lib/products-service";
 
 type PageProps = {
   params: Promise<{ category: string }>;
-  searchParams: Promise<{ sort?: string; price?: string | string[]; size?: string | string[] }>;
+  searchParams: Promise<{
+    sort?: string;
+    price?: string | string[];
+    size?: string | string[];
+    complect?: string;
+  }>;
 };
 
 function buildFilterParams(searchParams: {
   sort?: string;
   price?: string | string[];
   size?: string | string[];
+  complect?: string;
 }) {
   const query = new URLSearchParams();
   if (searchParams.sort) query.set("sort", searchParams.sort);
@@ -36,6 +42,7 @@ function buildFilterParams(searchParams: {
       ? [searchParams.size]
       : [];
   sizes.forEach((value) => query.append("size", value));
+  if (searchParams.complect) query.set("complect", searchParams.complect);
 
   return query;
 }
