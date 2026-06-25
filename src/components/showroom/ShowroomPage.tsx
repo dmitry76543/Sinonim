@@ -82,7 +82,7 @@ export function ShowroomPage() {
               </div>
             </div>
 
-            <div className="relative aspect-[4/3] w-full">
+            <div className="relative aspect-[3/4] w-full">
               <div className="absolute -inset-3 rounded-2xl bg-brand-olive/10 blur-xl" />
               <Image
                 src="/images/show_room_2.jpg"
