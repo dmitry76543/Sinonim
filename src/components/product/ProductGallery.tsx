@@ -1,6 +1,6 @@
 "use client";
 
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { ProductImage } from "@/components/catalog/ProductImage";
 
 type GallerySlide =
@@ -13,6 +13,59 @@ type ProductGalleryProps = {
   videoUrl?: string;
 };
 
+type GalleryVideoProps = {
+  src: string;
+  label: string;
+  className?: string;
+  preload?: "auto" | "metadata";
+};
+
+function GalleryVideo({
+  src,
+  label,
+  className = "",
+  preload = "auto",
+}: GalleryVideoProps) {
+  const videoRef = useRef<HTMLVideoElement>(null);
+
+  useEffect(() => {
+    const video = videoRef.current;
+    if (!video) return;
+
+    video.muted = true;
+
+    const play = () => {
+      const promise = video.play();
+      if (promise) {
+        promise.catch(() => {
+          // Browser may block autoplay until interaction.
+        });
+      }
+    };
+
+    play();
+
+    if (video.readyState < 2) {
+      video.addEventListener("loadeddata", play, { once: true });
+      return () => video.removeEventListener("loadeddata", play);
+    }
+  }, [src]);
+
+  return (
+    <video
+      ref={videoRef}
+      src={src}
+      autoPlay
+      muted
+      loop
+      playsInline
+      preload={preload}
+      className={className}
+      aria-label={label}
+    />
+  );
+}
+
 export function ProductGallery({ images, name, videoUrl }: ProductGalleryProps) {
   const slides = useMemo(() => {
     const uniqueImages = images.filter((img, i, arr) => arr.indexOf(img) === i);
@@ -22,7 +75,7 @@ export function ProductGallery({ images, name, videoUrl }: ProductGalleryProps) 
     }));
 
     if (videoUrl) {
-      items.push({ type: "video", src: videoUrl });
+      items.unshift({ type: "video", src: videoUrl });
     }
 
     return items;
@@ -30,7 +83,6 @@ export function ProductGallery({ images, name, videoUrl }: ProductGalleryProps) 
 
   const [activeIndex, setActiveIndex] = useState(0);
   const activeSlide = slides[activeIndex] ?? slides[0];
-  const poster = slides.find((slide) => slide.type === "image")?.src;
 
   if (!activeSlide) return null;
 
@@ -38,15 +90,11 @@ export function ProductGallery({ images, name, videoUrl }: ProductGalleryProps) 
     <div className="space-y-4">
       <div className="aspect-square relative overflow-hidden rounded-xl bg-brand-surface shadow-sm">
         {activeSlide.type === "video" ? (
-          <video
-            key={activeSlide.src}
+          <GalleryVideo
+            key={`main-${activeSlide.src}`}
             src={activeSlide.src}
-            controls
-            playsInline
-            preload="metadata"
-            poster={poster}
+            label={`Видео — ${name}`}
             className="h-full w-full object-cover bg-black"
-            aria-label={`Видео — ${name}`}
           />
         ) : (
           <ProductImage
@@ -64,7 +112,11 @@ export function ProductGallery({ images, name, videoUrl }: ProductGalleryProps) 
         <div className="flex gap-3 overflow-x-auto pb-1">
           {slides.map((slide, index) => (
             <button
-              key={slide.type === "video" ? `video-${slide.src}` : `${slide.src}-${index}`}
+              key={
+                slide.type === "video"
+                  ? `video-${slide.src}`
+                  : `${slide.src}-${index}`
+              }
               type="button"
               onClick={() => setActiveIndex(index)}
               aria-label={
@@ -79,32 +131,13 @@ export function ProductGallery({ images, name, videoUrl }: ProductGalleryProps) 
               }`}
             >
               {slide.type === "video" ? (
-                <>
-                  {poster ? (
-                    <ProductImage
-                      src={poster}
-                      alt=""
-                      fill
-                      className="object-cover"
-                      sizes="80px"
-                    />
-                  ) : (
-                    <span className="absolute inset-0 bg-brand-olive-dark" />
-                  )}
-                  <span className="absolute inset-0 flex items-center justify-center bg-black/35">
-                    <svg
-                      width="28"
-                      height="28"
-                      viewBox="0 0 24 24"
-                      fill="none"
-                      aria-hidden
-                      className="text-white"
-                    >
-                      <circle cx="12" cy="12" r="11" stroke="currentColor" strokeWidth="1.5" />
-                      <path d="M10 8.5v7l6-3.5-6-3.5z" fill="currentColor" />
-                    </svg>
-                  </span>
-                </>
+                <GalleryVideo
+                  key={`thumb-${slide.src}`}
+                  src={slide.src}
+                  label={`Видео ${name}`}
+                  className="h-full w-full object-cover"
+                  preload="metadata"
+                />
               ) : (
                 <ProductImage
                   src={slide.src}
