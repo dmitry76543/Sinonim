@@ -12,6 +12,7 @@ import { ProductSelectionProvider } from "./ProductSelectionContext";
 import { ProductTryOn } from "./ProductTryOn";
 import { getPhottaApiKey } from "@/lib/photta/server";
 import { absoluteImageUrl } from "@/lib/seo-images";
+import { resolveProductVideoUrl } from "@/lib/product-video";
 
 type ProductPageProps = {
   product: ProductDetails;
@@ -29,6 +30,11 @@ export function ProductPage({
   const diamondWeight = getProductCaratWeightLabel(product);
   const phottaApiKey = getPhottaApiKey();
   const phottaProductImage = absoluteImageUrl(product.images[0] ?? product.image);
+  const videoUrl = resolveProductVideoUrl([
+    product.artNo,
+    ...Object.values(product.sizeArtNos ?? {}),
+    ...(product.offerArtNos ?? []),
+  ]);
   return (
     <section className="py-8 md:py-12">
       <ProductViewTracker
@@ -70,7 +76,11 @@ export function ProductPage({
 
         <ProductSelectionProvider product={product}>
           <div className="grid lg:grid-cols-2 gap-8 lg:gap-14 mb-16 md:mb-20">
-            <ProductGallery images={product.images} name={product.name} />
+            <ProductGallery
+              images={product.images}
+              name={product.name}
+              videoUrl={videoUrl}
+            />
 
             <div>
               <p className="text-brand-olive text-sm tracking-[0.2em] uppercase mb-2">
