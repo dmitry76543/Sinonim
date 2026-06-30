@@ -41,42 +41,36 @@ export async function Categories() {
               <Link
                 key={cat.href}
                 href={cat.href}
-                className="group relative flex aspect-[5/2] overflow-hidden rounded-xl bg-brand-surface shadow-sm transition-shadow hover:shadow-md"
+                className="group relative flex aspect-[7/4] overflow-hidden rounded-xl bg-brand-surface shadow-sm transition-shadow hover:shadow-md md:aspect-[8/5]"
               >
                 <ScrollReveal
                   delayMs={index * 90}
                   className="flex min-h-0 w-full flex-row"
                 >
-                  <div className="flex min-w-0 flex-1 flex-col justify-center p-4 md:p-5">
-                    <h3 className="font-heading text-xl md:text-2xl mb-1 text-brand-olive-dark">
+                  <div className="flex min-w-0 flex-1 flex-col justify-center p-5 md:p-6">
+                    <h3 className="font-heading text-2xl md:text-3xl mb-1.5 text-brand-olive-dark">
                       {cat.title}
                     </h3>
-                    <p className="text-xs md:text-sm text-brand-muted">
+                    <p className="text-sm md:text-base text-brand-muted">
                       {cat.countLabel}
                     </p>
-                    <p className="text-sm text-brand-olive-dark mt-1">
+                    <p className="text-base md:text-lg text-brand-olive-dark mt-1.5">
                       {cat.priceFromLabel}
                     </p>
                   </div>
 
                   <div className="relative h-full w-[42%] shrink-0 overflow-hidden bg-brand-sand/50 md:w-[45%]">
-                    <div
-                      className={`relative h-full w-full ${
-                        isBracelets ? "p-5 md:p-7" : ""
-                      }`}
-                    >
-                      <Image
-                        src={cat.image}
-                        alt={cat.title}
-                        fill
-                        className={
-                          isBracelets
-                            ? "object-contain transition-transform duration-500 group-hover:scale-[1.03]"
-                            : "object-cover transition-transform duration-500 group-hover:scale-105"
-                        }
-                        sizes="(max-width: 768px) 42vw, 22vw"
-                      />
-                    </div>
+                    <Image
+                      src={cat.image}
+                      alt={cat.title}
+                      fill
+                      className={
+                        isBracelets
+                          ? "object-cover object-center scale-[1.18] transition-transform duration-500 group-hover:scale-[1.24]"
+                          : "object-cover transition-transform duration-500 group-hover:scale-105"
+                      }
+                      sizes="(max-width: 768px) 42vw, 22vw"
+                    />
                   </div>
                 </ScrollReveal>
               </Link>
