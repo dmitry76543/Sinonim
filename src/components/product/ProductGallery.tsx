@@ -249,6 +249,195 @@ function GalleryNavArrow({
     </button>
   );
 }
+function ZoomInPlusIcon() {
+  return (
+    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" aria-hidden>
+      <circle cx="10" cy="10" r="6.5" stroke="currentColor" strokeWidth="1.5" />
+      <path d="M14.5 14.5L19 19" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" />
+      <path d="M10 7.5v5M7.5 10h5" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" />
+    </svg>
+  );
+}
+
+type MobileImageZoomProps = {
+  src: string;
+  alt: string;
+  onClose: () => void;
+};
+
+function MobileImageZoom({ src, alt, onClose }: MobileImageZoomProps) {
+  useEffect(() => {
+    const previousOverflow = document.body.style.overflow;
+    document.body.style.overflow = "hidden";
+
+    return () => {
+      document.body.style.overflow = previousOverflow;
+    };
+  }, []);
+
+  return createPortal(
+    <div
+      className="fixed inset-0 z-[90] flex items-center justify-center bg-black/90 p-4"
+      role="presentation"
+    >
+      <button
+        type="button"
+        className="absolute inset-0"
+        onClick={onClose}
+        aria-label="Закрыть увеличенное изображение"
+      />
+      <div className="relative z-10 h-full w-full max-h-[90vh] max-w-full">
+        <ProductImage
+          src={src}
+          alt={alt}
+          fill
+          className="object-contain"
+          sizes="100vw"
+          priority
+        />
+      </div>
+    </div>,
+    document.body,
+  );
+}
+
+type MobileProductGalleryProps = {
+  slides: GallerySlide[];
+  name: string;
+  activeIndex: number;
+  onActiveIndexChange: (index: number) => void;
+};
+
+function MobileProductGallery({
+  slides,
+  name,
+  activeIndex,
+  onActiveIndexChange,
+}: MobileProductGalleryProps) {
+  const [zoomOpen, setZoomOpen] = useState(false);
+  const touchStart = useRef<{ x: number; y: number } | null>(null);
+  const activeSlide = slides[activeIndex] ?? slides[0];
+  const isVideoSlide = activeSlide?.type === "video";
+
+  useEffect(() => {
+    setZoomOpen(false);
+  }, [activeIndex]);
+
+  if (!activeSlide) return null;
+
+  const goToSlide = (index: number) => {
+    onActiveIndexChange((index + slides.length) % slides.length);
+  };
+
+  const handleTouchStart = (event: React.TouchEvent<HTMLDivElement>) => {
+    const touch = event.touches[0];
+    if (!touch) return;
+
+    touchStart.current = {
+      x: touch.clientX,
+      y: touch.clientY,
+    };
+  };
+
+  const handleTouchEnd = (event: React.TouchEvent<HTMLDivElement>) => {
+    if (!touchStart.current || slides.length <= 1) return;
+
+    const touch = event.changedTouches[0];
+    if (!touch) return;
+
+    const deltaX = touch.clientX - touchStart.current.x;
+    const deltaY = touch.clientY - touchStart.current.y;
+
+    touchStart.current = null;
+
+    if (Math.abs(deltaX) < 50 || Math.abs(deltaX) < Math.abs(deltaY)) return;
+
+    if (deltaX < 0) {
+      goToSlide(activeIndex + 1);
+      return;
+    }
+
+    goToSlide(activeIndex - 1);
+  };
+
+  return (
+    <div className="-mx-4 w-[calc(100%+2rem)] md:hidden">
+      {slides.length > 1 && (
+        <div
+          className="flex gap-1.5 px-4 pb-3"
+          role="tablist"
+          aria-label="Слайды галереи"
+        >
+          {slides.map((slide, index) => (
+            <div
+              key={
+                slide.type === "video"
+                  ? `progress-video-${slide.src}`
+                  : `progress-${slide.src}-${index}`
+              }
+              role="tab"
+              aria-selected={activeIndex === index}
+              className={`h-0 flex-1 border-t-2 border-dashed transition-colors ${
+                activeIndex === index
+                  ? "border-brand-terracotta"
+                  : "border-brand-olive/25"
+              }`}
+            />
+          ))}
+        </div>
+      )}
+
+      <div
+        className="relative aspect-square w-full overflow-hidden bg-brand-surface touch-pan-y"
+        onTouchStart={handleTouchStart}
+        onTouchEnd={handleTouchEnd}
+      >
+        {isVideoSlide ? (
+          <GalleryMainMedia
+            slide={activeSlide}
+            name={name}
+            objectFit="cover"
+            imageSizes="100vw"
+            priority
+          />
+        ) : (
+          <button
+            type="button"
+            onClick={() => setZoomOpen(true)}
+            className="relative block h-full w-full"
+            aria-label="Увеличить изображение"
+          >
+            <GalleryMainMedia
+              slide={activeSlide}
+              name={name}
+              objectFit="cover"
+              imageSizes="100vw"
+              priority
+            />
+          </button>
+        )}
+
+        {!isVideoSlide && (
+          <div
+            className="pointer-events-none absolute top-3 right-3 flex h-9 w-9 items-center justify-center rounded-full bg-white/90 text-brand-olive-dark shadow-sm"
+            aria-hidden
+          >
+            <ZoomInPlusIcon />
+          </div>
+        )}
+      </div>
+
+      {zoomOpen && activeSlide.type === "image" && (
+        <MobileImageZoom
+          src={activeSlide.src}
+          alt={name}
+          onClose={() => setZoomOpen(false)}
+        />
+      )}
+    </div>
+  );
+}
+
 function GalleryLayout({
   slides,
   name,
@@ -561,7 +750,7 @@ function ProductGalleryModal({
 
   return createPortal(
     <div
-      className="fixed inset-0 z-[100] flex items-center justify-center p-4 md:p-8"
+      className="fixed inset-0 z-[100] max-md:hidden flex items-center justify-center p-4 md:p-8"
       role="presentation"
     >
       <button
@@ -655,20 +844,29 @@ export function ProductGallery({
 
   return (
     <>
-      <GalleryLayout
+      <MobileProductGallery
         slides={slides}
         name={name}
         activeIndex={activeIndex}
         onActiveIndexChange={setActiveIndex}
-        thumbClassName="h-24 w-24 md:h-28 md:w-28 lg:h-32 lg:w-32"
-        mainClassName="aspect-square"
-        mainObjectFit="cover"
-        mainImageSizes="(max-width: 1024px) 100vw, 50vw"
-        thumbImageSizes="128px"
-        mainPriority
-        thumbListClassName="max-h-[min(80vw,36rem)]"
-        onMainClick={() => setModalOpen(true)}
       />
+
+      <div className="hidden md:block">
+        <GalleryLayout
+          slides={slides}
+          name={name}
+          activeIndex={activeIndex}
+          onActiveIndexChange={setActiveIndex}
+          thumbClassName="h-24 w-24 md:h-28 md:w-28 lg:h-32 lg:w-32"
+          mainClassName="aspect-square"
+          mainObjectFit="cover"
+          mainImageSizes="(max-width: 1024px) 100vw, 50vw"
+          thumbImageSizes="128px"
+          mainPriority
+          thumbListClassName="max-h-[min(80vw,36rem)]"
+          onMainClick={() => setModalOpen(true)}
+        />
+      </div>
 
       <ProductGalleryModal
         open={modalOpen}
