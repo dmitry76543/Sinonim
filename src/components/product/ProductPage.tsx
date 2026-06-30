@@ -35,6 +35,10 @@ export function ProductPage({
     ...Object.values(product.sizeArtNos ?? {}),
     ...(product.offerArtNos ?? []),
   ]);
+  const defaultStoneLabel =
+    product.stoneVariants.find(
+      (variant) => Math.abs(variant.weight - product.stoneWeight) < 0.001,
+    )?.label ?? product.stoneVariants[0]?.label ?? "";
   return (
     <section className="py-8 md:py-12">
       <ProductViewTracker
@@ -80,6 +84,12 @@ export function ProductPage({
               images={product.images}
               name={product.name}
               videoUrl={videoUrl}
+              slug={product.slug}
+              price={product.price}
+              productImage={product.image}
+              category={product.category}
+              stoneWeight={product.stoneWeight}
+              stoneLabel={defaultStoneLabel}
             />
 
             <div>
