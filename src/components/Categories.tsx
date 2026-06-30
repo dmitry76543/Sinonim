@@ -34,32 +34,54 @@ export async function Categories() {
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4 md:gap-6 mb-16 md:mb-20">
-          {categories.map((cat, index) => (
-            <Link
-              key={cat.href}
-              href={cat.href}
-              className="group relative bg-brand-surface rounded-xl overflow-hidden shadow-sm hover:shadow-md transition-shadow"
-            >
-              <ScrollReveal delayMs={index * 90} className="block">
-                <div className="aspect-[4/5] relative overflow-hidden bg-brand-sand/50">
-                  <Image
-                    src={cat.image}
-                    alt={cat.title}
-                    fill
-                    className="object-cover group-hover:scale-105 transition-transform duration-500"
-                    sizes="(max-width: 768px) 100vw, 50vw"
-                  />
-                </div>
-              </ScrollReveal>
-              <div className="p-4 md:p-5">
-                <h3 className="font-heading text-xl md:text-2xl mb-1 text-brand-olive-dark">
-                  {cat.title}
-                </h3>
-                <p className="text-xs md:text-sm text-brand-muted">{cat.countLabel}</p>
-                <p className="text-sm text-brand-olive-dark mt-1">{cat.priceFromLabel}</p>
-              </div>
-            </Link>
-          ))}
+          {categories.map((cat, index) => {
+            const isBracelets = cat.slug === "bracelets";
+
+            return (
+              <Link
+                key={cat.href}
+                href={cat.href}
+                className="group relative flex aspect-[5/2] overflow-hidden rounded-xl bg-brand-surface shadow-sm transition-shadow hover:shadow-md"
+              >
+                <ScrollReveal
+                  delayMs={index * 90}
+                  className="flex min-h-0 w-full flex-row"
+                >
+                  <div className="flex min-w-0 flex-1 flex-col justify-center p-4 md:p-5">
+                    <h3 className="font-heading text-xl md:text-2xl mb-1 text-brand-olive-dark">
+                      {cat.title}
+                    </h3>
+                    <p className="text-xs md:text-sm text-brand-muted">
+                      {cat.countLabel}
+                    </p>
+                    <p className="text-sm text-brand-olive-dark mt-1">
+                      {cat.priceFromLabel}
+                    </p>
+                  </div>
+
+                  <div className="relative h-full w-[42%] shrink-0 overflow-hidden bg-brand-sand/50 md:w-[45%]">
+                    <div
+                      className={`relative h-full w-full ${
+                        isBracelets ? "p-5 md:p-7" : ""
+                      }`}
+                    >
+                      <Image
+                        src={cat.image}
+                        alt={cat.title}
+                        fill
+                        className={
+                          isBracelets
+                            ? "object-contain transition-transform duration-500 group-hover:scale-[1.03]"
+                            : "object-cover transition-transform duration-500 group-hover:scale-105"
+                        }
+                        sizes="(max-width: 768px) 42vw, 22vw"
+                      />
+                    </div>
+                  </div>
+                </ScrollReveal>
+              </Link>
+            );
+          })}
         </div>
 
         <div className="flex flex-col md:flex-row md:items-end md:justify-between gap-4 mb-10">
