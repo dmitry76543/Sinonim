@@ -9,9 +9,6 @@ import { ProductConfigurator } from "./ProductConfigurator";
 import { ProductDescription } from "./ProductDescription";
 import { ProductGallery } from "./ProductGallery";
 import { ProductSelectionProvider } from "./ProductSelectionContext";
-import { ProductTryOn } from "./ProductTryOn";
-import { getPhottaApiKey } from "@/lib/photta/server";
-import { absoluteImageUrl } from "@/lib/seo-images";
 import { resolveProductVideoUrl } from "@/lib/product-video";
 
 type ProductPageProps = {
@@ -28,8 +25,6 @@ export function ProductPage({
   const related = relatedProducts;
   const categoryTitle = CATEGORIES[product.category].title;
   const diamondWeight = getProductCaratWeightLabel(product);
-  const phottaApiKey = getPhottaApiKey();
-  const phottaProductImage = absoluteImageUrl(product.images[0] ?? product.image);
   const videoUrl = resolveProductVideoUrl([
     product.artNo,
     ...Object.values(product.sizeArtNos ?? {}),
@@ -100,12 +95,6 @@ export function ProductPage({
                 {product.name}
               </h1>
               <ProductConfigurator product={product} />
-              {product.category !== "gifts" && phottaApiKey ? (
-                <ProductTryOn
-                  apiKey={phottaApiKey}
-                  productImage={phottaProductImage}
-                />
-              ) : null}
             </div>
           </div>
 

@@ -146,10 +146,10 @@ function GalleryThumbnails({
               : `${name} — фото ${index + 1}`
           }
           aria-pressed={activeIndex === index}
-          className={`relative shrink-0 overflow-hidden rounded-lg border-2 transition-colors ${thumbClassName} ${
+          className={`relative shrink-0 overflow-hidden rounded-lg border-2 transition-all ${thumbClassName} ${
             activeIndex === index
-              ? "border-brand-olive"
-              : "border-transparent opacity-70 hover:opacity-100"
+              ? "border-brand-olive opacity-70"
+              : "border-transparent opacity-100"
           }`}
         >
           {slide.type === "video" ? (
