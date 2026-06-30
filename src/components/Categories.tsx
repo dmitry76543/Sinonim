@@ -59,17 +59,27 @@ export async function Categories() {
                     </p>
                   </div>
 
-                  <div className="relative h-full w-[42%] shrink-0 overflow-hidden bg-brand-sand/50 md:w-[45%]">
+                  <div
+                    className={`relative h-full shrink-0 overflow-hidden ${
+                      isBracelets
+                        ? "w-[59%] md:w-[63%] bg-brand-surface"
+                        : "w-[42%] md:w-[45%] bg-brand-sand/50"
+                    }`}
+                  >
                     <Image
                       src={cat.image}
                       alt={cat.title}
                       fill
                       className={
                         isBracelets
-                          ? "object-cover object-center scale-[1.18] transition-transform duration-500 group-hover:scale-[1.24]"
+                          ? "object-contain object-center transition-transform duration-500 group-hover:scale-[1.03]"
                           : "object-cover transition-transform duration-500 group-hover:scale-105"
                       }
-                      sizes="(max-width: 768px) 42vw, 22vw"
+                      sizes={
+                        isBracelets
+                          ? "(max-width: 768px) 59vw, 31vw"
+                          : "(max-width: 768px) 42vw, 22vw"
+                      }
                     />
                   </div>
                 </ScrollReveal>
