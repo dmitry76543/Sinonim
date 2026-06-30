@@ -214,7 +214,7 @@ function GalleryMainMedia({
 }
 
 const GALLERY_ARROW_CLASS =
-  "absolute bottom-3 z-10 flex h-10 w-10 items-center justify-center rounded-full bg-white/90 text-brand-olive-dark shadow-md transition-colors hover:bg-white hover:text-brand-terracotta disabled:pointer-events-none disabled:opacity-40";
+  "absolute bottom-4 z-10 flex h-12 w-12 items-center justify-center rounded-full border border-white/35 bg-brand-terracotta/95 text-white shadow-[0_8px_24px_rgba(212,119,80,0.35)] backdrop-blur-[2px] transition-all duration-200 hover:border-white/50 hover:bg-brand-terracotta-logo hover:shadow-[0_10px_28px_rgba(201,106,74,0.42)] hover:scale-105 active:scale-95 disabled:pointer-events-none disabled:opacity-40";
 
 function GalleryNavArrow({
   direction,
@@ -233,13 +233,13 @@ function GalleryNavArrow({
       onClick={onClick}
       disabled={disabled}
       aria-label={label}
-      className={`${GALLERY_ARROW_CLASS} ${direction === "prev" ? "left-3" : "right-3"}`}
+      className={`${GALLERY_ARROW_CLASS} ${direction === "prev" ? "left-4" : "right-4"}`}
     >
-      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" aria-hidden>
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" aria-hidden>
         <path
-          d={direction === "prev" ? "M15 6l-6 6 6 6" : "M9 6l6 6-6 6"}
+          d={direction === "prev" ? "M14 7l-5 5 5 5" : "M10 7l5 5-5 5"}
           stroke="currentColor"
-          strokeWidth="1.5"
+          strokeWidth="2"
           strokeLinecap="round"
           strokeLinejoin="round"
         />
@@ -316,7 +316,6 @@ type ModalGalleryViewProps = {
   onActiveIndexChange: (index: number) => void;
   onGoPrev: () => void;
   onGoNext: () => void;
-  price: number;
 };
 
 function ModalGalleryView({
@@ -326,7 +325,6 @@ function ModalGalleryView({
   onActiveIndexChange,
   onGoPrev,
   onGoNext,
-  price,
 }: ModalGalleryViewProps) {
   const activeSlide = slides[activeIndex] ?? slides[0];
   const isVideoActive = activeSlide?.type === "video";
@@ -335,74 +333,83 @@ function ModalGalleryView({
   if (!activeSlide) return null;
 
   return (
-    <div className="flex gap-3 md:gap-4 items-start min-h-0">
+    <div className="flex min-h-0 flex-1 gap-3 md:gap-4 overflow-hidden">
       <GalleryThumbnails
         slides={slides}
         name={name}
         activeIndex={activeIndex}
         onActiveIndexChange={onActiveIndexChange}
-        thumbClassName="h-20 w-20 md:h-24 md:w-24 lg:h-28 lg:w-28"
-        thumbImageSizes="112px"
+        thumbClassName="h-16 w-16 md:h-20 md:w-20 lg:h-24 lg:w-24"
+        thumbImageSizes="96px"
         isVideoActive={isVideoActive}
-        thumbListClassName="max-h-[min(80vw,36rem)]"
+        thumbListClassName="max-h-full self-center"
       />
 
-      <div className="min-w-0 flex-1">
-        <div className="relative aspect-square w-full overflow-hidden rounded-xl bg-brand-surface">
-          <GalleryMainMedia
-            slide={activeSlide}
-            name={name}
-            objectFit="contain"
-            imageSizes="(max-width: 1024px) 90vw, 60vw"
-          />
+      <div className="relative min-h-0 min-w-0 flex-1">
+        <div className="absolute inset-0 flex items-center justify-center overflow-hidden">
+          <div className="relative aspect-square h-full max-h-full max-w-full w-auto overflow-hidden rounded-xl bg-brand-surface">
+            <GalleryMainMedia
+              slide={activeSlide}
+              name={name}
+              objectFit="contain"
+              imageSizes="(max-width: 1024px) 90vw, 60vw"
+            />
 
-          {hasMultipleSlides && (
-            <>
-              <GalleryNavArrow
-                direction="prev"
-                onClick={onGoPrev}
-                disabled={false}
-                label="Предыдущее фото"
-              />
-              <GalleryNavArrow
-                direction="next"
-                onClick={onGoNext}
-                disabled={false}
-                label="Следующее фото"
-              />
-            </>
-          )}
-        </div>
-
-        <div className="mt-4">
-          <p className="font-heading text-2xl md:text-3xl text-brand-olive-dark">
-            {formatPrice(price)}
-          </p>
+            {hasMultipleSlides && (
+              <>
+                <GalleryNavArrow
+                  direction="prev"
+                  onClick={onGoPrev}
+                  disabled={false}
+                  label="Предыдущее фото"
+                />
+                <GalleryNavArrow
+                  direction="next"
+                  onClick={onGoNext}
+                  disabled={false}
+                  label="Следующее фото"
+                />
+              </>
+            )}
+          </div>
         </div>
       </div>
     </div>
   );
 }
 
-type ProductGalleryModalActionsProps = {
+function ModalThumbColumnSpacer({ visible }: { visible: boolean }) {
+  if (!visible) return null;
+
+  return (
+    <div
+      className="h-16 w-16 shrink-0 md:h-20 md:w-20 lg:h-24 lg:w-24"
+      aria-hidden
+    />
+  );
+}
+
+type ProductGalleryModalFooterProps = {
+  slides: GallerySlide[];
+  price: number;
   slug: string;
   name: string;
-  price: number;
   productImage: string;
   category: CategorySlug;
   stoneWeight: number;
   stoneLabel: string;
 };
 
-function ProductGalleryModalActions({
+function ProductGalleryModalFooter({
+  slides,
+  price,
   slug,
   name,
-  price,
   productImage,
   category,
   stoneWeight,
   stoneLabel,
-}: ProductGalleryModalActionsProps) {
+}: ProductGalleryModalFooterProps) {
   const [added, setAdded] = useState(false);
   const { addItem } = useCart();
   const { selectedSize, selectedSizeLabel, artNo } = useProductSelection();
@@ -437,17 +444,26 @@ function ProductGalleryModalActions({
   };
 
   return (
-    <div className="flex flex-wrap items-center justify-end gap-3 border-t border-brand-sand px-4 py-4 md:px-6 md:py-5">
-      <button
-        type="button"
-        data-add-to-cart
-        onClick={handleBuy}
-        className="px-6 py-3.5 bg-brand-terracotta hover:bg-brand-terracotta-logo text-white text-sm tracking-widest uppercase transition-colors whitespace-nowrap"
-      >
-        {added ? "Добавлено ✓" : "Купить"}
-      </button>
-      <FavoriteButton slug={slug} className={MODAL_ICON_BUTTON_CLASS} />
-      <CompareButton slug={slug} className={MODAL_ICON_BUTTON_CLASS} />
+    <div className="flex shrink-0 gap-3 border-t border-brand-sand pt-4 md:gap-4">
+      <ModalThumbColumnSpacer visible={slides.length > 1} />
+      <div className="flex min-w-0 flex-1 flex-wrap items-center justify-between gap-4">
+        <p className="font-heading text-2xl md:text-3xl text-brand-olive-dark">
+          {formatPrice(price)}
+        </p>
+
+        <div className="flex items-center gap-3">
+          <button
+            type="button"
+            data-add-to-cart
+            onClick={handleBuy}
+            className="px-6 py-3.5 bg-brand-terracotta hover:bg-brand-terracotta-logo text-white text-sm tracking-widest uppercase transition-colors whitespace-nowrap"
+          >
+            {added ? "Добавлено ✓" : "Купить"}
+          </button>
+          <FavoriteButton slug={slug} className={MODAL_ICON_BUTTON_CLASS} />
+          <CompareButton slug={slug} className={MODAL_ICON_BUTTON_CLASS} />
+        </div>
+      </div>
     </div>
   );
 }
@@ -545,9 +561,9 @@ function ProductGalleryModal({
         role="dialog"
         aria-modal="true"
         aria-label={`Галерея — ${name}`}
-        className="relative z-10 flex w-full max-w-6xl max-h-[min(92vh,900px)] flex-col overflow-hidden rounded-xl bg-brand-surface shadow-2xl"
+        className="relative z-10 flex h-[min(92vh,900px)] w-full max-w-6xl flex-col overflow-hidden rounded-xl bg-brand-surface shadow-2xl"
       >
-        <div className="flex items-center justify-end border-b border-brand-sand px-4 py-3 md:px-6">
+        <div className="flex shrink-0 items-center justify-end border-b border-brand-sand px-4 py-3 md:px-6">
           <button
             ref={closeButtonRef}
             type="button"
@@ -566,23 +582,21 @@ function ProductGalleryModal({
           </button>
         </div>
 
-        <div className="flex min-h-0 flex-1 flex-col overflow-hidden">
-          <div className="min-h-0 flex-1 overflow-y-auto p-4 md:p-6">
-            <ModalGalleryView
-              slides={slides}
-              name={name}
-              activeIndex={activeIndex}
-              onActiveIndexChange={onActiveIndexChange}
-              onGoPrev={goPrev}
-              onGoNext={goNext}
-              price={price}
-            />
-          </div>
+        <div className="flex min-h-0 flex-1 flex-col overflow-hidden p-4 md:p-6">
+          <ModalGalleryView
+            slides={slides}
+            name={name}
+            activeIndex={activeIndex}
+            onActiveIndexChange={onActiveIndexChange}
+            onGoPrev={goPrev}
+            onGoNext={goNext}
+          />
 
-          <ProductGalleryModalActions
+          <ProductGalleryModalFooter
+            slides={slides}
+            price={price}
             slug={slug}
             name={name}
-            price={price}
             productImage={productImage}
             category={category}
             stoneWeight={stoneWeight}
