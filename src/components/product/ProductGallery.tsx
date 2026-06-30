@@ -104,6 +104,149 @@ function GalleryVideo({
   );
 }
 
+type GalleryThumbnailsProps = {
+  slides: GallerySlide[];
+  name: string;
+  activeIndex: number;
+  onActiveIndexChange: (index: number) => void;
+  thumbClassName: string;
+  thumbImageSizes: string;
+  isVideoActive: boolean;
+  thumbListClassName?: string;
+};
+
+function GalleryThumbnails({
+  slides,
+  name,
+  activeIndex,
+  onActiveIndexChange,
+  thumbClassName,
+  thumbImageSizes,
+  isVideoActive,
+  thumbListClassName = "max-h-full",
+}: GalleryThumbnailsProps) {
+  if (slides.length <= 1) return null;
+
+  return (
+    <div
+      className={`flex shrink-0 flex-col gap-3 overflow-y-auto py-0.5 pr-0.5 ${thumbListClassName}`}
+    >
+      {slides.map((slide, index) => (
+        <button
+          key={
+            slide.type === "video"
+              ? `video-${slide.src}`
+              : `${slide.src}-${index}`
+          }
+          type="button"
+          onClick={() => onActiveIndexChange(index)}
+          aria-label={
+            slide.type === "video"
+              ? `Видео ${name}`
+              : `${name} — фото ${index + 1}`
+          }
+          aria-pressed={activeIndex === index}
+          className={`relative shrink-0 overflow-hidden rounded-lg border-2 transition-colors ${thumbClassName} ${
+            activeIndex === index
+              ? "border-brand-olive"
+              : "border-transparent opacity-70 hover:opacity-100"
+          }`}
+        >
+          {slide.type === "video" ? (
+            <GalleryVideo
+              key={`thumb-${slide.src}`}
+              src={slide.src}
+              label={`Видео ${name}`}
+              className="h-full w-full object-cover pointer-events-none"
+              preload="metadata"
+              playing={!isVideoActive}
+            />
+          ) : (
+            <ProductImage
+              src={slide.src}
+              alt=""
+              fill
+              className="object-cover"
+              sizes={thumbImageSizes}
+            />
+          )}
+        </button>
+      ))}
+    </div>
+  );
+}
+
+function GalleryMainMedia({
+  slide,
+  name,
+  objectFit,
+  imageSizes,
+  priority,
+}: {
+  slide: GallerySlide;
+  name: string;
+  objectFit: "cover" | "contain";
+  imageSizes: string;
+  priority?: boolean;
+}) {
+  if (slide.type === "video") {
+    return (
+      <GalleryVideo
+        key={`main-${slide.src}`}
+        src={slide.src}
+        label={`Видео — ${name}`}
+        className={`h-full w-full ${objectFit === "cover" ? "object-cover" : "object-contain"} bg-black`}
+        playing
+      />
+    );
+  }
+
+  return (
+    <ProductImage
+      src={slide.src}
+      alt={name}
+      fill
+      className={objectFit === "cover" ? "object-cover" : "object-contain"}
+      sizes={imageSizes}
+      priority={priority}
+    />
+  );
+}
+
+const GALLERY_ARROW_CLASS =
+  "absolute bottom-3 z-10 flex h-10 w-10 items-center justify-center rounded-full bg-white/90 text-brand-olive-dark shadow-md transition-colors hover:bg-white hover:text-brand-terracotta disabled:pointer-events-none disabled:opacity-40";
+
+function GalleryNavArrow({
+  direction,
+  onClick,
+  disabled,
+  label,
+}: {
+  direction: "prev" | "next";
+  onClick: () => void;
+  disabled: boolean;
+  label: string;
+}) {
+  return (
+    <button
+      type="button"
+      onClick={onClick}
+      disabled={disabled}
+      aria-label={label}
+      className={`${GALLERY_ARROW_CLASS} ${direction === "prev" ? "left-3" : "right-3"}`}
+    >
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" aria-hidden>
+        <path
+          d={direction === "prev" ? "M15 6l-6 6 6 6" : "M9 6l6 6-6 6"}
+          stroke="currentColor"
+          strokeWidth="1.5"
+          strokeLinecap="round"
+          strokeLinejoin="round"
+        />
+      </svg>
+    </button>
+  );
+}
 function GalleryLayout({
   slides,
   name,
@@ -123,75 +266,28 @@ function GalleryLayout({
 
   if (!activeSlide) return null;
 
-  const mainContent =
-    activeSlide.type === "video" ? (
-      <GalleryVideo
-        key={`main-${activeSlide.src}`}
-        src={activeSlide.src}
-        label={`Видео — ${name}`}
-        className={`h-full w-full ${mainObjectFit === "cover" ? "object-cover" : "object-contain"} bg-black`}
-        playing
-      />
-    ) : (
-      <ProductImage
-        src={activeSlide.src}
-        alt={name}
-        fill
-        className={mainObjectFit === "cover" ? "object-cover" : "object-contain"}
-        sizes={mainImageSizes}
-        priority={mainPriority}
-      />
-    );
+  const mainPanel = (
+    <GalleryMainMedia
+      slide={activeSlide}
+      name={name}
+      objectFit={mainObjectFit}
+      imageSizes={mainImageSizes}
+      priority={mainPriority}
+    />
+  );
 
   return (
     <div className="flex gap-3 md:gap-4 items-start min-h-0">
-      {slides.length > 1 && (
-        <div
-          className={`flex shrink-0 flex-col gap-3 overflow-y-auto py-0.5 pr-0.5 ${thumbListClassName}`}
-        >
-          {slides.map((slide, index) => (
-            <button
-              key={
-                slide.type === "video"
-                  ? `video-${slide.src}`
-                  : `${slide.src}-${index}`
-              }
-              type="button"
-              onClick={() => onActiveIndexChange(index)}
-              aria-label={
-                slide.type === "video"
-                  ? `Видео ${name}`
-                  : `${name} — фото ${index + 1}`
-              }
-              aria-pressed={activeIndex === index}
-              className={`relative shrink-0 overflow-hidden rounded-lg border-2 transition-colors ${thumbClassName} ${
-                activeIndex === index
-                  ? "border-brand-olive"
-                  : "border-transparent opacity-70 hover:opacity-100"
-              }`}
-            >
-              {slide.type === "video" ? (
-                <GalleryVideo
-                  key={`thumb-${slide.src}`}
-                  src={slide.src}
-                  label={`Видео ${name}`}
-                  className="h-full w-full object-cover pointer-events-none"
-                  preload="metadata"
-                  playing={!isVideoActive}
-                />
-              ) : (
-                <ProductImage
-                  src={slide.src}
-                  alt=""
-                  fill
-                  className="object-cover"
-                  sizes={thumbImageSizes}
-                />
-              )}
-            </button>
-          ))}
-        </div>
-      )}
+      <GalleryThumbnails
+        slides={slides}
+        name={name}
+        activeIndex={activeIndex}
+        onActiveIndexChange={onActiveIndexChange}
+        thumbClassName={thumbClassName}
+        thumbImageSizes={thumbImageSizes}
+        isVideoActive={isVideoActive}
+        thumbListClassName={thumbListClassName}
+      />
 
       {onMainClick ? (
         <button
@@ -200,20 +296,95 @@ function GalleryLayout({
           className={`min-w-0 flex-1 relative overflow-hidden rounded-xl bg-brand-surface shadow-sm cursor-zoom-in ${mainClassName}`}
           aria-label="Открыть галерею в полном размере"
         >
-          {mainContent}
+          {mainPanel}
         </button>
       ) : (
         <div
           className={`min-w-0 flex-1 relative overflow-hidden rounded-xl bg-brand-surface ${mainClassName}`}
         >
-          {mainContent}
+          {mainPanel}
         </div>
       )}
     </div>
   );
 }
 
-type ProductGalleryModalFooterProps = {
+type ModalGalleryViewProps = {
+  slides: GallerySlide[];
+  name: string;
+  activeIndex: number;
+  onActiveIndexChange: (index: number) => void;
+  onGoPrev: () => void;
+  onGoNext: () => void;
+  price: number;
+};
+
+function ModalGalleryView({
+  slides,
+  name,
+  activeIndex,
+  onActiveIndexChange,
+  onGoPrev,
+  onGoNext,
+  price,
+}: ModalGalleryViewProps) {
+  const activeSlide = slides[activeIndex] ?? slides[0];
+  const isVideoActive = activeSlide?.type === "video";
+  const hasMultipleSlides = slides.length > 1;
+
+  if (!activeSlide) return null;
+
+  return (
+    <div className="flex gap-3 md:gap-4 items-start min-h-0">
+      <GalleryThumbnails
+        slides={slides}
+        name={name}
+        activeIndex={activeIndex}
+        onActiveIndexChange={onActiveIndexChange}
+        thumbClassName="h-20 w-20 md:h-24 md:w-24 lg:h-28 lg:w-28"
+        thumbImageSizes="112px"
+        isVideoActive={isVideoActive}
+        thumbListClassName="max-h-[min(80vw,36rem)]"
+      />
+
+      <div className="min-w-0 flex-1">
+        <div className="relative aspect-square w-full overflow-hidden rounded-xl bg-brand-surface">
+          <GalleryMainMedia
+            slide={activeSlide}
+            name={name}
+            objectFit="contain"
+            imageSizes="(max-width: 1024px) 90vw, 60vw"
+          />
+
+          {hasMultipleSlides && (
+            <>
+              <GalleryNavArrow
+                direction="prev"
+                onClick={onGoPrev}
+                disabled={false}
+                label="Предыдущее фото"
+              />
+              <GalleryNavArrow
+                direction="next"
+                onClick={onGoNext}
+                disabled={false}
+                label="Следующее фото"
+              />
+            </>
+          )}
+        </div>
+
+        <div className="mt-4">
+          <p className="font-heading text-2xl md:text-3xl text-brand-olive-dark">
+            {formatPrice(price)}
+          </p>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+type ProductGalleryModalActionsProps = {
   slug: string;
   name: string;
   price: number;
@@ -223,7 +394,7 @@ type ProductGalleryModalFooterProps = {
   stoneLabel: string;
 };
 
-function ProductGalleryModalFooter({
+function ProductGalleryModalActions({
   slug,
   name,
   price,
@@ -231,7 +402,7 @@ function ProductGalleryModalFooter({
   category,
   stoneWeight,
   stoneLabel,
-}: ProductGalleryModalFooterProps) {
+}: ProductGalleryModalActionsProps) {
   const [added, setAdded] = useState(false);
   const { addItem } = useCart();
   const { selectedSize, selectedSizeLabel, artNo } = useProductSelection();
@@ -266,26 +437,17 @@ function ProductGalleryModalFooter({
   };
 
   return (
-    <div className="flex flex-wrap items-center justify-between gap-4 border-t border-brand-sand px-4 py-4 md:px-6 md:py-5">
-      <p className="font-heading text-2xl md:text-3xl text-brand-olive-dark">
-        {formatPrice(price)}
-      </p>
-
-      <div className="flex items-center gap-3">
-        <button
-          type="button"
-          data-add-to-cart
-          onClick={handleBuy}
-          className="px-6 py-3.5 bg-brand-terracotta hover:bg-brand-terracotta-logo text-white text-sm tracking-widest uppercase transition-colors whitespace-nowrap"
-        >
-          {added ? "Добавлено ✓" : "Купить"}
-        </button>
-        <FavoriteButton
-          slug={slug}
-          className={MODAL_ICON_BUTTON_CLASS}
-        />
-        <CompareButton slug={slug} className={MODAL_ICON_BUTTON_CLASS} />
-      </div>
+    <div className="flex flex-wrap items-center justify-end gap-3 border-t border-brand-sand px-4 py-4 md:px-6 md:py-5">
+      <button
+        type="button"
+        data-add-to-cart
+        onClick={handleBuy}
+        className="px-6 py-3.5 bg-brand-terracotta hover:bg-brand-terracotta-logo text-white text-sm tracking-widest uppercase transition-colors whitespace-nowrap"
+      >
+        {added ? "Добавлено ✓" : "Купить"}
+      </button>
+      <FavoriteButton slug={slug} className={MODAL_ICON_BUTTON_CLASS} />
+      <CompareButton slug={slug} className={MODAL_ICON_BUTTON_CLASS} />
     </div>
   );
 }
@@ -321,13 +483,34 @@ function ProductGalleryModal({
 }: ProductGalleryModalProps) {
   const closeButtonRef = useRef<HTMLButtonElement>(null);
 
+  const goPrev = useCallback(() => {
+    onActiveIndexChange((activeIndex - 1 + slides.length) % slides.length);
+  }, [activeIndex, onActiveIndexChange, slides.length]);
+
+  const goNext = useCallback(() => {
+    onActiveIndexChange((activeIndex + 1) % slides.length);
+  }, [activeIndex, onActiveIndexChange, slides.length]);
+
   const handleKeyDown = useCallback(
     (event: KeyboardEvent) => {
       if (event.key === "Escape") {
         onClose();
+        return;
+      }
+
+      if (slides.length <= 1) return;
+
+      if (event.key === "ArrowLeft") {
+        event.preventDefault();
+        goPrev();
+      }
+
+      if (event.key === "ArrowRight") {
+        event.preventDefault();
+        goNext();
       }
     },
-    [onClose],
+    [goNext, goPrev, onClose, slides.length],
   );
 
   useEffect(() => {
@@ -384,22 +567,19 @@ function ProductGalleryModal({
         </div>
 
         <div className="flex min-h-0 flex-1 flex-col overflow-hidden">
-          <div className="min-h-0 flex-1 overflow-hidden p-4 md:p-6">
-            <GalleryLayout
+          <div className="min-h-0 flex-1 overflow-y-auto p-4 md:p-6">
+            <ModalGalleryView
               slides={slides}
               name={name}
               activeIndex={activeIndex}
               onActiveIndexChange={onActiveIndexChange}
-              thumbClassName="h-20 w-20 md:h-24 md:w-24 lg:h-28 lg:w-28"
-              mainClassName="h-[min(58vh,640px)]"
-              mainObjectFit="contain"
-              mainImageSizes="(max-width: 1024px) 90vw, 60vw"
-              thumbImageSizes="112px"
-              thumbListClassName="max-h-full"
+              onGoPrev={goPrev}
+              onGoNext={goNext}
+              price={price}
             />
           </div>
 
-          <ProductGalleryModalFooter
+          <ProductGalleryModalActions
             slug={slug}
             name={name}
             price={price}
