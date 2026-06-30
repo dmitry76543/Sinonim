@@ -18,6 +18,7 @@ type GalleryVideoProps = {
   label: string;
   className?: string;
   preload?: "auto" | "metadata";
+  playing: boolean;
 };
 
 function GalleryVideo({
@@ -25,6 +26,7 @@ function GalleryVideo({
   label,
   className = "",
   preload = "auto",
+  playing,
 }: GalleryVideoProps) {
   const videoRef = useRef<HTMLVideoElement>(null);
 
@@ -33,6 +35,11 @@ function GalleryVideo({
     if (!video) return;
 
     video.muted = true;
+
+    if (!playing) {
+      video.pause();
+      return;
+    }
 
     const play = () => {
       const promise = video.play();
@@ -49,13 +56,12 @@ function GalleryVideo({
       video.addEventListener("loadeddata", play, { once: true });
       return () => video.removeEventListener("loadeddata", play);
     }
-  }, [src]);
+  }, [src, playing]);
 
   return (
     <video
       ref={videoRef}
       src={src}
-      autoPlay
       muted
       loop
       playsInline
@@ -75,7 +81,7 @@ export function ProductGallery({ images, name, videoUrl }: ProductGalleryProps) 
     }));
 
     if (videoUrl) {
-      items.unshift({ type: "video", src: videoUrl });
+      items.push({ type: "video", src: videoUrl });
     }
 
     return items;
@@ -83,33 +89,14 @@ export function ProductGallery({ images, name, videoUrl }: ProductGalleryProps) 
 
   const [activeIndex, setActiveIndex] = useState(0);
   const activeSlide = slides[activeIndex] ?? slides[0];
+  const isVideoActive = activeSlide?.type === "video";
 
   if (!activeSlide) return null;
 
   return (
-    <div className="space-y-4">
-      <div className="aspect-square relative overflow-hidden rounded-xl bg-brand-surface shadow-sm">
-        {activeSlide.type === "video" ? (
-          <GalleryVideo
-            key={`main-${activeSlide.src}`}
-            src={activeSlide.src}
-            label={`Видео — ${name}`}
-            className="h-full w-full object-cover bg-black"
-          />
-        ) : (
-          <ProductImage
-            src={activeSlide.src}
-            alt={name}
-            fill
-            className="object-cover"
-            sizes="(max-width: 1024px) 100vw, 50vw"
-            priority
-          />
-        )}
-      </div>
-
+    <div className="flex gap-3 md:gap-4 items-start">
       {slides.length > 1 && (
-        <div className="flex gap-3 overflow-x-auto pb-1">
+        <div className="flex shrink-0 flex-col gap-3 overflow-y-auto max-h-[min(80vw,36rem)] py-0.5 pr-0.5">
           {slides.map((slide, index) => (
             <button
               key={
@@ -124,7 +111,8 @@ export function ProductGallery({ images, name, videoUrl }: ProductGalleryProps) 
                   ? `Видео ${name}`
                   : `${name} — фото ${index + 1}`
               }
-              className={`relative h-20 w-20 shrink-0 overflow-hidden rounded-lg border-2 transition-colors ${
+              aria-pressed={activeIndex === index}
+              className={`relative h-24 w-24 md:h-28 md:w-28 lg:h-32 lg:w-32 shrink-0 overflow-hidden rounded-lg border-2 transition-colors ${
                 activeIndex === index
                   ? "border-brand-olive"
                   : "border-transparent opacity-70 hover:opacity-100"
@@ -135,8 +123,9 @@ export function ProductGallery({ images, name, videoUrl }: ProductGalleryProps) 
                   key={`thumb-${slide.src}`}
                   src={slide.src}
                   label={`Видео ${name}`}
-                  className="h-full w-full object-cover"
+                  className="h-full w-full object-cover pointer-events-none"
                   preload="metadata"
+                  playing={!isVideoActive}
                 />
               ) : (
                 <ProductImage
@@ -144,13 +133,34 @@ export function ProductGallery({ images, name, videoUrl }: ProductGalleryProps) 
                   alt=""
                   fill
                   className="object-cover"
-                  sizes="80px"
+                  sizes="128px"
                 />
               )}
             </button>
           ))}
         </div>
       )}
+
+      <div className="min-w-0 flex-1 aspect-square relative overflow-hidden rounded-xl bg-brand-surface shadow-sm">
+        {activeSlide.type === "video" ? (
+          <GalleryVideo
+            key={`main-${activeSlide.src}`}
+            src={activeSlide.src}
+            label={`Видео — ${name}`}
+            className="h-full w-full object-cover bg-black"
+            playing
+          />
+        ) : (
+          <ProductImage
+            src={activeSlide.src}
+            alt={name}
+            fill
+            className="object-cover"
+            sizes="(max-width: 1024px) 100vw, 50vw"
+            priority
+          />
+        )}
+      </div>
     </div>
   );
 }
