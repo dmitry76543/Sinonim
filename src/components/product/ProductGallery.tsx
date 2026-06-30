@@ -265,7 +265,28 @@ type MobileImageZoomProps = {
   onClose: () => void;
 };
 
+function getTouchDistance(
+  touchA: { clientX: number; clientY: number },
+  touchB: { clientX: number; clientY: number },
+) {
+  return Math.hypot(
+    touchB.clientX - touchA.clientX,
+    touchB.clientY - touchA.clientY,
+  );
+}
+
 function MobileImageZoom({ src, alt, onClose }: MobileImageZoomProps) {
+  const [scale, setScale] = useState(1.5);
+  const [position, setPosition] = useState({ x: 0, y: 0 });
+  const viewportRef = useRef<HTMLDivElement>(null);
+  const pinchStart = useRef<{ distance: number; scale: number } | null>(null);
+  const panStart = useRef<{
+    x: number;
+    y: number;
+    posX: number;
+    posY: number;
+  } | null>(null);
+
   useEffect(() => {
     const previousOverflow = document.body.style.overflow;
     document.body.style.overflow = "hidden";
@@ -275,29 +296,148 @@ function MobileImageZoom({ src, alt, onClose }: MobileImageZoomProps) {
     };
   }, []);
 
+  useEffect(() => {
+    const viewport = viewportRef.current;
+    if (!viewport) return;
+
+    const handleTouchMove = (event: TouchEvent) => {
+      if (event.touches.length === 2 && pinchStart.current) {
+        event.preventDefault();
+        const distance = getTouchDistance(event.touches[0], event.touches[1]);
+        const nextScale = Math.min(
+          4,
+          Math.max(1, pinchStart.current.scale * (distance / pinchStart.current.distance)),
+        );
+        setScale(nextScale);
+        return;
+      }
+
+      if (event.touches.length === 1 && panStart.current) {
+        event.preventDefault();
+        const touch = event.touches[0];
+        setPosition({
+          x: panStart.current.posX + (touch.clientX - panStart.current.x),
+          y: panStart.current.posY + (touch.clientY - panStart.current.y),
+        });
+      }
+    };
+
+    viewport.addEventListener("touchmove", handleTouchMove, { passive: false });
+
+    return () => {
+      viewport.removeEventListener("touchmove", handleTouchMove);
+    };
+  }, []);
+
+  const handleTouchStart = (event: React.TouchEvent<HTMLDivElement>) => {
+    if (event.touches.length === 2) {
+      pinchStart.current = {
+        distance: getTouchDistance(event.touches[0], event.touches[1]),
+        scale,
+      };
+      panStart.current = null;
+      return;
+    }
+
+    if (event.touches.length === 1) {
+      const touch = event.touches[0];
+      panStart.current = {
+        x: touch.clientX,
+        y: touch.clientY,
+        posX: position.x,
+        posY: position.y,
+      };
+      pinchStart.current = null;
+    }
+  };
+
+  const handleTouchEnd = () => {
+    pinchStart.current = null;
+    panStart.current = null;
+  };
+
   return createPortal(
-    <div
-      className="fixed inset-0 z-[90] flex items-center justify-center bg-black/90 p-4"
-      role="presentation"
-    >
+    <div className="fixed inset-0 z-[90] bg-white" role="dialog" aria-modal="true" aria-label="Увеличенное изображение">
       <button
         type="button"
-        className="absolute inset-0"
         onClick={onClose}
-        aria-label="Закрыть увеличенное изображение"
-      />
-      <div className="relative z-10 h-full w-full max-h-[90vh] max-w-full">
-        <ProductImage
-          src={src}
-          alt={alt}
-          fill
-          className="object-contain"
-          sizes="100vw"
-          priority
-        />
+        className="absolute top-3 right-3 z-30 flex h-11 w-11 items-center justify-center rounded-full border border-brand-olive/20 bg-white text-brand-olive-dark shadow-lg"
+        aria-label="Закрыть"
+      >
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" aria-hidden>
+          <path
+            d="M6 6l12 12M18 6L6 18"
+            stroke="currentColor"
+            strokeWidth="2"
+            strokeLinecap="round"
+          />
+        </svg>
+      </button>
+
+      <div
+        ref={viewportRef}
+        className="flex h-full w-full items-center justify-center overflow-hidden px-4 pt-14 pb-6 touch-none"
+        onTouchStart={handleTouchStart}
+        onTouchEnd={handleTouchEnd}
+      >
+        <div
+          className="relative aspect-square w-full max-w-md will-change-transform"
+          style={{
+            transform: `translate(${position.x}px, ${position.y}px) scale(${scale})`,
+          }}
+        >
+          <ProductImage
+            src={src}
+            alt={alt}
+            fill
+            className="object-contain"
+            sizes="100vw"
+            priority
+          />
+        </div>
       </div>
     </div>,
     document.body,
+  );
+}
+
+type MobileGalleryProgressProps = {
+  count: number;
+  activeIndex: number;
+};
+
+function MobileGalleryProgress({ count, activeIndex }: MobileGalleryProgressProps) {
+  return (
+    <div className="mb-3 px-1">
+      <div className="mb-2 flex items-center justify-center gap-2 text-[11px] tracking-wide text-brand-muted">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" aria-hidden className="text-brand-olive/50">
+          <path d="M14 7l-5 5 5 5" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
+        </svg>
+        <span>Листайте влево или вправо</span>
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" aria-hidden className="text-brand-olive/50">
+          <path d="M10 7l5 5-5 5" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
+        </svg>
+      </div>
+
+      <div
+        className="flex items-center gap-2"
+        role="tablist"
+        aria-label="Слайды галереи"
+      >
+        {Array.from({ length: count }, (_, index) => (
+          <div
+            key={`mobile-progress-${index}`}
+            role="tab"
+            aria-selected={activeIndex === index}
+            className={`h-1 flex-1 rounded-full transition-colors ${
+              activeIndex === index
+                ? "bg-brand-terracotta"
+                : "border border-dashed border-brand-olive/35 bg-brand-sand/40"
+            }`}
+          />
+        ))}
+      </div>
+    </div>
   );
 }
 
@@ -316,6 +456,7 @@ function MobileProductGallery({
 }: MobileProductGalleryProps) {
   const [zoomOpen, setZoomOpen] = useState(false);
   const touchStart = useRef<{ x: number; y: number } | null>(null);
+  const didSwipe = useRef(false);
   const activeSlide = slides[activeIndex] ?? slides[0];
   const isVideoSlide = activeSlide?.type === "video";
 
@@ -352,6 +493,8 @@ function MobileProductGallery({
 
     if (Math.abs(deltaX) < 50 || Math.abs(deltaX) < Math.abs(deltaY)) return;
 
+    didSwipe.current = true;
+
     if (deltaX < 0) {
       goToSlide(activeIndex + 1);
       return;
@@ -361,34 +504,13 @@ function MobileProductGallery({
   };
 
   return (
-    <div className="-mx-4 w-[calc(100%+2rem)] md:hidden">
+    <div className="md:hidden">
       {slides.length > 1 && (
-        <div
-          className="flex gap-1.5 px-4 pb-3"
-          role="tablist"
-          aria-label="Слайды галереи"
-        >
-          {slides.map((slide, index) => (
-            <div
-              key={
-                slide.type === "video"
-                  ? `progress-video-${slide.src}`
-                  : `progress-${slide.src}-${index}`
-              }
-              role="tab"
-              aria-selected={activeIndex === index}
-              className={`h-0 flex-1 border-t-2 border-dashed transition-colors ${
-                activeIndex === index
-                  ? "border-brand-terracotta"
-                  : "border-brand-olive/25"
-              }`}
-            />
-          ))}
-        </div>
+        <MobileGalleryProgress count={slides.length} activeIndex={activeIndex} />
       )}
 
       <div
-        className="relative aspect-square w-full overflow-hidden bg-brand-surface touch-pan-y"
+        className="relative mx-1 aspect-square overflow-hidden rounded-xl bg-brand-surface touch-pan-y"
         onTouchStart={handleTouchStart}
         onTouchEnd={handleTouchEnd}
       >
@@ -397,13 +519,19 @@ function MobileProductGallery({
             slide={activeSlide}
             name={name}
             objectFit="cover"
-            imageSizes="100vw"
+            imageSizes="(max-width: 768px) 92vw, 50vw"
             priority
           />
         ) : (
           <button
             type="button"
-            onClick={() => setZoomOpen(true)}
+            onClick={() => {
+              if (didSwipe.current) {
+                didSwipe.current = false;
+                return;
+              }
+              setZoomOpen(true);
+            }}
             className="relative block h-full w-full"
             aria-label="Увеличить изображение"
           >
@@ -411,7 +539,7 @@ function MobileProductGallery({
               slide={activeSlide}
               name={name}
               objectFit="cover"
-              imageSizes="100vw"
+              imageSizes="(max-width: 768px) 92vw, 50vw"
               priority
             />
           </button>
