@@ -33,7 +33,7 @@ export async function Categories() {
           </Link>
         </div>
 
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-4 md:gap-6 mb-16 md:mb-20">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4 md:gap-6 mb-16 md:mb-20">
           {categories.map((cat, index) => (
             <Link
               key={cat.href}
@@ -47,7 +47,7 @@ export async function Categories() {
                     alt={cat.title}
                     fill
                     className="object-cover group-hover:scale-105 transition-transform duration-500"
-                    sizes="(max-width: 768px) 50vw, 20vw"
+                    sizes="(max-width: 768px) 100vw, 50vw"
                   />
                 </div>
               </ScrollReveal>
