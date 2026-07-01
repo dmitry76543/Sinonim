@@ -195,8 +195,8 @@ function GalleryMainMedia({
         key={`main-${slide.src}`}
         src={slide.src}
         label={`Видео — ${name}`}
-        className={`h-full w-full ${
-          objectFit === "cover" ? "object-cover bg-brand-surface" : "object-contain bg-black"
+        className={`absolute inset-0 h-full w-full ${
+          objectFit === "cover" ? "object-cover bg-brand-surface" : "object-contain bg-brand-surface"
         }`}
         playing
       />
@@ -649,8 +649,6 @@ function ModalGalleryView({
   const isVideoActive = activeSlide?.type === "video";
   const hasMultipleSlides = slides.length > 1;
 
-  const isVideoSlide = activeSlide.type === "video";
-
   if (!activeSlide) return null;
 
   return (
@@ -667,22 +665,12 @@ function ModalGalleryView({
       />
 
       <div className="relative min-h-0 min-w-0 flex-1">
-        <div
-          className={`absolute inset-0 flex overflow-hidden ${
-            isVideoSlide ? "items-start justify-center" : "items-center justify-center"
-          }`}
-        >
-          <div
-            className={`relative overflow-hidden rounded-xl bg-brand-surface ${
-              isVideoSlide
-                ? "aspect-square w-full max-h-full"
-                : "aspect-square h-full max-h-full max-w-full w-auto"
-            }`}
-          >
+        <div className="absolute inset-0 flex items-center justify-center overflow-hidden">
+          <div className="relative aspect-square h-full max-h-full max-w-full w-auto overflow-hidden rounded-xl bg-brand-surface">
             <GalleryMainMedia
               slide={activeSlide}
               name={name}
-              objectFit={isVideoSlide ? "cover" : "contain"}
+              objectFit="contain"
               imageSizes="(max-width: 1024px) 90vw, 60vw"
             />
 
