@@ -1,4 +1,4 @@
-import Link from "next/link";
+﻿import Link from "next/link";
 import { ProductViewTracker } from "@/components/analytics/ProductViewTracker";
 import { CATEGORIES, type ProductDetails } from "@/lib/products";
 import type { Product } from "@/lib/products";
@@ -47,13 +47,13 @@ export function ProductPage({
         <nav className="text-sm text-brand-muted mb-6" aria-label="Хлебные крошки">
           <ol className="flex flex-wrap items-center gap-2">
             <li>
-              <Link href="/" className="hover:text-brand-olive transition-colors">
+              <Link href="/" className="hover:text-brand-terracotta transition-colors">
                 Главная
               </Link>
             </li>
             <li aria-hidden>/</li>
             <li>
-              <Link href="/shop" className="hover:text-brand-olive transition-colors">
+              <Link href="/shop" className="hover:text-brand-terracotta transition-colors">
                 Каталог
               </Link>
             </li>
@@ -61,7 +61,7 @@ export function ProductPage({
             <li>
               <Link
                 href={`/shop/${product.category}`}
-                className="hover:text-brand-olive transition-colors"
+                className="hover:text-brand-terracotta transition-colors"
               >
                 {categoryTitle}
               </Link>
@@ -88,7 +88,7 @@ export function ProductPage({
             />
 
             <div>
-              <p className="text-brand-olive text-sm tracking-[0.2em] uppercase mb-2">
+              <p className="text-brand-terracotta text-sm tracking-[0.2em] uppercase mb-2">
                 {categoryTitle}
               </p>
               <h1 className="font-heading text-3xl md:text-4xl text-brand-olive-dark mb-6">
@@ -134,7 +134,7 @@ export function ProductPage({
           </div>
           </div>
 
-          <div className="rounded-xl border border-brand-olive/15 bg-brand-sand/20 p-6 md:p-8">
+          <div className="rounded-xl border border-brand-olive/15 bg-brand-surface p-6 md:p-8">
             <h2 className="font-heading text-xl text-brand-olive-dark mb-4">
               Полезно перед покупкой
             </h2>
@@ -174,7 +174,7 @@ export function ProductPage({
 
         {related.length > 0 && (
           <div className={complectProducts.length > 0 ? "mt-16 md:mt-20" : ""}>
-            <p className="text-brand-olive text-sm tracking-[0.2em] uppercase mb-2">
+            <p className="text-brand-terracotta text-sm tracking-[0.2em] uppercase mb-2">
               Похожие
             </p>
             <h2 className="font-heading text-2xl md:text-3xl text-brand-olive-dark mb-8">

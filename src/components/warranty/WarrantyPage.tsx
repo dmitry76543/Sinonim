@@ -1,4 +1,4 @@
-import Image from "next/image";
+﻿import Image from "next/image";
 import Link from "next/link";
 import { WarrantyFaq } from "@/components/warranty/WarrantyFaq";
 
@@ -22,7 +22,7 @@ export function WarrantyPage() {
     <>
       <section className="py-10 md:py-14">
         <div className="mx-auto max-w-7xl px-4 md:px-6 lg:px-10">
-          <p className="text-brand-olive text-sm tracking-[0.2em] uppercase mb-2">
+          <p className="text-brand-terracotta text-sm tracking-[0.2em] uppercase mb-2">
             Синоним
           </p>
           <h1 className="font-heading text-3xl md:text-5xl text-brand-olive-dark mb-6 md:mb-8">
@@ -55,7 +55,7 @@ export function WarrantyPage() {
             </div>
 
             <div className="relative w-full max-w-lg mx-auto lg:max-w-none aspect-[3/4] lg:aspect-auto lg:h-full lg:min-h-0">
-              <div className="absolute -inset-3 rounded-2xl bg-brand-olive/10 blur-xl" />
+              <div className="absolute -inset-3 rounded-2xl bg-brand-surface blur-xl" />
               <Image
                 src="/images/warranty-certificate.png"
                 alt="Аттестат партии ювелирных изделий Синоним"
@@ -78,12 +78,12 @@ export function WarrantyPage() {
 
       <WarrantyFaq />
 
-      <section className="bg-brand-olive-dark text-white py-12 md:py-16">
+      <section className="bg-white text-brand-text border-y border-brand-sand py-12 md:py-16">
         <div className="mx-auto max-w-3xl px-4 md:px-6 lg:px-10 text-center">
-          <h2 className="font-heading text-2xl md:text-3xl text-brand-sand mb-5">
+          <h2 className="font-heading text-2xl md:text-3xl text-brand-olive-dark mb-5">
             Качество, которому можно доверять
           </h2>
-          <p className="text-white/80 leading-relaxed mb-8">
+          <p className="text-brand-muted leading-relaxed mb-8">
             Лабораторные бриллианты проходят оценку по тем же стандартам, что и
             природные камни. Аттестация и гарантия — наш способ быть
             максимально открытыми перед вами.
@@ -97,7 +97,7 @@ export function WarrantyPage() {
             </Link>
             <Link
               href="/about"
-              className="inline-flex items-center justify-center px-8 py-3.5 border border-white/40 hover:border-white text-white text-sm tracking-widest uppercase transition-colors"
+              className="inline-flex items-center justify-center px-8 py-3.5 border border-brand-olive/25 text-brand-text hover:border-brand-terracotta hover:text-brand-terracotta text-sm tracking-widest uppercase transition-colors"
             >
               О бренде
             </Link>

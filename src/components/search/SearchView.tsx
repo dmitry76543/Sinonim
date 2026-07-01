@@ -1,4 +1,4 @@
-"use client";
+﻿"use client";
 
 import { useCallback, useEffect, useState } from "react";
 import Link from "next/link";
@@ -104,7 +104,7 @@ export function SearchView() {
         <nav className="text-sm text-brand-muted mb-6" aria-label="Хлебные крошки">
           <ol className="flex flex-wrap items-center gap-2">
             <li>
-              <Link href="/" className="hover:text-brand-olive transition-colors">
+              <Link href="/" className="hover:text-brand-terracotta transition-colors">
                 Главная
               </Link>
             </li>
@@ -116,7 +116,7 @@ export function SearchView() {
         </nav>
 
         <div className="mb-8 md:mb-10">
-          <p className="text-brand-olive text-sm tracking-[0.2em] uppercase mb-2">
+          <p className="text-brand-terracotta text-sm tracking-[0.2em] uppercase mb-2">
             Каталог
           </p>
           <h1 className="font-heading text-3xl md:text-4xl text-brand-olive-dark mb-4">
@@ -141,7 +141,7 @@ export function SearchView() {
             <button
               type="button"
               onClick={retrySearch}
-              className="rounded-lg bg-brand-olive px-5 py-2.5 text-sm font-medium text-white hover:bg-brand-olive-dark transition-colors"
+              className="rounded-lg bg-brand-terracotta px-5 py-2.5 text-sm font-medium text-white hover:bg-brand-terracotta-logo transition-colors"
             >
               Попробовать снова
             </button>

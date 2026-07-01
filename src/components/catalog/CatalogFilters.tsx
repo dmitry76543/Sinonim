@@ -1,4 +1,4 @@
-"use client";
+﻿"use client";
 
 import Link from "next/link";
 import {
@@ -58,7 +58,7 @@ function CheckboxItem({
       <span
         className={`w-4 h-4 rounded border flex items-center justify-center shrink-0 transition-colors ${
           checked
-            ? "bg-brand-olive border-brand-olive"
+            ? "bg-brand-terracotta border-brand-olive"
             : "border-brand-olive/30 group-hover:border-brand-olive"
         }`}
       >
@@ -127,7 +127,7 @@ export function CatalogFilters({ filters, basePath, onClose }: CatalogFiltersPro
           <button
             type="button"
             onClick={onClose}
-            className="p-2 text-brand-muted transition-colors hover:text-brand-olive"
+            className="p-2 text-brand-muted transition-colors hover:text-brand-terracotta"
             aria-label="Закрыть фильтры"
           >
             <svg width="20" height="20" viewBox="0 0 24 24" fill="none" aria-hidden>
@@ -195,7 +195,7 @@ export function CatalogFilters({ filters, basePath, onClose }: CatalogFiltersPro
                   onClick={(e) => e.stopPropagation()}
                   className={`rounded-lg border px-2 py-2 text-center text-sm transition-colors ${
                     filters.sizes.includes(id)
-                      ? "border-brand-olive bg-brand-olive/10 text-brand-olive-dark font-medium"
+                      ? "border-brand-olive bg-brand-surface text-brand-olive-dark font-medium"
                       : "border-brand-olive/20 bg-brand-surface text-brand-text hover:border-brand-olive"
                   }`}
                 >
@@ -206,7 +206,7 @@ export function CatalogFilters({ filters, basePath, onClose }: CatalogFiltersPro
           </div>
           <p className="mt-3 text-xs text-brand-muted leading-relaxed">
             Для колец и браслетов.{" "}
-            <Link href="/how-size-ring" className="text-brand-olive hover:underline">
+            <Link href="/how-size-ring" className="text-brand-terracotta hover:underline">
               Как определить размер →
             </Link>
           </p>

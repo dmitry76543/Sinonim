@@ -1,4 +1,4 @@
-import Image from "next/image";
+﻿import Image from "next/image";
 import Link from "next/link";
 import { Suspense } from "react";
 import {
@@ -18,7 +18,7 @@ export async function Categories() {
       <div className="mx-auto max-w-7xl px-4 md:px-6 lg:px-10">
         <div className="flex flex-col md:flex-row md:items-end md:justify-between gap-4 mb-10">
           <div>
-            <p className="text-brand-olive text-sm tracking-[0.2em] uppercase mb-2">
+            <p className="text-brand-terracotta text-sm tracking-[0.2em] uppercase mb-2">
               Каталог
             </p>
             <h2 className="font-heading text-3xl md:text-4xl text-brand-olive-dark">
@@ -27,7 +27,7 @@ export async function Categories() {
           </div>
           <Link
             href="/shop"
-            className="text-sm text-brand-olive hover:text-brand-terracotta transition-colors tracking-wide"
+            className="text-sm text-brand-terracotta hover:text-brand-terracotta transition-colors tracking-wide"
           >
             Весь каталог →
           </Link>
@@ -63,7 +63,7 @@ export async function Categories() {
                     className={`relative h-full shrink-0 overflow-hidden ${
                       isBracelets
                         ? "w-[59%] md:w-[63%] bg-brand-surface"
-                        : "w-[42%] md:w-[45%] bg-brand-sand/50"
+                        : "w-[42%] md:w-[45%] bg-brand-surface"
                     }`}
                   >
                     <Image

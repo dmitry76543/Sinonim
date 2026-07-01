@@ -1,4 +1,4 @@
-import Image from "next/image";
+﻿import Image from "next/image";
 import Link from "next/link";
 import { MetrikaMapLink } from "@/components/analytics/MetrikaMapLink";
 import { MetrikaPhoneLink } from "@/components/analytics/MetrikaPhoneLink";
@@ -13,7 +13,7 @@ import {
 export function ShowroomPage() {
   return (
     <>
-      <section className="relative overflow-hidden bg-brand-olive-dark">
+      <section className="relative overflow-hidden bg-white border-b border-brand-sand">
         <div className="absolute inset-0">
           <Image
             src="/images/show_room_2.jpg"
@@ -23,17 +23,17 @@ export function ShowroomPage() {
             priority
             sizes="100vw"
           />
-          <div className="absolute inset-0 bg-gradient-to-r from-brand-olive-dark/95 via-brand-olive-dark/75 to-brand-olive-dark/35" />
+          <div className="absolute inset-0 bg-gradient-to-r from-white/95 via-white/80 to-white/40" />
         </div>
 
         <div className="relative mx-auto max-w-7xl px-4 md:px-6 lg:px-10 py-16 md:py-24">
-          <p className="text-brand-sand/90 text-sm tracking-[0.2em] uppercase mb-3">
+          <p className="text-brand-terracotta text-sm tracking-[0.2em] uppercase mb-3">
             Москва
           </p>
-          <h1 className="font-heading text-4xl md:text-5xl lg:text-6xl text-white mb-6 max-w-2xl leading-tight">
+          <h1 className="font-heading text-4xl md:text-5xl lg:text-6xl text-brand-olive-dark mb-6 max-w-2xl leading-tight">
             Шоурум Синоним
           </h1>
-          <p className="text-white/85 text-base md:text-lg max-w-xl leading-relaxed">
+          <p className="text-brand-muted text-base md:text-lg max-w-xl leading-relaxed">
             Пространство, где можно увидеть сияние лабораторных бриллиантов
             вживую, примерить украшения и выбрать изделие без спешки.
           </p>
@@ -83,7 +83,7 @@ export function ShowroomPage() {
             </div>
 
             <div className="relative aspect-[3/4] w-full">
-              <div className="absolute -inset-3 rounded-2xl bg-brand-olive/10 blur-xl" />
+              <div className="absolute -inset-3 rounded-2xl bg-brand-surface blur-xl" />
               <Image
                 src="/images/show_room_2.jpg"
                 alt="Интерьер шоурума с витринами украшений"
@@ -103,8 +103,8 @@ export function ShowroomPage() {
           </h2>
 
           <div className="grid md:grid-cols-3 gap-6 mb-10 md:mb-12">
-            <div className="rounded-xl border border-brand-olive/15 bg-brand-sand/30 p-6 md:p-8 text-center md:text-left">
-              <p className="text-brand-olive text-xs tracking-[0.2em] uppercase mb-3">
+            <div className="rounded-xl border border-brand-olive/15 bg-brand-surface p-6 md:p-8 text-center md:text-left">
+              <p className="text-brand-terracotta text-xs tracking-[0.2em] uppercase mb-3">
                 Адрес
               </p>
               <p className="text-brand-olive-dark leading-relaxed">
@@ -118,13 +118,13 @@ export function ShowroomPage() {
               </MetrikaMapLink>
             </div>
 
-            <div className="rounded-xl border border-brand-olive/15 bg-brand-sand/30 p-6 md:p-8 text-center md:text-left">
-              <p className="text-brand-olive text-xs tracking-[0.2em] uppercase mb-3">
+            <div className="rounded-xl border border-brand-olive/15 bg-brand-surface p-6 md:p-8 text-center md:text-left">
+              <p className="text-brand-terracotta text-xs tracking-[0.2em] uppercase mb-3">
                 Телефон
               </p>
               <MetrikaPhoneLink
                 href={SITE_PHONE_TEL}
-                className="font-heading text-xl md:text-2xl text-brand-olive-dark hover:text-brand-olive transition-colors"
+                className="font-heading text-xl md:text-2xl text-brand-olive-dark hover:text-brand-terracotta transition-colors"
               >
                 {SITE_PHONE}
               </MetrikaPhoneLink>
@@ -133,8 +133,8 @@ export function ShowroomPage() {
               </p>
             </div>
 
-            <div className="rounded-xl border border-brand-olive/15 bg-brand-sand/30 p-6 md:p-8 text-center md:text-left">
-              <p className="text-brand-olive text-xs tracking-[0.2em] uppercase mb-3">
+            <div className="rounded-xl border border-brand-olive/15 bg-brand-surface p-6 md:p-8 text-center md:text-left">
+              <p className="text-brand-terracotta text-xs tracking-[0.2em] uppercase mb-3">
                 Часы работы
               </p>
               <p className="font-heading text-xl md:text-2xl text-brand-olive-dark">

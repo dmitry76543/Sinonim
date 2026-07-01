@@ -1,4 +1,4 @@
-import Link from "next/link";
+﻿import Link from "next/link";
 import { SHOWROOM, SITE_PHONE, SITE_PHONE_TEL } from "@/lib/contacts";
 import { DELIVERY_FEE, FREE_DELIVERY_THRESHOLD } from "@/lib/checkout";
 
@@ -39,7 +39,7 @@ export function ShippingPage() {
     <>
       <section className="py-10 md:py-14">
         <div className="mx-auto max-w-7xl px-4 md:px-6 lg:px-10">
-          <p className="text-brand-olive text-sm tracking-[0.2em] uppercase mb-2">
+          <p className="text-brand-terracotta text-sm tracking-[0.2em] uppercase mb-2">
             Синоним
           </p>
           <h1 className="font-heading text-3xl md:text-5xl text-brand-olive-dark mb-6 md:mb-8">
@@ -91,9 +91,9 @@ export function ShippingPage() {
         </div>
       </section>
 
-      <section className="bg-brand-olive-dark text-white py-12 md:py-16">
+      <section className="bg-white text-brand-text border-y border-brand-sand py-12 md:py-16">
         <div className="mx-auto max-w-7xl px-4 md:px-6 lg:px-10">
-          <h2 className="font-heading text-2xl md:text-3xl text-brand-sand mb-6 md:mb-8">
+          <h2 className="font-heading text-2xl md:text-3xl text-brand-olive-dark mb-6 md:mb-8">
             Оплата
           </h2>
 
@@ -101,16 +101,16 @@ export function ShippingPage() {
             {PAYMENT_OPTIONS.map((option) => (
               <div
                 key={option.title}
-                className="rounded-xl border border-white/15 bg-white/5 p-6 md:p-8"
+                className="rounded-xl border border-brand-sand bg-brand-surface p-6 md:p-8"
               >
-                <h3 className="font-heading text-xl md:text-2xl text-brand-sand mb-4">
+                <h3 className="font-heading text-xl md:text-2xl text-brand-olive-dark mb-4">
                   {option.title}
                 </h3>
                 <ul className="space-y-3">
                   {option.items.map((item) => (
                     <li
                       key={item}
-                      className="flex gap-3 text-white/80 text-sm md:text-base leading-relaxed"
+                      className="flex gap-3 text-brand-muted text-sm md:text-base leading-relaxed"
                     >
                       <span className="mt-2 h-1.5 w-1.5 shrink-0 rounded-full bg-brand-sand" />
                       {item}
@@ -121,7 +121,7 @@ export function ShippingPage() {
             ))}
           </div>
 
-          <p className="text-white/70 text-sm md:text-base leading-relaxed max-w-3xl">
+          <p className="text-brand-muted text-sm md:text-base leading-relaxed max-w-3xl">
             Онлайн-оплата на сайте проходит через платёжный сервис{" "}
             <span className="text-brand-sand">ЮKassa</span> — вы можете
             оплатить картой или по QR-коду в мобильном приложении банка.

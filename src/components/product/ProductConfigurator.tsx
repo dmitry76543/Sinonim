@@ -1,4 +1,4 @@
-"use client";
+﻿"use client";
 
 import { useState } from "react";
 import Link from "next/link";
@@ -120,7 +120,7 @@ export function ProductConfigurator({ product }: ProductConfiguratorProps) {
               </svg>
             </div>
             <p className="mt-2 text-xs text-brand-muted">
-              <a href="/how-size-ring" className="text-brand-olive hover:underline">
+              <a href="/how-size-ring" className="text-brand-terracotta hover:underline">
                 Как определить размер →
               </a>
             </p>
@@ -139,7 +139,7 @@ export function ProductConfigurator({ product }: ProductConfiguratorProps) {
         </button>
         <button
           type="button"
-          className="flex-1 px-6 py-3.5 border border-brand-olive text-brand-olive-dark hover:bg-brand-olive hover:text-white text-sm tracking-widest uppercase transition-colors"
+          className="flex-1 px-6 py-3.5 border border-brand-olive text-brand-olive-dark hover:bg-brand-terracotta hover:text-white text-sm tracking-widest uppercase transition-colors"
         >
           Примерить в шоуруме
         </button>
@@ -152,13 +152,13 @@ export function ProductConfigurator({ product }: ProductConfiguratorProps) {
 
       <Link
         href="/favorites"
-        className="inline-flex text-sm text-brand-olive hover:text-brand-terracotta transition-colors"
+        className="inline-flex text-sm text-brand-terracotta hover:text-brand-terracotta transition-colors"
       >
         Открыть избранное →
       </Link>
 
       {added && (
-        <p className="text-sm text-brand-olive">
+        <p className="text-sm text-brand-terracotta">
           Товар добавлен в корзину.{" "}
           <Link href="/cart" className="underline hover:text-brand-terracotta">
             Перейти в корзину →

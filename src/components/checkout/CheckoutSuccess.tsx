@@ -1,4 +1,4 @@
-"use client";
+﻿"use client";
 
 import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
@@ -161,7 +161,7 @@ export function CheckoutSuccess() {
           <p className="text-brand-muted mb-8">{error}</p>
           <Link
             href="/checkout"
-            className="inline-flex justify-center px-8 py-3.5 bg-brand-olive hover:bg-brand-olive-dark text-white text-sm tracking-widest uppercase transition-colors"
+            className="inline-flex justify-center px-8 py-3.5 bg-brand-terracotta hover:bg-brand-terracotta-logo text-white text-sm tracking-widest uppercase transition-colors"
           >
             Вернуться к оформлению
           </Link>
@@ -198,7 +198,7 @@ export function CheckoutSuccess() {
   return (
     <section className="py-12 md:py-16">
       <div className="mx-auto max-w-2xl px-4 md:px-6 lg:px-10 text-center">
-        <div className="inline-flex items-center justify-center w-16 h-16 rounded-full bg-brand-olive/10 text-brand-olive text-2xl mb-6">
+        <div className="inline-flex items-center justify-center w-16 h-16 rounded-full bg-brand-surface text-brand-terracotta text-2xl mb-6">
           ✓
         </div>
         <h1 className="font-heading text-3xl md:text-4xl text-brand-olive-dark mb-3">
@@ -249,7 +249,7 @@ export function CheckoutSuccess() {
         <div className="flex flex-col sm:flex-row gap-3 justify-center">
           <Link
             href="/shop"
-            className="inline-flex justify-center px-8 py-3.5 bg-brand-olive hover:bg-brand-olive-dark text-white text-sm tracking-widest uppercase transition-colors"
+            className="inline-flex justify-center px-8 py-3.5 bg-brand-terracotta hover:bg-brand-terracotta-logo text-white text-sm tracking-widest uppercase transition-colors"
           >
             В каталог
           </Link>

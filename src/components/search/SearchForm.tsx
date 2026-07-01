@@ -1,4 +1,4 @@
-"use client";
+﻿"use client";
 
 import {
   type FormEvent,
@@ -206,7 +206,7 @@ export function SearchForm({
         />
         <button
           type="submit"
-          className={`shrink-0 rounded-lg bg-brand-olive px-4 font-medium text-white transition-colors hover:bg-brand-olive-dark ${
+          className={`shrink-0 rounded-lg bg-brand-terracotta px-4 font-medium text-white transition-colors hover:bg-brand-terracotta-logo ${
             compact ? "py-2 text-sm" : "py-2.5 text-base"
           }`}
         >

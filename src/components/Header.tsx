@@ -1,4 +1,4 @@
-"use client";
+﻿"use client";
 
 import { useEffect, useState } from "react";
 import Image from "next/image";
@@ -39,7 +39,7 @@ function HeaderActions({
     <>
       <button
         type="button"
-        className="p-2 sm:p-2.5 text-brand-olive-dark hover:text-brand-olive transition-colors"
+        className="p-2 sm:p-2.5 text-brand-olive-dark hover:text-brand-terracotta transition-colors"
         aria-label={searchOpen ? "Закрыть поиск" : "Поиск"}
         aria-expanded={searchOpen}
         aria-controls="header-search"
@@ -139,16 +139,16 @@ export function Header() {
     <header className="sticky top-0 z-50 bg-brand-surface/95 backdrop-blur-sm border-b border-brand-olive/10 relative">
       <div className="hidden md:flex justify-between items-center px-6 lg:px-10 py-2 text-xs text-brand-muted border-b border-brand-sand">
         <div className="flex gap-6">
-          <Link href="/shipping" className="hover:text-brand-olive transition-colors">
+          <Link href="/shipping" className="hover:text-brand-terracotta transition-colors">
             Доставка и оплата
           </Link>
-          <Link href="/showroom" className="hover:text-brand-olive transition-colors">
+          <Link href="/showroom" className="hover:text-brand-terracotta transition-colors">
             Шоурум
           </Link>
         </div>
         <MetrikaPhoneLink
           href={SITE_PHONE_TEL}
-          className="hover:text-brand-olive transition-colors"
+          className="hover:text-brand-terracotta transition-colors"
         >
           {SITE_PHONE}
         </MetrikaPhoneLink>
@@ -214,7 +214,7 @@ export function Header() {
                   <li key={item.href}>
                     <Link
                       href={item.href}
-                      className="block rounded-lg px-3 py-3 text-base tracking-wide text-brand-text hover:bg-brand-sand/50 hover:text-brand-olive transition-colors"
+                      className="block rounded-lg px-3 py-3 text-base tracking-wide text-brand-text hover:bg-brand-surface hover:text-brand-terracotta transition-colors"
                       onClick={closeMenu}
                     >
                       {item.label}
@@ -226,28 +226,28 @@ export function Header() {
               <div className="mt-6 flex flex-col gap-3 border-t border-brand-sand pt-6 text-sm text-brand-muted">
                 <Link
                   href="/shop"
-                  className="hover:text-brand-olive transition-colors"
+                  className="hover:text-brand-terracotta transition-colors"
                   onClick={closeMenu}
                 >
                   Весь каталог
                 </Link>
                 <Link
                   href="/shipping"
-                  className="hover:text-brand-olive transition-colors"
+                  className="hover:text-brand-terracotta transition-colors"
                   onClick={closeMenu}
                 >
                   Доставка и оплата
                 </Link>
                 <Link
                   href="/showroom"
-                  className="hover:text-brand-olive transition-colors"
+                  className="hover:text-brand-terracotta transition-colors"
                   onClick={closeMenu}
                 >
                   Шоурум
                 </Link>
                 <MetrikaPhoneLink
                   href={SITE_PHONE_TEL}
-                  className="font-medium text-brand-olive-dark hover:text-brand-olive transition-colors"
+                  className="font-medium text-brand-olive-dark hover:text-brand-terracotta transition-colors"
                   onClick={closeMenu}
                 >
                   {SITE_PHONE}
@@ -266,7 +266,7 @@ export function Header() {
               <Link
                 key={item.href}
                 href={item.href}
-                className="text-sm tracking-wide text-brand-text hover:text-brand-olive transition-colors"
+                className="text-sm tracking-wide text-brand-text hover:text-brand-terracotta transition-colors"
               >
                 {item.label}
               </Link>

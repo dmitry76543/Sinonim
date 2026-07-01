@@ -1,4 +1,4 @@
-"use client";
+﻿"use client";
 
 import { ProductImage } from "@/components/catalog/ProductImage";
 import Link from "next/link";
@@ -134,7 +134,7 @@ export function CompareView() {
           </p>
           <Link
             href="/shop"
-            className="inline-flex px-8 py-3.5 bg-brand-olive hover:bg-brand-olive-dark text-white text-sm tracking-widest uppercase transition-colors"
+            className="inline-flex px-8 py-3.5 bg-brand-terracotta hover:bg-brand-terracotta-logo text-white text-sm tracking-widest uppercase transition-colors"
           >
             Перейти в каталог
           </Link>
@@ -150,7 +150,7 @@ export function CompareView() {
       <div className="mx-auto max-w-7xl px-4 md:px-6 lg:px-10">
         <div className="flex flex-wrap items-end justify-between gap-4 mb-8">
           <div>
-            <p className="text-brand-olive text-sm tracking-[0.2em] uppercase mb-2">
+            <p className="text-brand-terracotta text-sm tracking-[0.2em] uppercase mb-2">
               Каталог
             </p>
             <h1 className="font-heading text-3xl md:text-4xl text-brand-olive-dark">
@@ -184,7 +184,7 @@ export function CompareView() {
                     }`}
                   >
                     <div className="space-y-3">
-                      <div className="relative aspect-square rounded-lg overflow-hidden bg-brand-sand/30">
+                      <div className="relative aspect-square rounded-lg overflow-hidden bg-brand-surface">
                         <ProductImage
                           src={product.image}
                           alt={product.name}
@@ -199,7 +199,7 @@ export function CompareView() {
                         </p>
                         <Link
                           href={`/products/${product.slug}`}
-                          className="font-heading text-base text-brand-olive-dark hover:text-brand-olive transition-colors line-clamp-2"
+                          className="font-heading text-base text-brand-olive-dark hover:text-brand-terracotta transition-colors line-clamp-2"
                         >
                           {product.name}
                         </Link>
@@ -257,7 +257,7 @@ export function CompareView() {
           {products.length < MAX_COMPARE_ITEMS && (
             <Link
               href="/shop"
-              className="inline-flex px-6 py-3 bg-brand-olive hover:bg-brand-olive-dark text-white text-sm tracking-widest uppercase transition-colors"
+              className="inline-flex px-6 py-3 bg-brand-terracotta hover:bg-brand-terracotta-logo text-white text-sm tracking-widest uppercase transition-colors"
             >
               Добавить товар
             </Link>

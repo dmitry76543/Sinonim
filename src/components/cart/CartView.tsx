@@ -1,4 +1,4 @@
-"use client";
+﻿"use client";
 
 import Link from "next/link";
 import { ProductImage } from "@/components/catalog/ProductImage";
@@ -20,7 +20,7 @@ export function CartView() {
           </p>
           <Link
             href="/shop"
-            className="inline-flex px-8 py-3.5 bg-brand-olive hover:bg-brand-olive-dark text-white text-sm tracking-widest uppercase transition-colors"
+            className="inline-flex px-8 py-3.5 bg-brand-terracotta hover:bg-brand-terracotta-logo text-white text-sm tracking-widest uppercase transition-colors"
           >
             Перейти в каталог
           </Link>
@@ -34,7 +34,7 @@ export function CartView() {
       <div className="mx-auto max-w-7xl px-4 md:px-6 lg:px-10">
         <div className="flex flex-wrap items-end justify-between gap-4 mb-8">
           <div>
-            <p className="text-brand-olive text-sm tracking-[0.2em] uppercase mb-2">
+            <p className="text-brand-terracotta text-sm tracking-[0.2em] uppercase mb-2">
               Оформление
             </p>
             <h1 className="font-heading text-3xl md:text-4xl text-brand-olive-dark">
@@ -59,7 +59,7 @@ export function CartView() {
               >
                 <Link
                   href={`/products/${item.productSlug}`}
-                  className="relative w-24 h-24 md:w-28 md:h-28 shrink-0 rounded-lg overflow-hidden bg-brand-sand/30"
+                  className="relative w-24 h-24 md:w-28 md:h-28 shrink-0 rounded-lg overflow-hidden bg-brand-surface"
                 >
                   <ProductImage
                     src={item.image}
@@ -75,7 +75,7 @@ export function CartView() {
                     <div>
                       <Link
                         href={`/products/${item.productSlug}`}
-                        className="font-heading text-lg text-brand-olive-dark hover:text-brand-olive transition-colors"
+                        className="font-heading text-lg text-brand-olive-dark hover:text-brand-terracotta transition-colors"
                       >
                         {item.name}
                       </Link>
@@ -94,7 +94,7 @@ export function CartView() {
                       <button
                         type="button"
                         onClick={() => updateQuantity(item.id, item.quantity - 1)}
-                        className="w-9 h-9 flex items-center justify-center text-brand-muted hover:text-brand-olive transition-colors"
+                        className="w-9 h-9 flex items-center justify-center text-brand-muted hover:text-brand-terracotta transition-colors"
                         aria-label="Уменьшить количество"
                       >
                         −
@@ -103,7 +103,7 @@ export function CartView() {
                       <button
                         type="button"
                         onClick={() => updateQuantity(item.id, item.quantity + 1)}
-                        className="w-9 h-9 flex items-center justify-center text-brand-muted hover:text-brand-olive transition-colors"
+                        className="w-9 h-9 flex items-center justify-center text-brand-muted hover:text-brand-terracotta transition-colors"
                         aria-label="Увеличить количество"
                       >
                         +
@@ -154,7 +154,7 @@ export function CartView() {
 
               <Link
                 href="/shop"
-                className="block text-center text-sm text-brand-olive hover:text-brand-terracotta transition-colors"
+                className="block text-center text-sm text-brand-terracotta hover:text-brand-terracotta transition-colors"
               >
                 Продолжить покупки
               </Link>

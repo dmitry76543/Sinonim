@@ -1,4 +1,4 @@
-"use client";
+﻿"use client";
 
 import { ProductImage } from "@/components/catalog/ProductImage";
 import Link from "next/link";
@@ -68,7 +68,7 @@ export function SearchAutocompleteList({
           type="button"
           onMouseDown={(event) => event.preventDefault()}
           onClick={onShowAll}
-          className="w-full border-t border-brand-sand px-4 py-3 text-left text-sm text-brand-olive hover:bg-brand-sand/40 transition-colors"
+          className="w-full border-t border-brand-sand px-4 py-3 text-left text-sm text-brand-terracotta hover:bg-brand-surface transition-colors"
         >
           Искать «{query}» во всём каталоге
         </button>
@@ -104,11 +104,11 @@ export function SearchAutocompleteList({
                     onClick={() => onSelect(category)}
                     className={`flex items-center gap-3 px-4 py-2.5 text-sm transition-colors ${
                       isActive
-                        ? "bg-brand-sand/60 text-brand-olive-dark"
-                        : "text-brand-text hover:bg-brand-sand/40"
+                        ? "bg-brand-surface text-brand-olive-dark"
+                        : "text-brand-text hover:bg-brand-surface"
                     }`}
                   >
-                    <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-brand-sand text-brand-olive">
+                    <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-brand-sand text-brand-terracotta">
                       <svg width="16" height="16" viewBox="0 0 24 24" fill="none" aria-hidden>
                         <path
                           d="M4 7h16M4 12h10M4 17h16"
@@ -147,8 +147,8 @@ export function SearchAutocompleteList({
                     onClick={() => onSelect(product)}
                     className={`flex items-center gap-3 px-4 py-2.5 text-sm transition-colors ${
                       isActive
-                        ? "bg-brand-sand/60 text-brand-olive-dark"
-                        : "text-brand-text hover:bg-brand-sand/40"
+                        ? "bg-brand-surface text-brand-olive-dark"
+                        : "text-brand-text hover:bg-brand-surface"
                     }`}
                   >
                     <div className="relative h-10 w-10 shrink-0 overflow-hidden rounded-md bg-brand-sand">
@@ -183,7 +183,7 @@ export function SearchAutocompleteList({
         type="button"
         onMouseDown={(event) => event.preventDefault()}
         onClick={onShowAll}
-        className="w-full border-t border-brand-sand px-4 py-3 text-left text-sm text-brand-olive hover:bg-brand-sand/40 transition-colors"
+        className="w-full border-t border-brand-sand px-4 py-3 text-left text-sm text-brand-terracotta hover:bg-brand-surface transition-colors"
       >
         {loading ? "Загрузка…" : `Показать все результаты для «${query}»`}
       </button>

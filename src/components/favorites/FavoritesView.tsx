@@ -1,4 +1,4 @@
-"use client";
+﻿"use client";
 
 import Link from "next/link";
 import { useEffect, useState } from "react";
@@ -68,7 +68,7 @@ export function FavoritesView() {
           </p>
           <Link
             href="/shop"
-            className="inline-flex px-8 py-3.5 bg-brand-olive hover:bg-brand-olive-dark text-white text-sm tracking-widest uppercase transition-colors"
+            className="inline-flex px-8 py-3.5 bg-brand-terracotta hover:bg-brand-terracotta-logo text-white text-sm tracking-widest uppercase transition-colors"
           >
             Перейти в каталог
           </Link>
@@ -82,7 +82,7 @@ export function FavoritesView() {
       <div className="mx-auto max-w-7xl px-4 md:px-6 lg:px-10">
         <div className="flex flex-wrap items-end justify-between gap-4 mb-8">
           <div>
-            <p className="text-brand-olive text-sm tracking-[0.2em] uppercase mb-2">
+            <p className="text-brand-terracotta text-sm tracking-[0.2em] uppercase mb-2">
               Сохранённое
             </p>
             <h1 className="font-heading text-3xl md:text-4xl text-brand-olive-dark">

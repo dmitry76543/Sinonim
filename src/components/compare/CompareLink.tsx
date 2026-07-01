@@ -1,4 +1,4 @@
-"use client";
+﻿"use client";
 
 import Link from "next/link";
 import { useCompare } from "@/context/CompareContext";
@@ -22,12 +22,12 @@ export function CompareLink() {
   return (
     <Link
       href="/compare"
-      className="flex p-2 sm:p-2.5 text-brand-olive-dark hover:text-brand-olive transition-colors relative"
+      className="flex p-2 sm:p-2.5 text-brand-olive-dark hover:text-brand-terracotta transition-colors relative"
       aria-label={count > 0 ? `Сравнение: ${count} товаров` : "Сравнение товаров"}
     >
       <IconCompare />
       {isReady && count > 0 && (
-        <span className="absolute top-1 right-1 min-w-[18px] h-[18px] flex items-center justify-center px-1 bg-brand-olive text-white text-[10px] font-medium rounded-full">
+        <span className="absolute top-1 right-1 min-w-[18px] h-[18px] flex items-center justify-center px-1 bg-brand-terracotta text-white text-[10px] font-medium rounded-full">
           {count}
         </span>
       )}

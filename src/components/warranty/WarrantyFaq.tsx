@@ -1,4 +1,4 @@
-import { WARRANTY_FAQ_ITEMS } from "@/lib/warranty-faq";
+﻿import { WARRANTY_FAQ_ITEMS } from "@/lib/warranty-faq";
 
 function IconChevron() {
   return (
@@ -7,7 +7,7 @@ function IconChevron() {
       height="20"
       viewBox="0 0 24 24"
       fill="none"
-      className="shrink-0 text-brand-olive transition-transform duration-200 group-open:rotate-180"
+      className="shrink-0 text-brand-terracotta transition-transform duration-200 group-open:rotate-180"
       aria-hidden
     >
       <path
@@ -36,7 +36,7 @@ export function WarrantyFaq() {
           {WARRANTY_FAQ_ITEMS.map((item) => (
             <details
               key={item.question}
-              className="group rounded-xl border border-brand-olive/15 bg-brand-sand/20 open:bg-brand-surface open:shadow-sm transition-colors"
+              className="group rounded-xl border border-brand-olive/15 bg-brand-surface open:bg-brand-surface open:shadow-sm transition-colors"
             >
               <summary className="flex cursor-pointer list-none items-start justify-between gap-4 p-5 md:p-6 [&::-webkit-details-marker]:hidden">
                 <span className="font-heading text-base md:text-lg text-brand-olive-dark leading-snug">

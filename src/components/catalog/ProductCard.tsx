@@ -1,4 +1,4 @@
-import { ProductImage } from "@/components/catalog/ProductImage";
+﻿import { ProductImage } from "@/components/catalog/ProductImage";
 import Link from "next/link";
 import { CompareButton } from "@/components/compare/CompareButton";
 import { FavoriteButton } from "@/components/favorites/FavoriteButton";
@@ -21,7 +21,7 @@ export function ProductCard({
 }: ProductCardProps) {
   const displayBadge = badgeLabel ?? product.badge;
   const imageBlock = (
-    <div className="aspect-square relative overflow-hidden bg-brand-sand/30">
+    <div className="aspect-square relative overflow-hidden bg-brand-surface">
       <Link href={`/products/${product.slug}`} className="absolute inset-0">
         <ProductImage
           src={product.image}
@@ -54,7 +54,7 @@ export function ProductCard({
         href={`/products/${product.slug}`}
         className="block p-4"
       >
-        <h3 className="text-sm md:text-base text-brand-text group-hover:text-brand-olive transition-colors">
+        <h3 className="text-sm md:text-base text-brand-text group-hover:text-brand-terracotta transition-colors">
           {product.name}
         </h3>
         <p className="mt-1 text-xs text-brand-muted">

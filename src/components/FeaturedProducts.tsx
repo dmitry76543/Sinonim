@@ -1,4 +1,4 @@
-import Link from "next/link";
+﻿import Link from "next/link";
 import { ProductCard } from "@/components/catalog/ProductCard";
 import { getFeaturedProducts } from "@/lib/products-service";
 
@@ -8,7 +8,7 @@ export function FeaturedProductsFallback() {
       {Array.from({ length: 4 }).map((_, index) => (
         <div
           key={index}
-          className="aspect-square rounded-xl bg-brand-sand/40 animate-pulse"
+          className="aspect-square rounded-xl bg-brand-surface animate-pulse"
         />
       ))}
     </div>
@@ -22,7 +22,7 @@ export async function FeaturedProducts() {
     return (
       <p className="text-sm text-brand-muted">
         Не удалось загрузить подборку.{" "}
-        <Link href="/shop" className="text-brand-olive hover:underline">
+        <Link href="/shop" className="text-brand-terracotta hover:underline">
           Перейти в каталог
         </Link>
       </p>

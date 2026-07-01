@@ -1,4 +1,4 @@
-import Link from "next/link";
+﻿import Link from "next/link";
 import {
   SHOWROOM,
   SITE_PHONE,
@@ -54,7 +54,7 @@ export function HowSizeRingPage() {
     <>
       <section className="py-10 md:py-14">
         <div className="mx-auto max-w-7xl px-4 md:px-6 lg:px-10">
-          <p className="text-brand-olive text-sm tracking-[0.2em] uppercase mb-2">
+          <p className="text-brand-terracotta text-sm tracking-[0.2em] uppercase mb-2">
             Синоним
           </p>
           <h1 className="font-heading text-3xl md:text-5xl text-brand-olive-dark mb-6 md:mb-8">
@@ -80,7 +80,7 @@ export function HowSizeRingPage() {
                 key={method.title}
                 className={`rounded-xl border p-6 md:p-8 ${
                   method.highlight
-                    ? "border-brand-olive/30 bg-brand-olive/5"
+                    ? "border-brand-olive/30 bg-brand-surface"
                     : "border-brand-olive/15 bg-brand-surface"
                 }`}
               >
@@ -112,7 +112,7 @@ export function HowSizeRingPage() {
           <div className="overflow-x-auto rounded-xl border border-brand-olive/15 bg-white">
             <table className="w-full min-w-[480px] text-sm md:text-base">
               <thead>
-                <tr className="border-b border-brand-sand bg-brand-sand/40 text-left">
+                <tr className="border-b border-brand-sand bg-brand-surface text-left">
                   <th className="px-4 py-3 md:px-6 md:py-4 font-heading text-brand-olive-dark">
                     Размер
                   </th>
@@ -162,7 +162,7 @@ export function HowSizeRingPage() {
                     key={tip}
                     className="flex gap-3 text-brand-text leading-relaxed"
                   >
-                    <span className="mt-2 h-1.5 w-1.5 shrink-0 rounded-full bg-brand-olive" />
+                    <span className="mt-2 h-1.5 w-1.5 shrink-0 rounded-full bg-brand-terracotta" />
                     {tip}
                   </li>
                 ))}
@@ -188,17 +188,17 @@ export function HowSizeRingPage() {
         </div>
       </section>
 
-      <section className="bg-brand-olive-dark text-white py-12 md:py-16">
+      <section className="bg-white text-brand-text border-y border-brand-sand py-12 md:py-16">
         <div className="mx-auto max-w-3xl px-4 md:px-6 lg:px-10 text-center">
-          <h2 className="font-heading text-2xl md:text-3xl text-brand-sand mb-4">
+          <h2 className="font-heading text-2xl md:text-3xl text-brand-olive-dark mb-4">
             Нужна помощь с размером?
           </h2>
-          <p className="text-white/80 leading-relaxed mb-8">
+          <p className="text-brand-muted leading-relaxed mb-8">
             Приезжайте в шоурум на бесплатную примерку или напишите нам —
             подскажем по вашим замерам. Телефон{" "}
             <a
               href={SITE_PHONE_TEL}
-              className="text-brand-sand hover:text-white transition-colors"
+              className="text-brand-terracotta hover:text-white transition-colors"
             >
               {SITE_PHONE}
             </a>
@@ -213,7 +213,7 @@ export function HowSizeRingPage() {
             </Link>
             <Link
               href="/shop/rings"
-              className="inline-flex items-center justify-center px-8 py-3.5 border border-white/25 text-brand-sand hover:border-white/50 text-sm tracking-widest uppercase transition-colors"
+              className="inline-flex items-center justify-center px-8 py-3.5 border border-white/25 text-brand-terracotta hover:border-white/50 text-sm tracking-widest uppercase transition-colors"
             >
               Кольца в каталоге
             </Link>

@@ -1,4 +1,4 @@
-import Image from "next/image";
+﻿import Image from "next/image";
 import Link from "next/link";
 
 const PILLARS = [
@@ -17,7 +17,7 @@ export function AboutPage() {
     <>
       <section className="py-10 md:py-14">
         <div className="mx-auto max-w-7xl px-4 md:px-6 lg:px-10">
-          <p className="text-brand-olive text-sm tracking-[0.2em] uppercase mb-2">
+          <p className="text-brand-terracotta text-sm tracking-[0.2em] uppercase mb-2">
             Синоним
           </p>
           <h1 className="font-heading text-3xl md:text-5xl text-brand-olive-dark mb-8 md:mb-10">
@@ -52,7 +52,7 @@ export function AboutPage() {
             </div>
 
             <div className="relative aspect-[4/5] max-w-md mx-auto lg:max-w-none lg:ml-auto w-full">
-              <div className="absolute -inset-3 rounded-2xl bg-brand-olive/10 blur-xl" />
+              <div className="absolute -inset-3 rounded-2xl bg-brand-surface blur-xl" />
               <Image
                 src="/images/product-ring.webp"
                 alt="Украшение Синоним с лабораторным бриллиантом"
@@ -65,20 +65,20 @@ export function AboutPage() {
         </div>
       </section>
 
-      <section className="bg-brand-olive-dark text-white py-12 md:py-16">
+      <section className="bg-white text-brand-text border-y border-brand-sand py-12 md:py-16">
         <div className="mx-auto max-w-7xl px-4 md:px-6 lg:px-10">
-          <p className="text-brand-sand/90 text-sm tracking-[0.2em] uppercase mb-8 text-center">
+          <p className="text-brand-terracotta text-sm tracking-[0.2em] uppercase mb-8 text-center">
             Уникальная концепция
           </p>
 
           <div className="max-w-3xl mx-auto text-center mb-10 md:mb-12">
-            <p className="font-heading text-4xl md:text-5xl tracking-[0.15em] text-brand-sand mb-4">
+            <p className="font-heading text-4xl md:text-5xl tracking-[0.15em] text-brand-olive-dark mb-4">
               СИНОНИМ
             </p>
-            <p className="text-lg md:text-xl text-white/90 mb-3">
+            <p className="text-lg md:text-xl text-brand-text mb-3">
               Украшения из серебра с лабораторными бриллиантами
             </p>
-            <p className="text-white/70 leading-relaxed">
+            <p className="text-brand-muted leading-relaxed">
               Сочетаем ювелирные тренды и современные технологии, делая
               изысканные украшения ближе и доступнее
             </p>
@@ -88,12 +88,12 @@ export function AboutPage() {
             {PILLARS.map((item) => (
               <div
                 key={item.title}
-                className="rounded-xl border border-white/15 bg-white/5 p-6 md:p-8"
+                className="rounded-xl border border-brand-sand bg-brand-surface p-6 md:p-8"
               >
-                <h3 className="font-heading text-xl md:text-2xl text-brand-sand mb-3">
+                <h3 className="font-heading text-xl md:text-2xl text-brand-olive-dark mb-3">
                   {item.title}
                 </h3>
-                <p className="text-white/75 text-sm md:text-base leading-relaxed">
+                <p className="text-brand-muted text-sm md:text-base leading-relaxed">
                   {item.text}
                 </p>
               </div>

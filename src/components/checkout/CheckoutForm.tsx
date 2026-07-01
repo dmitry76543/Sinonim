@@ -1,4 +1,4 @@
-"use client";
+﻿"use client";
 
 import { ProductImage } from "@/components/catalog/ProductImage";
 import Link from "next/link";
@@ -202,7 +202,7 @@ export function CheckoutForm() {
     return (
       <section className="py-12 md:py-16">
         <div className="mx-auto max-w-2xl px-4 md:px-6 lg:px-10 text-center">
-          <div className="inline-flex items-center justify-center w-16 h-16 rounded-full bg-brand-olive/10 text-brand-olive text-2xl mb-6">
+          <div className="inline-flex items-center justify-center w-16 h-16 rounded-full bg-brand-surface text-brand-terracotta text-2xl mb-6">
             ✓
           </div>
           <h1 className="font-heading text-3xl md:text-4xl text-brand-olive-dark mb-3">
@@ -252,7 +252,7 @@ export function CheckoutForm() {
           <div className="flex flex-col sm:flex-row gap-3 justify-center">
             <Link
               href="/shop"
-              className="inline-flex justify-center px-8 py-3.5 bg-brand-olive hover:bg-brand-olive-dark text-white text-sm tracking-widest uppercase transition-colors"
+              className="inline-flex justify-center px-8 py-3.5 bg-brand-terracotta hover:bg-brand-terracotta-logo text-white text-sm tracking-widest uppercase transition-colors"
             >
               В каталог
             </Link>
@@ -276,7 +276,7 @@ export function CheckoutForm() {
     <section className="py-8 md:py-12">
       <div className="mx-auto max-w-7xl px-4 md:px-6 lg:px-10">
         <div className="mb-8">
-          <p className="text-brand-olive text-sm tracking-[0.2em] uppercase mb-2">
+          <p className="text-brand-terracotta text-sm tracking-[0.2em] uppercase mb-2">
             Оформление
           </p>
           <h1 className="font-heading text-3xl md:text-4xl text-brand-olive-dark">
@@ -342,7 +342,7 @@ export function CheckoutForm() {
                     onClick={() => handleDeliveryMethod("pickup")}
                     className={`text-left p-4 rounded-xl border transition-colors ${
                       form.deliveryMethod === "pickup"
-                        ? "border-brand-olive bg-brand-olive/10"
+                        ? "border-brand-olive bg-brand-surface"
                         : "border-brand-olive/20 hover:border-brand-olive/50"
                     }`}
                   >
@@ -359,7 +359,7 @@ export function CheckoutForm() {
                     onClick={() => handleDeliveryMethod("delivery")}
                     className={`text-left p-4 rounded-xl border transition-colors ${
                       form.deliveryMethod === "delivery"
-                        ? "border-brand-olive bg-brand-olive/10"
+                        ? "border-brand-olive bg-brand-surface"
                         : "border-brand-olive/20 hover:border-brand-olive/50"
                     }`}
                   >
@@ -375,7 +375,7 @@ export function CheckoutForm() {
                 </div>
 
                 {form.deliveryMethod === "pickup" ? (
-                  <div className="rounded-lg bg-brand-sand/40 p-4 text-sm text-brand-muted space-y-1">
+                  <div className="rounded-lg bg-brand-surface p-4 text-sm text-brand-muted space-y-1">
                     <p className="font-medium text-brand-olive-dark">
                       {SHOWROOM.title}
                     </p>
@@ -383,7 +383,7 @@ export function CheckoutForm() {
                     <p>{SHOWROOM.hours}</p>
                     <a
                       href={`tel:${SHOWROOM.phone.replace(/\D/g, "")}`}
-                      className="inline-block text-brand-olive hover:text-brand-terracotta transition-colors"
+                      className="inline-block text-brand-terracotta hover:text-brand-terracotta transition-colors"
                     >
                       {SHOWROOM.phone}
                     </a>
@@ -457,7 +457,7 @@ export function CheckoutForm() {
                         onClick={() => handlePaymentMethod("yookassa")}
                         className={`text-left p-4 rounded-xl border transition-colors ${
                           form.paymentMethod === "yookassa"
-                            ? "border-brand-olive bg-brand-olive/10"
+                            ? "border-brand-olive bg-brand-surface"
                             : "border-brand-olive/20 hover:border-brand-olive/50"
                         }`}
                       >
@@ -475,7 +475,7 @@ export function CheckoutForm() {
                       onClick={() => handlePaymentMethod("on_receipt")}
                       className={`text-left p-4 rounded-xl border transition-colors ${
                         form.paymentMethod === "on_receipt"
-                          ? "border-brand-olive bg-brand-olive/10"
+                          ? "border-brand-olive bg-brand-surface"
                           : "border-brand-olive/20 hover:border-brand-olive/50"
                       }`}
                     >
@@ -525,7 +525,7 @@ export function CheckoutForm() {
                 <ul className="space-y-3 max-h-64 overflow-y-auto pr-1">
                   {items.map((item) => (
                     <li key={item.id} className="flex gap-3">
-                      <div className="relative w-14 h-14 shrink-0 rounded-lg overflow-hidden bg-brand-sand/30">
+                      <div className="relative w-14 h-14 shrink-0 rounded-lg overflow-hidden bg-brand-surface">
                         <ProductImage
                           src={item.image}
                           alt={item.name}
@@ -582,7 +582,7 @@ export function CheckoutForm() {
 
                 <Link
                   href="/cart"
-                  className="block text-center text-sm text-brand-olive hover:text-brand-terracotta transition-colors"
+                  className="block text-center text-sm text-brand-terracotta hover:text-brand-terracotta transition-colors"
                 >
                   Вернуться в корзину
                 </Link>

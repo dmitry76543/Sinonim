@@ -22,7 +22,7 @@ const FOOTER_LINKS = {
 
 export function Footer() {
   return (
-    <footer className="bg-brand-olive-dark text-white mt-auto">
+    <footer className="bg-white text-brand-text border-t border-brand-sand mt-auto">
       <div className="mx-auto max-w-7xl px-4 md:px-6 lg:px-10 py-12 md:py-16">
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-10">
           <div className="lg:col-span-1">
@@ -32,18 +32,18 @@ export function Footer() {
                 alt="Синоним"
                 width={1000}
                 height={150}
-                className="h-7 w-auto max-w-none object-contain"
+                className="h-7 w-auto max-w-none object-contain brightness-0"
                 style={{ width: "auto" }}
               />
             </Link>
-            <p className="text-white/70 text-sm leading-relaxed max-w-xs">
+            <p className="text-brand-muted text-sm leading-relaxed max-w-xs">
               Выращенные бриллианты в серебре — современный подход к украшениям
               без компромиссов в качестве.
             </p>
           </div>
 
           <div>
-            <h4 className="text-brand-sand text-xs tracking-[0.2em] uppercase mb-4">
+            <h4 className="text-brand-terracotta text-xs tracking-[0.2em] uppercase mb-4">
               Каталог
             </h4>
             <ul className="space-y-2.5">
@@ -51,7 +51,7 @@ export function Footer() {
                 <li key={link.href}>
                   <Link
                     href={link.href}
-                    className="text-sm text-white/80 hover:text-brand-sand transition-colors"
+                    className="text-sm text-brand-text hover:text-brand-terracotta transition-colors"
                   >
                     {link.label}
                   </Link>
@@ -61,7 +61,7 @@ export function Footer() {
           </div>
 
           <div>
-            <h4 className="text-brand-sand text-xs tracking-[0.2em] uppercase mb-4">
+            <h4 className="text-brand-terracotta text-xs tracking-[0.2em] uppercase mb-4">
               Покупателям
             </h4>
             <ul className="space-y-2.5">
@@ -69,7 +69,7 @@ export function Footer() {
                 <li key={link.href}>
                   <Link
                     href={link.href}
-                    className="text-sm text-white/80 hover:text-brand-sand transition-colors"
+                    className="text-sm text-brand-text hover:text-brand-terracotta transition-colors"
                   >
                     {link.label}
                   </Link>
@@ -79,32 +79,32 @@ export function Footer() {
           </div>
 
           <div>
-            <h4 className="text-brand-sand text-xs tracking-[0.2em] uppercase mb-4">
+            <h4 className="text-brand-terracotta text-xs tracking-[0.2em] uppercase mb-4">
               Контакты
             </h4>
-            <p className="text-sm text-white/80 mb-2">Шоурум в Москве</p>
-            <p className="text-sm text-white/60 mb-3 leading-relaxed">
+            <p className="text-sm text-brand-text mb-2">Шоурум в Москве</p>
+            <p className="text-sm text-brand-muted mb-3 leading-relaxed">
               {SHOWROOM.address}
             </p>
             <MetrikaPhoneLink
               href={SITE_PHONE_TEL}
-              className="block text-sm text-brand-sand hover:text-white transition-colors mb-4"
+              className="block text-sm text-brand-terracotta hover:text-brand-terracotta-logo transition-colors mb-4"
             >
               {SITE_PHONE}
             </MetrikaPhoneLink>
-            <p className="text-sm text-white/60">
+            <p className="text-sm text-brand-muted">
               {SHOWROOM.hours}
             </p>
           </div>
         </div>
 
-        <div className="border-t border-white/10 mt-10 pt-6 flex flex-col sm:flex-row justify-between gap-4 text-xs text-white/50">
+        <div className="border-t border-brand-sand mt-10 pt-6 flex flex-col sm:flex-row justify-between gap-4 text-xs text-brand-muted">
           <p>© 2026 Синоним. Все права защищены.</p>
           <div className="flex gap-6">
-            <Link href="/privacy" className="hover:text-white/80 transition-colors">
+            <Link href="/privacy" className="hover:text-brand-text transition-colors">
               Политика конфиденциальности
             </Link>
-            <Link href="/terms" className="hover:text-white/80 transition-colors">
+            <Link href="/terms" className="hover:text-brand-text transition-colors">
               Оферта
             </Link>
           </div>

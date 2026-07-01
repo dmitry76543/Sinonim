@@ -1,4 +1,4 @@
-"use client";
+﻿"use client";
 
 import Link from "next/link";
 import { useCart } from "@/context/CartContext";
@@ -25,7 +25,7 @@ export function CartLink() {
   return (
     <Link
       href="/cart"
-      className="p-2.5 text-brand-olive-dark hover:text-brand-olive transition-colors relative"
+      className="p-2.5 text-brand-olive-dark hover:text-brand-terracotta transition-colors relative"
       aria-label={count > 0 ? `Корзина: ${count} товаров` : "Корзина"}
     >
       <IconCart />

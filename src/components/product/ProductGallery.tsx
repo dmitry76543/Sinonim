@@ -1,4 +1,4 @@
-"use client";
+﻿"use client";
 
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { createPortal } from "react-dom";
@@ -410,11 +410,11 @@ function MobileGalleryProgress({ count, activeIndex }: MobileGalleryProgressProp
   return (
     <div className="mb-3 px-1">
       <div className="mb-2 flex items-center justify-center gap-2 text-[11px] tracking-wide text-brand-muted">
-        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" aria-hidden className="text-brand-olive/50">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" aria-hidden className="text-brand-terracotta/50">
           <path d="M14 7l-5 5 5 5" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
         </svg>
         <span>Листайте влево или вправо</span>
-        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" aria-hidden className="text-brand-olive/50">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" aria-hidden className="text-brand-terracotta/50">
           <path d="M10 7l5 5-5 5" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
         </svg>
       </div>
@@ -432,7 +432,7 @@ function MobileGalleryProgress({ count, activeIndex }: MobileGalleryProgressProp
             className={`h-1 flex-1 rounded-full transition-colors ${
               activeIndex === index
                 ? "bg-brand-terracotta"
-                : "border border-dashed border-brand-olive/35 bg-brand-sand/40"
+                : "border border-dashed border-brand-olive/35 bg-brand-surface"
             }`}
           />
         ))}
@@ -887,7 +887,7 @@ function ProductGalleryModal({
             ref={closeButtonRef}
             type="button"
             onClick={onClose}
-            className="flex h-10 w-10 items-center justify-center rounded-full text-brand-muted transition-colors hover:bg-brand-sand hover:text-brand-olive-dark"
+            className="flex h-10 w-10 items-center justify-center rounded-full text-brand-muted transition-colors hover:bg-brand-sand hover:text-brand-terracotta-dark"
             aria-label="Закрыть"
           >
             <svg width="20" height="20" viewBox="0 0 24 24" fill="none" aria-hidden>

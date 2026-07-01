@@ -1,14 +1,14 @@
 @import "tailwindcss";
 
 :root {
-  --color-olive: #73a341;
-  --color-olive-dark: #4a5335;
-  --color-sand: #e8d9b5;
+  --color-olive: #525252;
+  --color-olive-dark: #141414;
+  --color-sand: #e8e8e8;
   --color-terracotta: #d47750;
   --color-terracotta-logo: #c96a4a;
   --color-surface: #ffffff;
   --color-text: #2c2c2c;
-  --color-text-muted: #6b6b6b;
+  --color-text-muted: #737373;
 }
 
 @theme inline {
@@ -26,29 +26,13 @@
 
 html {
   min-height: 100%;
-  background-color: var(--color-sand);
-  background-image:
-    radial-gradient(
-      ellipse 120% 80% at 50% -20%,
-      rgba(255, 255, 255, 0.3) 0%,
-      transparent 55%
-    ),
-    radial-gradient(
-      ellipse 90% 60% at 100% 100%,
-      rgba(115, 163, 65, 0.05) 0%,
-      transparent 50%
-    ),
-    url("/images/bg-ornament.svg");
-  background-size: 100% 100%, 100% 100%, 200px 200px;
-  background-position: center top, right bottom, center;
-  background-repeat: no-repeat, no-repeat, repeat;
-  background-attachment: fixed, fixed, fixed;
+  background-color: #ffffff;
 }
 
 body {
   position: relative;
   min-height: 100%;
-  background: transparent;
+  background: #ffffff;
   color: var(--color-text);
   font-family: var(--font-body);
 }

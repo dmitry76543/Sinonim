@@ -1,4 +1,4 @@
-"use client";
+﻿"use client";
 
 import { useState } from "react";
 import { useCompare } from "@/context/CompareContext";
@@ -54,7 +54,7 @@ export function CompareButton({
         disabled={!isReady}
         className={`inline-flex items-center justify-center gap-2 px-6 py-3.5 border text-sm tracking-widest uppercase transition-colors ${
           active
-            ? "border-brand-olive bg-brand-olive/10 text-brand-olive-dark"
+            ? "border-brand-olive bg-brand-surface text-brand-olive-dark"
             : "border-brand-olive/30 text-brand-olive-dark hover:border-brand-olive"
         } ${disabled ? "opacity-50 cursor-not-allowed" : ""} ${className}`}
         aria-pressed={active}
@@ -79,7 +79,7 @@ export function CompareButton({
         disabled={!isReady}
         className={`w-8 h-8 flex items-center justify-center rounded-full transition-colors ${
           active
-            ? "bg-brand-olive text-white opacity-100"
+            ? "bg-brand-terracotta text-white opacity-100"
             : "bg-white/90 text-brand-olive-dark opacity-0 group-hover:opacity-100"
         } ${disabled && !active ? "opacity-50 cursor-not-allowed" : ""} ${className}`}
         aria-pressed={active}
@@ -95,7 +95,7 @@ export function CompareButton({
         <IconCompare active={active} />
       </button>
       {limitHint && (
-        <span className="absolute top-full right-0 mt-2 z-10 w-44 rounded-lg bg-brand-olive-dark text-white text-[11px] leading-snug px-3 py-2 shadow-lg">
+        <span className="absolute top-full right-0 mt-2 z-10 w-44 rounded-lg bg-brand-text text-white text-[11px] leading-snug px-3 py-2 shadow-lg">
           Можно сравнить до {MAX_COMPARE_ITEMS} товаров
         </span>
       )}
