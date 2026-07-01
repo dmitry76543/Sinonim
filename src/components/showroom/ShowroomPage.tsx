@@ -2,6 +2,7 @@
 import Link from "next/link";
 import { MetrikaMapLink } from "@/components/analytics/MetrikaMapLink";
 import { MetrikaPhoneLink } from "@/components/analytics/MetrikaPhoneLink";
+import { ShowroomBookButton } from "@/components/showroom/ShowroomBookButton";
 import {
   SHOWROOM,
   SHOWROOM_MAP_EMBED_URL,
@@ -73,12 +74,7 @@ export function ShowroomPage() {
                 >
                   Смотреть каталог
                 </Link>
-                <MetrikaPhoneLink
-                  href={SITE_PHONE_TEL}
-                  className="inline-flex items-center justify-center px-8 py-3.5 border border-brand-olive/30 text-brand-olive-dark hover:border-brand-olive text-sm tracking-widest uppercase transition-colors"
-                >
-                  Записаться
-                </MetrikaPhoneLink>
+                <ShowroomBookButton className="inline-flex items-center justify-center px-8 py-3.5 border border-brand-olive/30 text-brand-olive-dark hover:border-brand-olive text-sm tracking-widest uppercase transition-colors" />
               </div>
             </div>
 

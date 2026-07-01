@@ -1,4 +1,4 @@
-﻿"use client";
+"use client";
 
 import { ProductImage } from "@/components/catalog/ProductImage";
 import Link from "next/link";

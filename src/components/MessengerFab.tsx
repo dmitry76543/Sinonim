@@ -1,9 +1,14 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
-import { MESSENGERS } from "@/lib/contacts";
+import { MESSENGERS, SITE_PHONE_TEL } from "@/lib/contacts";
+import {
+  MESSENGER_FAB_OPEN_EVENT,
+  type MessengerFabOpenDetail,
+} from "@/lib/messenger-fab";
 import {
   trackContactMax,
+  trackContactPhone,
   trackContactTelegram,
   trackContactWhatsapp,
 } from "@/lib/analytics/metrika";
@@ -36,6 +41,20 @@ function IconWhatsApp() {
   );
 }
 
+function IconPhone() {
+  return (
+    <svg width="22" height="22" viewBox="0 0 24 24" fill="none" aria-hidden>
+      <path
+        d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92Z"
+        stroke="currentColor"
+        strokeWidth="1.5"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+      />
+    </svg>
+  );
+}
+
 function IconChat() {
   return (
     <svg width="24" height="24" viewBox="0 0 24 24" fill="none" aria-hidden>
@@ -63,6 +82,7 @@ function IconClose() {
 }
 
 const ICONS = {
+  phone: IconPhone,
   max: IconMax,
   telegram: IconTelegram,
   whatsapp: IconWhatsApp,
@@ -79,9 +99,45 @@ const MESSENGER_GOALS = {
 const MESSENGER_BUTTON_BG =
   "bg-[url('/images/logo-sinonim.png')] bg-cover bg-center bg-no-repeat";
 
+const FAB_ITEMS = [
+  { id: "phone" as const, label: "Позвонить", href: SITE_PHONE_TEL },
+  ...MESSENGERS,
+];
+
 export function MessengerFab() {
   const [open, setOpen] = useState(false);
   const rootRef = useRef<HTMLDivElement>(null);
+  const toggleRef = useRef<HTMLButtonElement>(null);
+  const pendingDesktopFocusRef = useRef(false);
+
+  useEffect(() => {
+    const handleOpenRequest = (event: Event) => {
+      const detail = (event as CustomEvent<MessengerFabOpenDetail>).detail;
+      setOpen(true);
+
+      if (
+        detail?.focusOnDesktop !== false &&
+        window.matchMedia("(min-width: 768px)").matches
+      ) {
+        pendingDesktopFocusRef.current = true;
+      }
+    };
+
+    window.addEventListener(MESSENGER_FAB_OPEN_EVENT, handleOpenRequest);
+    return () =>
+      window.removeEventListener(MESSENGER_FAB_OPEN_EVENT, handleOpenRequest);
+  }, []);
+
+  useEffect(() => {
+    if (!open || !pendingDesktopFocusRef.current) return;
+
+    pendingDesktopFocusRef.current = false;
+    const timer = window.setTimeout(() => {
+      toggleRef.current?.focus({ preventScroll: true });
+    }, 320);
+
+    return () => window.clearTimeout(timer);
+  }, [open]);
 
   useEffect(() => {
     if (!open) return;
@@ -118,20 +174,26 @@ export function MessengerFab() {
         }`}
         aria-hidden={!open}
       >
-        {MESSENGERS.map((messenger, index) => {
-          const Icon = ICONS[messenger.id];
-          const closeDelay = `${(MESSENGERS.length - 1 - index) * 40}ms`;
+        {FAB_ITEMS.map((item, index) => {
+          const isPhone = item.id === "phone";
+          const Icon = ICONS[item.id];
+          const closeDelay = `${(FAB_ITEMS.length - 1 - index) * 40}ms`;
           const openDelay = `${index * 50}ms`;
 
           return (
             <a
-              key={messenger.id}
-              href={messenger.href}
-              target="_blank"
-              rel="noopener noreferrer"
+              key={item.id}
+              href={item.href}
+              {...(isPhone
+                ? {}
+                : { target: "_blank", rel: "noopener noreferrer" })}
               className="group flex items-center gap-3 origin-bottom-right"
               onClick={() => {
-                MESSENGER_GOALS[messenger.id]?.();
+                if (isPhone) {
+                  trackContactPhone();
+                } else {
+                  MESSENGER_GOALS[item.id]?.();
+                }
                 setOpen(false);
               }}
             >
@@ -143,14 +205,14 @@ export function MessengerFab() {
                 }`}
                 style={{ transitionDelay: open ? openDelay : closeDelay }}
               >
-                {messenger.label}
+                {item.label}
               </span>
               <span
                 className={`flex h-12 w-12 origin-bottom-right items-center justify-center rounded-full shadow-lg transition-all duration-300 group-hover:scale-105 ${
                   open ? "scale-100 opacity-100" : "scale-0 opacity-0"
                 } ${MESSENGER_BUTTON_BG} ${ICON_CLASS}`}
                 style={{ transitionDelay: open ? openDelay : closeDelay }}
-                aria-label={messenger.label}
+                aria-label={item.label}
               >
                 <Icon />
               </span>
@@ -160,6 +222,7 @@ export function MessengerFab() {
       </div>
 
       <button
+        ref={toggleRef}
         type="button"
         onClick={() => setOpen((value) => !value)}
         className="relative flex h-14 w-14 items-center justify-center rounded-full bg-brand-terracotta text-white shadow-xl transition-all duration-300 hover:bg-brand-terracotta-logo hover:scale-105 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand-terracotta"

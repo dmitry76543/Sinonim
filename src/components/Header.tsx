@@ -136,7 +136,7 @@ export function Header() {
   };
 
   return (
-    <header className="sticky top-0 z-50 bg-brand-surface/95 backdrop-blur-sm border-b border-brand-olive/10 relative">
+    <header className="sticky top-0 z-50 bg-brand-surface/95 backdrop-blur-sm border-b border-brand-terracotta relative">
       <div className="hidden md:flex justify-between items-center px-6 lg:px-10 py-2 text-xs text-brand-muted border-b border-brand-sand">
         <div className="flex gap-6">
           <Link href="/shipping" className="hover:text-brand-terracotta transition-colors">

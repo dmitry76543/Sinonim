@@ -1,4 +1,4 @@
-﻿import Link from "next/link";
+import Link from "next/link";
 import { SHOWROOM, SITE_PHONE, SITE_PHONE_TEL } from "@/lib/contacts";
 import { DELIVERY_FEE, FREE_DELIVERY_THRESHOLD } from "@/lib/checkout";
 

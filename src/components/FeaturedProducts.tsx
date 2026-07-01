@@ -1,4 +1,4 @@
-﻿import Link from "next/link";
+import Link from "next/link";
 import { ProductCard } from "@/components/catalog/ProductCard";
 import { getFeaturedProducts } from "@/lib/products-service";
 

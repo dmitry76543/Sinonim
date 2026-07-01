@@ -2,6 +2,7 @@ export const SITE_PHONE = "+7 (903) 761-36-97";
 export const SITE_PHONE_TEL = "tel:+79037613697";
 
 const PHONE_DIGITS = "79037613697";
+const TELEGRAM_PHONE = "+79037613697";
 const DEFAULT_MESSAGE = "Здравствуйте! Интересуют украшения Синоним";
 
 export const MESSENGERS = [
@@ -13,7 +14,7 @@ export const MESSENGERS = [
   {
     id: "telegram",
     label: "Telegram",
-    href: `https://t.me/sinonym_jewelry`,
+    href: `https://t.me/${TELEGRAM_PHONE}`,
   },
   {
     id: "whatsapp",

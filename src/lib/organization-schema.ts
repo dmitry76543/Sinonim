@@ -1,4 +1,4 @@
-import { SHOWROOM, SITE_PHONE_TEL } from "@/lib/contacts";
+import { MESSENGERS, SHOWROOM, SITE_PHONE_TEL } from "@/lib/contacts";
 import { absoluteImageUrl } from "@/lib/seo-images";
 import { getSiteUrl } from "@/lib/site-url";
 
@@ -23,7 +23,7 @@ export function buildOrganizationJsonLd(): Record<string, unknown> {
       addressCountry: "RU",
     },
     sameAs: [
-      "https://t.me/sinonym_jewelry",
+      MESSENGERS.find((m) => m.id === "telegram")!.href,
       `${siteUrl}/showroom`,
     ],
     contactPoint: {

@@ -1,4 +1,4 @@
-﻿import { WARRANTY_FAQ_ITEMS } from "@/lib/warranty-faq";
+import { WARRANTY_FAQ_ITEMS } from "@/lib/warranty-faq";
 
 function IconChevron() {
   return (
