@@ -2,6 +2,7 @@
 
 :root {
   --color-olive: #525252;
+  --color-olive-logo: #4a5335;
   --color-olive-dark: #141414;
   --color-sand: #e8e8e8;
   --color-terracotta: #d47750;
@@ -13,6 +14,7 @@
 
 @theme inline {
   --color-brand-olive: var(--color-olive);
+  --color-brand-olive-logo: var(--color-olive-logo);
   --color-brand-olive-dark: var(--color-olive-dark);
   --color-brand-sand: var(--color-sand);
   --color-brand-terracotta: var(--color-terracotta);

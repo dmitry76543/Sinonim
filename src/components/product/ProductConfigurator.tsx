@@ -82,42 +82,36 @@ export function ProductConfigurator({ product }: ProductConfiguratorProps) {
       <div className="space-y-4">
         {product.sizeOptions.length > 0 && (
           <div>
-            <label
-              htmlFor="size-select"
+            <p
+              id="size-label"
               className="block text-xs tracking-[0.15em] uppercase text-brand-muted mb-2"
             >
               Размер
-            </label>
-            <div className="relative">
-              <select
-                id="size-select"
-                value={selectedSize ?? ""}
-                onChange={(e) =>
-                  setSelectedSize(e.target.value ? e.target.value : null)
-                }
-                className="w-full appearance-none bg-brand-surface border border-brand-olive/20 rounded-lg pl-4 pr-10 py-3 text-sm text-brand-text focus:outline-none focus:border-brand-olive cursor-pointer"
-              >
-                {product.sizeOptions.map((size) => (
-                  <option key={size.value} value={size.value}>
+            </p>
+            <div
+              className="grid grid-cols-4 sm:grid-cols-5 gap-2"
+              role="radiogroup"
+              aria-labelledby="size-label"
+            >
+              {product.sizeOptions.map((size) => {
+                const isSelected = selectedSize === size.value;
+                return (
+                  <button
+                    key={size.value}
+                    type="button"
+                    role="radio"
+                    aria-checked={isSelected}
+                    onClick={() => setSelectedSize(size.value)}
+                    className={`rounded-lg border px-2 py-2.5 text-center text-sm transition-colors ${
+                      isSelected
+                        ? "border-brand-olive-logo bg-brand-olive-logo text-white font-medium"
+                        : "border-brand-olive/20 bg-brand-surface text-brand-text hover:border-brand-olive"
+                    }`}
+                  >
                     {size.label}
-                  </option>
-                ))}
-              </select>
-              <svg
-                className="absolute right-3 top-1/2 -translate-y-1/2 pointer-events-none text-brand-muted"
-                width="16"
-                height="16"
-                viewBox="0 0 24 24"
-                fill="none"
-                aria-hidden
-              >
-                <path
-                  d="M6 9l6 6 6-6"
-                  stroke="currentColor"
-                  strokeWidth="1.5"
-                  strokeLinecap="round"
-                />
-              </svg>
+                  </button>
+                );
+              })}
             </div>
             <p className="mt-2 text-xs text-brand-muted">
               <a href="/how-size-ring" className="text-brand-terracotta hover:underline">
