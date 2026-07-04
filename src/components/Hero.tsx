@@ -12,7 +12,7 @@ export function Hero() {
             <div className="relative w-full max-w-md lg:max-w-lg">
               <div className="relative aspect-square overflow-hidden rounded-2xl shadow-lg border border-brand-sand">
                 <AutoplayVideo
-                  src="/images/video_hero_2_1.mp4"
+                  src="/images/video-hero_1.mp4"
                   className="absolute inset-0 h-full w-full object-cover object-center scale-125"
                   aria-label="Кольцо с лабораторным бриллиантом в серебре"
                 />
