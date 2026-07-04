@@ -309,6 +309,27 @@ export function numericSizesFromOptions(
     .filter((size) => !Number.isNaN(size));
 }
 
+function parseSizeSortKey(value: string): number {
+  const match = value.trim().replace(",", ".").match(/(\d+(?:\.\d+)?)/);
+  if (!match) return Number.NaN;
+  return Number.parseFloat(match[1]);
+}
+
+export function sortProductSizeOptions(
+  options: ProductSizeOption[],
+): ProductSizeOption[] {
+  return [...options].sort((a, b) => {
+    const aNum = parseSizeSortKey(a.value);
+    const bNum = parseSizeSortKey(b.value);
+    const aValid = !Number.isNaN(aNum);
+    const bValid = !Number.isNaN(bNum);
+    if (aValid && bValid) return aNum - bNum;
+    if (aValid) return -1;
+    if (bValid) return 1;
+    return a.label.localeCompare(b.label, "ru", { numeric: true });
+  });
+}
+
 export function getProductSizeLabel(
   product: Pick<Product, "sizeOptions">,
   sizeValue: string | null,
@@ -364,7 +385,9 @@ export function getProductDetails(slug: string): ProductDetails | undefined {
     clarity: product.clarity ?? "5",
     cut: product.cut ?? "Круглая (57 граней)",
     metal: product.metal ?? "Серебро 925, родиевое покрытие",
-    sizeOptions: product.sizeOptions ?? (hasSizes ? [...DEFAULT_SIZE_OPTIONS] : []),
+    sizeOptions: sortProductSizeOptions(
+      product.sizeOptions ?? (hasSizes ? [...DEFAULT_SIZE_OPTIONS] : []),
+    ),
     stoneVariants,
   };
 }

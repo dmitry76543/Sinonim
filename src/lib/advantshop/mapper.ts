@@ -1,5 +1,5 @@
 import type { CategorySlug, Product, ProductDetails, ProductSizeOption, StoneVariant } from "@/lib/products";
-import { defaultRingBraceletSizeOptions } from "@/lib/products";
+import { defaultRingBraceletSizeOptions, sortProductSizeOptions } from "@/lib/products";
 import { parseCaratWeightFromDescription } from "@/lib/product-weight";
 import { resolveComplectNumber } from "@/lib/product-complect";
 import { buildSeoProductSlug } from "@/lib/product-slug";
@@ -188,7 +188,7 @@ function resolveCatalogSizeOptions(
   const needsSizes =
     category === "rings" || category === "bracelets" || sizeOptions.length > 0;
   if (!needsSizes) return undefined;
-  if (sizeOptions.length) return sizeOptions;
+  if (sizeOptions.length) return sortProductSizeOptions(sizeOptions);
   if (category === "rings" || category === "bracelets") {
     return defaultRingBraceletSizeOptions();
   }
@@ -305,7 +305,7 @@ export function mapProductDetails(
     metal:
       parseProperty(properties, ["металл", "проба", "silver"]) ??
       "Серебро 925, родиевое покрытие",
-    sizeOptions: hasSizes ? sizeOptions : [],
+    sizeOptions: hasSizes ? sortProductSizeOptions(sizeOptions) : [],
     stoneVariants,
     artNo: artNo || undefined,
     sizeArtNos,
