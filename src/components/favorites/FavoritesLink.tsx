@@ -16,13 +16,13 @@ function IconHeart() {
   );
 }
 
-export function FavoritesLink() {
+export function FavoritesLink({ className = "" }: { className?: string }) {
   const { count, isReady } = useFavorites();
 
   return (
     <Link
       href="/favorites"
-      className="flex p-2 sm:p-2.5 text-brand-olive-dark hover:text-brand-terracotta transition-colors relative"
+      className={`flex text-brand-olive-dark hover:text-brand-terracotta transition-colors relative ${className || "p-2 sm:p-2.5"}`}
       aria-label={count > 0 ? `Избранное: ${count} товаров` : "Избранное"}
     >
       <IconHeart />

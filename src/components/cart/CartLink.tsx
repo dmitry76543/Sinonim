@@ -19,13 +19,13 @@ function IconCart() {
   );
 }
 
-export function CartLink() {
+export function CartLink({ className = "" }: { className?: string }) {
   const { count, isReady } = useCart();
 
   return (
     <Link
       href="/cart"
-      className="p-2.5 text-brand-olive-dark hover:text-brand-terracotta transition-colors relative"
+      className={`text-brand-olive-dark hover:text-brand-terracotta transition-colors relative ${className || "p-2.5"}`}
       aria-label={count > 0 ? `Корзина: ${count} товаров` : "Корзина"}
     >
       <IconCart />

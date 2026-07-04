@@ -31,14 +31,16 @@ function IconSearch({ className = "size-6 lg:size-5" }: { className?: string }) 
 function SearchToggleButton({
   searchOpen,
   onSearchToggle,
+  className = "",
 }: {
   searchOpen: boolean;
   onSearchToggle: () => void;
+  className?: string;
 }) {
   return (
     <button
       type="button"
-      className="p-2 sm:p-2.5 text-brand-olive-dark hover:text-brand-terracotta transition-colors"
+      className={`text-brand-olive-dark hover:text-brand-terracotta transition-colors ${className || "p-2 sm:p-2.5"}`}
       aria-label={searchOpen ? "Закрыть поиск" : "Поиск"}
       aria-expanded={searchOpen}
       aria-controls="header-search"
@@ -171,11 +173,11 @@ export function Header() {
       </div>
 
       <div className="px-4 md:px-6 lg:px-10 py-1 md:py-3 lg:py-4">
-        <div className="flex items-center lg:hidden">
+        <div className="flex items-center -mx-4 px-0 md:-mx-6 lg:mx-0 lg:hidden">
           <div className="flex flex-1 items-center justify-start min-w-0">
             <button
               type="button"
-              className="p-2 text-brand-olive-dark shrink-0"
+              className="py-2 pl-3 pr-0.5 text-brand-olive-dark shrink-0"
               aria-label={menuOpen ? "Закрыть меню" : "Открыть меню"}
               aria-expanded={menuOpen}
               aria-controls="mobile-nav"
@@ -204,20 +206,17 @@ export function Header() {
             <SearchToggleButton
               searchOpen={searchOpen}
               onSearchToggle={toggleSearch}
+              className="py-2 px-0.5"
             />
           </div>
 
-          <div className="shrink-0 px-3 sm:px-4">
+          <div className="shrink-0 px-2 sm:px-3">
             <Logo compact />
           </div>
 
           <div className="flex flex-1 items-center justify-end min-w-0">
-            <HeaderActions
-              searchOpen={searchOpen}
-              onSearchToggle={toggleSearch}
-              showSearch={false}
-              showCompare={false}
-            />
+            <FavoritesLink className="py-2 pl-2 pr-0.5" />
+            <CartLink className="py-2 pl-0.5 pr-3" />
           </div>
         </div>
 
