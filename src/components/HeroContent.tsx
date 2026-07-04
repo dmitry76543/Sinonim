@@ -9,7 +9,7 @@ export function HeroContent({ className = "" }: HeroContentProps) {
   return (
     <div className={className}>
       <p
-        className="hero-unroll text-brand-terracotta text-sm tracking-[0.25em] uppercase mb-4"
+        className="hero-unroll hidden lg:block text-brand-terracotta text-sm tracking-[0.25em] uppercase mb-4"
         style={{ animationDelay: "0ms" }}
       >
         Лабораторные бриллианты · Серебро 925
