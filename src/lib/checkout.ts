@@ -51,24 +51,39 @@ export function normalizePhone(value: string): string {
 }
 
 export function formatPhoneInput(value: string): string {
-  const digits = normalizePhone(value);
+  const digits = normalizePhone(value).slice(0, 11);
   if (!digits) return "";
 
   let normalized = digits;
   if (normalized.startsWith("8")) {
     normalized = `7${normalized.slice(1)}`;
-  }
-  if (!normalized.startsWith("7")) {
+  } else if (!normalized.startsWith("7")) {
     normalized = `7${normalized}`;
   }
+  normalized = normalized.slice(0, 11);
 
-  const rest = normalized.slice(1, 11);
+  const rest = normalized.slice(1);
   let result = "+7";
   if (rest.length > 0) result += ` (${rest.slice(0, 3)}`;
-  if (rest.length >= 3) result += `) ${rest.slice(3, 6)}`;
-  if (rest.length >= 6) result += `-${rest.slice(6, 8)}`;
-  if (rest.length >= 8) result += `-${rest.slice(8, 10)}`;
+  if (rest.length >= 4) result += `) ${rest.slice(3, 6)}`;
+  if (rest.length >= 7) result += `-${rest.slice(6, 8)}`;
+  if (rest.length >= 9) result += `-${rest.slice(8, 10)}`;
   return result;
+}
+
+export function applyPhoneInputChange(previous: string, next: string): string {
+  const prevDigits = normalizePhone(previous);
+  const nextDigits = normalizePhone(next);
+
+  if (
+    next.length < previous.length &&
+    nextDigits.length === prevDigits.length &&
+    prevDigits.length > 0
+  ) {
+    return formatPhoneInput(prevDigits.slice(0, -1));
+  }
+
+  return formatPhoneInput(next);
 }
 
 export function isValidPhone(phone: string): boolean {

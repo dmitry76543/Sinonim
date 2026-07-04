@@ -1,6 +1,7 @@
 ﻿"use client";
 
 import { ProductImage } from "@/components/catalog/ProductImage";
+import { ProductQuickViewModal } from "@/components/product/ProductQuickViewModal";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useEffect, useMemo, useRef, useState } from "react";
@@ -11,7 +12,7 @@ import {
   trackPurchase,
 } from "@/lib/analytics/metrika";
 import {
-  formatPhoneInput,
+  applyPhoneInputChange,
   generateOrderId,
   getDeliveryFee,
   DELIVERY_FEE,
@@ -27,6 +28,7 @@ import {
   type PaymentMethod,
 } from "@/lib/checkout";
 import { formatPrice } from "@/lib/products";
+import type { CartItem } from "@/lib/cart";
 
 const initialForm: CheckoutFormData = {
   name: "",
@@ -46,6 +48,7 @@ export function CheckoutForm() {
   const [error, setError] = useState<string | null>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [completedOrder, setCompletedOrder] = useState<Order | null>(null);
+  const [previewItem, setPreviewItem] = useState<CartItem | null>(null);
   const [yookassaEnabled, setYookassaEnabled] = useState(false);
   const checkoutTrackedRef = useRef(false);
 
@@ -90,7 +93,7 @@ export function CheckoutForm() {
   };
 
   const handlePhoneChange = (value: string) => {
-    updateField("phone", formatPhoneInput(value));
+    updateField("phone", applyPhoneInputChange(form.phone, value));
   };
 
   const handleDeliveryMethod = (method: DeliveryMethod) => {
@@ -524,24 +527,31 @@ export function CheckoutForm() {
 
                 <ul className="space-y-3 max-h-64 overflow-y-auto pr-1">
                   {items.map((item) => (
-                    <li key={item.id} className="flex gap-3">
-                      <div className="relative w-14 h-14 shrink-0 rounded-lg overflow-hidden bg-brand-surface">
-                        <ProductImage
-                          src={item.image}
-                          alt={item.name}
-                          fill
-                          className="object-cover"
-                          sizes="56px"
-                        />
-                      </div>
-                      <div className="flex-1 min-w-0">
-                        <p className="text-sm text-brand-olive-dark line-clamp-2">
-                          {item.name}
-                        </p>
-                        <p className="text-xs text-brand-muted mt-0.5">
-                          {item.quantity} × {formatPrice(item.price)}
-                        </p>
-                      </div>
+                    <li key={item.id}>
+                      <button
+                        type="button"
+                        onClick={() => setPreviewItem(item)}
+                        className="flex w-full gap-3 rounded-lg p-1 text-left transition-colors hover:bg-brand-sand/70"
+                        aria-label={`Открыть карточку товара ${item.name}`}
+                      >
+                        <div className="relative w-14 h-14 shrink-0 rounded-lg overflow-hidden bg-brand-surface">
+                          <ProductImage
+                            src={item.image}
+                            alt=""
+                            fill
+                            className="object-cover"
+                            sizes="56px"
+                          />
+                        </div>
+                        <div className="flex-1 min-w-0">
+                          <p className="text-sm text-brand-olive-dark line-clamp-2">
+                            {item.name}
+                          </p>
+                          <p className="text-xs text-brand-muted mt-0.5">
+                            {item.quantity} × {formatPrice(item.price)}
+                          </p>
+                        </div>
+                      </button>
                     </li>
                   ))}
                 </ul>
@@ -598,6 +608,11 @@ export function CheckoutForm() {
           </div>
         </form>
       </div>
+      <ProductQuickViewModal
+        cartItem={previewItem}
+        open={previewItem !== null}
+        onClose={() => setPreviewItem(null)}
+      />
     </section>
   );
 }
