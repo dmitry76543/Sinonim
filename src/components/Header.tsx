@@ -58,9 +58,7 @@ function Logo({ compact = false }: { compact?: boolean }) {
     <Link
       href="/"
       className={`flex flex-col group shrink-0 min-w-0 ${
-        compact
-          ? "col-start-2 justify-self-center md:col-start-1 md:justify-self-start items-center md:items-start"
-          : "items-center md:items-start"
+        compact ? "items-center" : "items-center md:items-start"
       }`}
     >
       <span
@@ -150,10 +148,10 @@ export function Header() {
       </div>
 
       <div className="px-4 md:px-6 lg:px-10 py-4">
-        <div className="grid grid-cols-[2.25rem_minmax(0,1fr)_auto] md:grid-cols-[minmax(0,1fr)_auto] items-center gap-2 lg:hidden">
+        <div className="relative flex items-center justify-between gap-2 lg:hidden">
           <button
             type="button"
-            className="p-2 text-brand-olive-dark shrink-0 justify-self-start"
+            className="relative z-10 p-2 text-brand-olive-dark shrink-0"
             aria-label={menuOpen ? "Закрыть меню" : "Открыть меню"}
             aria-expanded={menuOpen}
             aria-controls="mobile-nav"
@@ -180,9 +178,13 @@ export function Header() {
             )}
           </button>
 
-          <Logo compact />
+          <div className="pointer-events-none absolute inset-x-0 flex justify-center">
+            <div className="pointer-events-auto">
+              <Logo compact />
+            </div>
+          </div>
 
-          <div className="col-start-3 md:col-start-2 flex items-center gap-0.5 sm:gap-1 shrink-0 justify-self-end">
+          <div className="relative z-10 flex items-center gap-0.5 sm:gap-1 shrink-0">
             <HeaderActions searchOpen={searchOpen} onSearchToggle={toggleSearch} />
           </div>
         </div>
