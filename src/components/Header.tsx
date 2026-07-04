@@ -170,7 +170,7 @@ export function Header() {
         </MetrikaPhoneLink>
       </div>
 
-      <div className="px-4 md:px-6 lg:px-10 py-4">
+      <div className="px-4 md:px-6 lg:px-10 py-2 md:py-3 lg:py-4">
         <div className="relative flex items-center justify-between gap-2 lg:hidden">
           <div className="relative z-10 flex items-center shrink-0">
             <button
@@ -233,7 +233,7 @@ export function Header() {
             />
             <nav
               id="mobile-nav"
-              className="fixed inset-x-0 top-[calc(3.5rem+1px)] z-40 flex max-h-[calc(100dvh-3.5rem)] flex-col border-b border-brand-olive/10 bg-brand-surface shadow-lg lg:hidden md:top-[calc(5.5rem+1px)] md:max-h-[calc(100dvh-5.5rem)]"
+              className="fixed inset-x-0 top-[calc(3.375rem+1px)] z-40 flex max-h-[calc(100dvh-3.375rem)] flex-col border-b border-brand-olive/10 bg-brand-surface shadow-lg lg:hidden md:top-[calc(5.25rem+1px)] md:max-h-[calc(100dvh-5.25rem)]"
             >
               <div className="shrink-0 px-4 pt-6 pb-4">
                 <SearchForm compact onSubmit={closeMenu} />
@@ -320,7 +320,7 @@ export function Header() {
         {searchOpen && (
           <div
             id="header-search"
-            className="mt-4 border-t border-brand-olive/10 pt-4 lg:mt-0 lg:border-t-0 lg:pt-0 lg:absolute lg:left-0 lg:right-0 lg:top-full lg:border-b lg:border-brand-olive/10 lg:bg-brand-surface lg:px-10 lg:py-4 lg:shadow-sm"
+            className="mt-2 border-t border-brand-olive/10 pt-2 md:mt-3 md:pt-3 lg:mt-0 lg:border-t-0 lg:pt-0 lg:absolute lg:left-0 lg:right-0 lg:top-full lg:border-b lg:border-brand-olive/10 lg:bg-brand-surface lg:px-10 lg:py-4 lg:shadow-sm"
           >
             <div className="mx-auto max-w-xl lg:max-w-2xl">
               <SearchForm autoFocus compact onSubmit={closeSearch} />
