@@ -5,7 +5,7 @@ import { useFavorites } from "@/context/FavoritesContext";
 
 function IconHeart() {
   return (
-    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" aria-hidden>
+    <svg className="size-6 lg:size-5" viewBox="0 0 24 24" fill="none" aria-hidden>
       <path
         d="M12 20.5s-7-4.6-7-10a4 4 0 0 1 7-2.2A4 4 0 0 1 19 10.5c0 5.4-7 10-7 10Z"
         stroke="currentColor"

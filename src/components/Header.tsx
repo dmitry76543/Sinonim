@@ -19,9 +19,9 @@ const NAV_ITEMS = [
   { label: "О бренде", href: "/about" },
 ];
 
-function IconSearch() {
+function IconSearch({ className = "size-6 lg:size-5" }: { className?: string }) {
   return (
-    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" aria-hidden>
+    <svg className={className} viewBox="0 0 24 24" fill="none" aria-hidden>
       <circle cx="11" cy="11" r="7" stroke="currentColor" strokeWidth="1.5" />
       <path d="M20 20L16.5 16.5" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" />
     </svg>
@@ -170,7 +170,7 @@ export function Header() {
         </MetrikaPhoneLink>
       </div>
 
-      <div className="px-4 md:px-6 lg:px-10 py-2 md:py-3 lg:py-4">
+      <div className="px-4 md:px-6 lg:px-10 py-1 md:py-3 lg:py-4">
         <div className="relative flex items-center justify-between gap-2 lg:hidden">
           <div className="relative z-10 flex items-center shrink-0">
             <button
@@ -182,7 +182,7 @@ export function Header() {
               onClick={openMenu}
             >
               {menuOpen ? (
-                <svg width="22" height="22" viewBox="0 0 24 24" fill="none" aria-hidden>
+                <svg className="size-6" viewBox="0 0 24 24" fill="none" aria-hidden>
                   <path
                     d="M18 6 6 18M6 6l12 12"
                     stroke="currentColor"
@@ -191,7 +191,7 @@ export function Header() {
                   />
                 </svg>
               ) : (
-                <svg width="22" height="22" viewBox="0 0 24 24" fill="none" aria-hidden>
+                <svg className="size-6" viewBox="0 0 24 24" fill="none" aria-hidden>
                   <path
                     d="M4 7h16M4 12h16M4 17h16"
                     stroke="currentColor"
@@ -233,7 +233,7 @@ export function Header() {
             />
             <nav
               id="mobile-nav"
-              className="fixed inset-x-0 top-[calc(3.375rem+1px)] z-40 flex max-h-[calc(100dvh-3.375rem)] flex-col border-b border-brand-olive/10 bg-brand-surface shadow-lg lg:hidden md:top-[calc(5.25rem+1px)] md:max-h-[calc(100dvh-5.25rem)]"
+              className="fixed inset-x-0 top-[calc(3rem+1px)] z-40 flex max-h-[calc(100dvh-3rem)] flex-col border-b border-brand-olive/10 bg-brand-surface shadow-lg lg:hidden md:top-[calc(6rem+1px)] md:max-h-[calc(100dvh-6rem)]"
             >
               <div className="shrink-0 px-4 pt-6 pb-4">
                 <SearchForm compact onSubmit={closeMenu} />

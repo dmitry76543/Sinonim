@@ -5,7 +5,7 @@ import { useCart } from "@/context/CartContext";
 
 function IconCart() {
   return (
-    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" aria-hidden>
+    <svg className="size-6 lg:size-5" viewBox="0 0 24 24" fill="none" aria-hidden>
       <path
         d="M6 6h15l-1.5 9h-12L6 6Z"
         stroke="currentColor"
