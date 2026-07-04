@@ -87,7 +87,7 @@ function Logo({ compact = false }: { compact?: boolean }) {
         role="img"
         aria-label="Синоним"
         className={`logo-brand block aspect-[20/3] max-w-full object-contain ${
-          compact ? "h-5 max-w-[6.5rem] sm:max-w-[7rem]" : "h-7 md:h-8"
+          compact ? "logo-brand-bold h-5 max-w-[6.5rem] sm:max-w-[7rem]" : "h-7 md:h-8"
         }`}
       />
       {!compact && (
@@ -171,8 +171,8 @@ export function Header() {
       </div>
 
       <div className="px-4 md:px-6 lg:px-10 py-1 md:py-3 lg:py-4">
-        <div className="relative flex items-center justify-between gap-2 lg:hidden">
-          <div className="relative z-10 flex items-center shrink-0">
+        <div className="flex items-center lg:hidden">
+          <div className="flex flex-1 items-center justify-start min-w-0">
             <button
               type="button"
               className="p-2 text-brand-olive-dark shrink-0"
@@ -207,13 +207,11 @@ export function Header() {
             />
           </div>
 
-          <div className="pointer-events-none absolute inset-x-0 flex justify-center px-24">
-            <div className="pointer-events-auto max-w-full">
-              <Logo compact />
-            </div>
+          <div className="shrink-0 px-3 sm:px-4">
+            <Logo compact />
           </div>
 
-          <div className="relative z-10 flex items-center gap-0.5 shrink-0">
+          <div className="flex flex-1 items-center justify-end min-w-0">
             <HeaderActions
               searchOpen={searchOpen}
               onSearchToggle={toggleSearch}
@@ -235,11 +233,7 @@ export function Header() {
               id="mobile-nav"
               className="fixed inset-x-0 top-[calc(3rem+1px)] z-40 flex max-h-[calc(100dvh-3rem)] flex-col border-b border-brand-olive/10 bg-brand-surface shadow-lg lg:hidden md:top-[calc(6rem+1px)] md:max-h-[calc(100dvh-6rem)]"
             >
-              <div className="shrink-0 px-4 pt-6 pb-4">
-                <SearchForm compact onSubmit={closeMenu} />
-              </div>
-
-              <div className="min-h-0 flex-1 overflow-y-auto px-4 pb-6">
+              <div className="min-h-0 flex-1 overflow-y-auto px-4 pt-4 pb-6">
               <ul className="flex flex-col gap-1">
                 {NAV_ITEMS.map((item) => (
                   <li key={item.href}>
