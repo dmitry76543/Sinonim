@@ -47,6 +47,18 @@ body {
   font-family: var(--font-body);
 }
 
+.logo-brand {
+  background-color: var(--color-olive-logo);
+  mask-image: url("/images/logo_20260527190756.png");
+  mask-size: contain;
+  mask-repeat: no-repeat;
+  mask-position: center;
+  -webkit-mask-image: url("/images/logo_20260527190756.png");
+  -webkit-mask-size: contain;
+  -webkit-mask-repeat: no-repeat;
+  -webkit-mask-position: center;
+}
+
 @keyframes hero-unroll {
   from {
     opacity: 0;

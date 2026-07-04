@@ -1,7 +1,6 @@
 ﻿"use client";
 
 import { useEffect, useState } from "react";
-import Image from "next/image";
 import Link from "next/link";
 import { CartLink } from "@/components/cart/CartLink";
 import { CompareLink } from "@/components/compare/CompareLink";
@@ -64,16 +63,12 @@ function Logo({ compact = false }: { compact?: boolean }) {
           : "items-center md:items-start"
       }`}
     >
-      <Image
-        src="/images/logo_20260527190756.png"
-        alt="Синоним"
-        width={1000}
-        height={150}
-        className={`w-auto max-w-full object-contain brightness-0 ${
+      <span
+        role="img"
+        aria-label="Синоним"
+        className={`logo-brand block aspect-[20/3] max-w-full object-contain ${
           compact ? "h-6 max-w-[8.75rem] sm:h-7 sm:max-w-[10rem]" : "h-7 md:h-8"
         }`}
-        style={{ width: "auto" }}
-        priority
       />
       {!compact && (
         <span className="hidden sm:block text-[10px] md:text-xs text-brand-muted tracking-wide mt-1 text-center md:text-left">
