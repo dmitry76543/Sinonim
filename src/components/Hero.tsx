@@ -5,8 +5,8 @@ export function Hero() {
   return (
     <section className="relative overflow-hidden bg-white border-b border-brand-sand">
       <div className="relative mx-auto max-w-7xl lg:px-10">
-        <div className="grid lg:grid-cols-2 gap-8 lg:gap-12 items-center lg:min-h-[580px]">
-          <HeroContent className="order-2 lg:order-1 px-4 md:px-6 lg:px-10 py-8 lg:py-16" />
+        <div className="grid lg:grid-cols-2 gap-4 lg:gap-12 items-center lg:min-h-[580px]">
+          <HeroContent className="order-2 lg:order-1 px-4 md:px-6 lg:px-10 pt-4 pb-8 lg:py-16" />
 
           <div className="relative order-1 lg:order-2 flex justify-center lg:justify-end lg:py-16">
             <div className="relative w-full lg:max-w-lg">

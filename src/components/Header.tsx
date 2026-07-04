@@ -172,12 +172,12 @@ export function Header() {
         </MetrikaPhoneLink>
       </div>
 
-      <div className="px-4 md:px-6 lg:px-10 py-1 md:py-3 lg:py-4">
+      <div className="px-4 md:px-6 lg:px-10 py-0 md:py-3 lg:py-4">
         <div className="flex items-center -mx-4 px-0 md:-mx-6 lg:mx-0 lg:hidden">
           <div className="flex flex-1 items-center justify-start min-w-0">
             <button
               type="button"
-              className="py-2 pl-3 pr-0.5 text-brand-olive-dark shrink-0"
+              className="py-1 pl-3 pr-0.5 text-brand-olive-dark shrink-0"
               aria-label={menuOpen ? "Закрыть меню" : "Открыть меню"}
               aria-expanded={menuOpen}
               aria-controls="mobile-nav"
@@ -206,7 +206,7 @@ export function Header() {
             <SearchToggleButton
               searchOpen={searchOpen}
               onSearchToggle={toggleSearch}
-              className="py-2 px-0.5"
+              className="py-1 px-0.5"
             />
           </div>
 
@@ -215,8 +215,8 @@ export function Header() {
           </div>
 
           <div className="flex flex-1 items-center justify-end min-w-0">
-            <FavoritesLink className="py-2 pl-2 pr-0.5" />
-            <CartLink className="py-2 pl-0.5 pr-3" />
+            <FavoritesLink className="py-1 pl-2 pr-0.5" />
+            <CartLink className="py-1 pl-0.5 pr-3" />
           </div>
         </div>
 
@@ -230,7 +230,7 @@ export function Header() {
             />
             <nav
               id="mobile-nav"
-              className="fixed inset-x-0 top-[calc(3rem+1px)] z-40 flex max-h-[calc(100dvh-3rem)] flex-col border-b border-brand-olive/10 bg-brand-surface shadow-lg lg:hidden md:top-[calc(6rem+1px)] md:max-h-[calc(100dvh-6rem)]"
+              className="fixed inset-x-0 top-[calc(2rem+1px)] z-40 flex max-h-[calc(100dvh-2rem)] flex-col border-b border-brand-olive/10 bg-brand-surface shadow-lg lg:hidden md:top-[calc(5.75rem+1px)] md:max-h-[calc(100dvh-5.75rem)]"
             >
               <div className="min-h-0 flex-1 overflow-y-auto px-4 pt-4 pb-6">
               <ul className="flex flex-col gap-1">
