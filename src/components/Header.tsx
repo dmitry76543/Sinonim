@@ -7,6 +7,7 @@ import { CompareLink } from "@/components/compare/CompareLink";
 import { FavoritesLink } from "@/components/favorites/FavoritesLink";
 import { MetrikaPhoneLink } from "@/components/analytics/MetrikaPhoneLink";
 import { SearchForm } from "@/components/search/SearchForm";
+import { useCompare } from "@/context/CompareContext";
 import { SITE_PHONE, SITE_PHONE_TEL } from "@/lib/contacts";
 
 const NAV_ITEMS = [
@@ -27,7 +28,7 @@ function IconSearch() {
   );
 }
 
-function HeaderActions({
+function SearchToggleButton({
   searchOpen,
   onSearchToggle,
 }: {
@@ -35,19 +36,40 @@ function HeaderActions({
   onSearchToggle: () => void;
 }) {
   return (
+    <button
+      type="button"
+      className="p-2 sm:p-2.5 text-brand-olive-dark hover:text-brand-terracotta transition-colors"
+      aria-label={searchOpen ? "Закрыть поиск" : "Поиск"}
+      aria-expanded={searchOpen}
+      aria-controls="header-search"
+      onClick={onSearchToggle}
+    >
+      <IconSearch />
+    </button>
+  );
+}
+
+function HeaderActions({
+  searchOpen,
+  onSearchToggle,
+  showSearch = true,
+  showCompare = true,
+}: {
+  searchOpen: boolean;
+  onSearchToggle: () => void;
+  showSearch?: boolean;
+  showCompare?: boolean;
+}) {
+  return (
     <>
-      <button
-        type="button"
-        className="p-2 sm:p-2.5 text-brand-olive-dark hover:text-brand-terracotta transition-colors"
-        aria-label={searchOpen ? "Закрыть поиск" : "Поиск"}
-        aria-expanded={searchOpen}
-        aria-controls="header-search"
-        onClick={onSearchToggle}
-      >
-        <IconSearch />
-      </button>
+      {showSearch && (
+        <SearchToggleButton
+          searchOpen={searchOpen}
+          onSearchToggle={onSearchToggle}
+        />
+      )}
       <FavoritesLink />
-      <CompareLink />
+      {showCompare && <CompareLink />}
       <CartLink />
     </>
   );
@@ -65,7 +87,7 @@ function Logo({ compact = false }: { compact?: boolean }) {
         role="img"
         aria-label="Синоним"
         className={`logo-brand block aspect-[20/3] max-w-full object-contain ${
-          compact ? "h-6 max-w-[8.75rem] sm:h-7 sm:max-w-[10rem]" : "h-7 md:h-8"
+          compact ? "h-5 max-w-[6.5rem] sm:max-w-[7rem]" : "h-7 md:h-8"
         }`}
       />
       {!compact && (
@@ -80,6 +102,7 @@ function Logo({ compact = false }: { compact?: boolean }) {
 export function Header() {
   const [menuOpen, setMenuOpen] = useState(false);
   const [searchOpen, setSearchOpen] = useState(false);
+  const { count: compareCount, isReady: compareReady } = useCompare();
 
   useEffect(() => {
     if (!menuOpen) return;
@@ -149,43 +172,54 @@ export function Header() {
 
       <div className="px-4 md:px-6 lg:px-10 py-4">
         <div className="relative flex items-center justify-between gap-2 lg:hidden">
-          <button
-            type="button"
-            className="relative z-10 p-2 text-brand-olive-dark shrink-0"
-            aria-label={menuOpen ? "Закрыть меню" : "Открыть меню"}
-            aria-expanded={menuOpen}
-            aria-controls="mobile-nav"
-            onClick={openMenu}
-          >
-            {menuOpen ? (
-              <svg width="22" height="22" viewBox="0 0 24 24" fill="none" aria-hidden>
-                <path
-                  d="M18 6 6 18M6 6l12 12"
-                  stroke="currentColor"
-                  strokeWidth="1.5"
-                  strokeLinecap="round"
-                />
-              </svg>
-            ) : (
-              <svg width="22" height="22" viewBox="0 0 24 24" fill="none" aria-hidden>
-                <path
-                  d="M4 7h16M4 12h16M4 17h16"
-                  stroke="currentColor"
-                  strokeWidth="1.5"
-                  strokeLinecap="round"
-                />
-              </svg>
-            )}
-          </button>
+          <div className="relative z-10 flex items-center shrink-0">
+            <button
+              type="button"
+              className="p-2 text-brand-olive-dark shrink-0"
+              aria-label={menuOpen ? "Закрыть меню" : "Открыть меню"}
+              aria-expanded={menuOpen}
+              aria-controls="mobile-nav"
+              onClick={openMenu}
+            >
+              {menuOpen ? (
+                <svg width="22" height="22" viewBox="0 0 24 24" fill="none" aria-hidden>
+                  <path
+                    d="M18 6 6 18M6 6l12 12"
+                    stroke="currentColor"
+                    strokeWidth="1.5"
+                    strokeLinecap="round"
+                  />
+                </svg>
+              ) : (
+                <svg width="22" height="22" viewBox="0 0 24 24" fill="none" aria-hidden>
+                  <path
+                    d="M4 7h16M4 12h16M4 17h16"
+                    stroke="currentColor"
+                    strokeWidth="1.5"
+                    strokeLinecap="round"
+                  />
+                </svg>
+              )}
+            </button>
+            <SearchToggleButton
+              searchOpen={searchOpen}
+              onSearchToggle={toggleSearch}
+            />
+          </div>
 
-          <div className="pointer-events-none absolute inset-x-0 flex justify-center">
-            <div className="pointer-events-auto">
+          <div className="pointer-events-none absolute inset-x-0 flex justify-center px-24">
+            <div className="pointer-events-auto max-w-full">
               <Logo compact />
             </div>
           </div>
 
-          <div className="relative z-10 flex items-center gap-0.5 sm:gap-1 shrink-0">
-            <HeaderActions searchOpen={searchOpen} onSearchToggle={toggleSearch} />
+          <div className="relative z-10 flex items-center gap-0.5 shrink-0">
+            <HeaderActions
+              searchOpen={searchOpen}
+              onSearchToggle={toggleSearch}
+              showSearch={false}
+              showCompare={false}
+            />
           </div>
         </div>
 
@@ -227,6 +261,14 @@ export function Header() {
                   onClick={closeMenu}
                 >
                   Весь каталог
+                </Link>
+                <Link
+                  href="/compare"
+                  className="hover:text-brand-terracotta transition-colors"
+                  onClick={closeMenu}
+                >
+                  Сравнение
+                  {compareReady && compareCount > 0 ? ` · ${compareCount}` : ""}
                 </Link>
                 <Link
                   href="/shipping"
