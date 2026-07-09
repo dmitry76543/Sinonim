@@ -30,10 +30,7 @@ export function ProductPage({
     ...Object.values(product.sizeArtNos ?? {}),
     ...(product.offerArtNos ?? []),
   ]);
-  const defaultStoneLabel =
-    product.stoneVariants.find(
-      (variant) => Math.abs(variant.weight - product.stoneWeight) < 0.001,
-    )?.label ?? product.stoneVariants[0]?.label ?? "";
+  const cartStoneLabel = `${diamondWeight} карат`;
   return (
     <section className="py-8 md:py-12">
       <ProductViewTracker
@@ -84,7 +81,7 @@ export function ProductPage({
               productImage={product.image}
               category={product.category}
               stoneWeight={product.stoneWeight}
-              stoneLabel={defaultStoneLabel}
+              stoneLabel={cartStoneLabel}
             />
 
             <div>

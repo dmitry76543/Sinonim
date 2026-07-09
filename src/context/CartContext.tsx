@@ -16,6 +16,7 @@ import {
   getCartTotal,
   type CartItem,
 } from "@/lib/cart";
+import { formatCaratWeight } from "@/lib/product-weight";
 
 type AddToCartInput = {
   productSlug: string;
@@ -103,7 +104,7 @@ export function CartProvider({ children }: { children: ReactNode }) {
             return {
               item,
               freshWeight,
-              freshLabel: freshWeight >= 1 ? "1 карат" : `${freshWeight} карат`,
+              freshLabel: `${formatCaratWeight(freshWeight)} карат`,
             };
           } catch {
             return null;
