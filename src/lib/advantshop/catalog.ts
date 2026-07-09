@@ -284,7 +284,12 @@ function parseStoneWeightFromProperties(
     const name = (property.propertyName ?? property.name ?? "").toLowerCase();
     const value = property.propertyValue ?? property.value ?? "";
 
-    if (name.includes("карат") || name.includes("вес камн")) {
+    if (
+      name.includes("карат") ||
+      name.includes("вес камн") ||
+      name.includes("вес брилл") ||
+      name.includes("бриллиант")
+    ) {
       const match = value.replace(",", ".").match(/(\d+(?:\.\d+)?)/);
       if (match) return Number(match[1]);
     }

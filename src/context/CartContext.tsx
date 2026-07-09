@@ -68,6 +68,99 @@ export function CartProvider({ children }: { children: ReactNode }) {
 
   useEffect(() => {
     if (!isReady) return;
+    if (items.length === 0) return;
+
+    let cancelled = false;
+
+    const refreshStoneWeights = async () => {
+      const candidates = items.filter(
+        (item) =>
+          Number.isFinite(item.stoneWeight) &&
+          item.stoneWeight > 0 &&
+          item.stoneWeight <= 0.11,
+      );
+      if (candidates.length === 0) return;
+
+      const updates = await Promise.all(
+        candidates.map(async (item) => {
+          try {
+            const response = await fetch(
+              `/api/products/${encodeURIComponent(item.productSlug)}`,
+            );
+            if (!response.ok) return null;
+            const json = (await response.json()) as { product?: { stoneWeight?: number } };
+            const freshWeight = json.product?.stoneWeight;
+            if (
+              typeof freshWeight !== "number" ||
+              !Number.isFinite(freshWeight) ||
+              freshWeight <= 0
+            ) {
+              return null;
+            }
+
+            if (Math.abs(freshWeight - item.stoneWeight) < 0.001) return null;
+
+            return {
+              item,
+              freshWeight,
+              freshLabel: freshWeight >= 1 ? "1 карат" : `${freshWeight} карат`,
+            };
+          } catch {
+            return null;
+          }
+        }),
+      );
+
+      const normalized = updates.filter(
+        (value): value is NonNullable<typeof value> => Boolean(value),
+      );
+      if (normalized.length === 0) return;
+
+      if (cancelled) return;
+
+      setItems((prev) => {
+        const updateMap = new Map(
+          normalized.map((entry) => [entry.item.id, entry]),
+        );
+        const merged = new Map<string, CartItem>();
+
+        for (const item of prev) {
+          const patch = updateMap.get(item.id);
+          const nextWeight = patch ? patch.freshWeight : item.stoneWeight;
+          const nextLabel = patch ? patch.freshLabel : item.stoneLabel;
+          const nextId = buildCartItemId(item.productSlug, nextWeight, item.size);
+
+          const existing = merged.get(nextId);
+          if (existing) {
+            merged.set(nextId, {
+              ...existing,
+              quantity: existing.quantity + item.quantity,
+            });
+          } else {
+            merged.set(nextId, {
+              ...item,
+              id: nextId,
+              stoneWeight: nextWeight,
+              stoneLabel: nextLabel,
+            });
+          }
+        }
+
+        return Array.from(merged.values());
+      });
+    };
+
+    void refreshStoneWeights();
+
+    return () => {
+      cancelled = true;
+    };
+    // Intentionally run on initial hydrate only; subsequent cart changes are user-driven.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [isReady]);
+
+  useEffect(() => {
+    if (!isReady) return;
     saveCart(items);
   }, [items, isReady]);
 

@@ -86,22 +86,25 @@ function parseStoneWeight(
   properties: AdvantShopProperty[],
   description?: string,
 ): number {
-  if (description) {
-    const fromDescription = parseCaratWeightFromDescription(description);
-    if (fromDescription !== undefined) return fromDescription;
-  }
-
-  for (const property of properties) {    const name = (property.propertyName ?? property.name ?? "").toLowerCase();
+  for (const property of properties) {
+    const name = (property.propertyName ?? property.name ?? "").toLowerCase();
     const value = property.propertyValue ?? property.value ?? "";
 
     if (
       name.includes("карат") ||
       name.includes("вес камн") ||
+      name.includes("вес брилл") ||
+      name.includes("бриллиант") ||
       name.includes("carat")
     ) {
       const match = value.replace(",", ".").match(/(\d+(?:\.\d+)?)/);
       if (match) return Number(match[1]);
     }
+  }
+
+  if (description) {
+    const fromDescription = parseCaratWeightFromDescription(description);
+    if (fromDescription !== undefined) return fromDescription;
   }
 
   return 0.2;
