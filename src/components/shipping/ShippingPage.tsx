@@ -1,6 +1,8 @@
 import Link from "next/link";
+import { FaqSection } from "@/components/seo/FaqSection";
 import { SHOWROOM, SITE_PHONE, SITE_PHONE_TEL } from "@/lib/contacts";
 import { DELIVERY_FEE, FREE_DELIVERY_THRESHOLD } from "@/lib/checkout";
+import { SHIPPING_FAQ_ITEMS } from "@/lib/shipping-faq";
 
 const DELIVERY_OPTIONS = [
   {
@@ -128,6 +130,12 @@ export function ShippingPage() {
           </p>
         </div>
       </section>
+
+      <FaqSection
+        title="Частые вопросы о доставке и оплате"
+        subtitle="Сроки, стоимость и способы получения заказа"
+        items={SHIPPING_FAQ_ITEMS}
+      />
 
       <section className="py-12 md:py-16">
         <div className="mx-auto max-w-3xl px-4 md:px-6 lg:px-10 text-center">

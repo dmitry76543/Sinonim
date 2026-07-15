@@ -2,8 +2,14 @@ import { notFound } from "next/navigation";
 import { Footer } from "@/components/Footer";
 import { Header } from "@/components/Header";
 import { GuidePage } from "@/components/guide/GuidePage";
+import { JsonLd } from "@/components/seo/JsonLd";
+import {
+  buildGuideArticleJsonLd,
+  LAB_GROWN_DIAMONDS_FAQ,
+} from "@/lib/guide-schema";
 import { buildPageMetadata } from "@/lib/metadata";
 import { getGuideArticle } from "@/lib/guides";
+import { buildFaqPageJsonLd } from "@/lib/warranty-faq";
 
 type PageProps = {
   params: Promise<{ slug: string }>;
@@ -27,8 +33,16 @@ export default async function GuideArticleRoute({ params }: PageProps) {
   const article = getGuideArticle(slug);
   if (!article) notFound();
 
+  const jsonLd = [
+    buildGuideArticleJsonLd(article),
+    ...(slug === "lab-grown-diamonds"
+      ? [buildFaqPageJsonLd(LAB_GROWN_DIAMONDS_FAQ)]
+      : []),
+  ];
+
   return (
     <>
+      <JsonLd data={jsonLd} />
       <Header />
       <main>
         {slug === "lab-grown-diamonds" && <LabGrownGuide />}

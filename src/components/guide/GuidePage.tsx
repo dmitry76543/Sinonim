@@ -29,14 +29,14 @@ export function GuidePage({
           <h1 className="font-heading text-3xl md:text-5xl text-brand-olive-dark mb-6 md:mb-8">
             {title}
           </h1>
-          <p className="text-brand-text leading-relaxed text-base md:text-lg">
+          <p className="guide-intro text-brand-text leading-relaxed text-base md:text-lg">
             {intro}
           </p>
         </div>
       </section>
 
       <section className="pb-12 md:pb-16">
-        <div className="mx-auto max-w-3xl px-4 md:px-6 lg:px-10 space-y-8 text-brand-text leading-relaxed text-sm md:text-base">
+        <div className="guide-content mx-auto max-w-3xl px-4 md:px-6 lg:px-10 space-y-8 text-brand-text leading-relaxed text-sm md:text-base">
           {children}
         </div>
       </section>

@@ -6,9 +6,11 @@ import { CatalogView } from "@/components/catalog/CatalogView";
 import { JsonLd } from "@/components/seo/JsonLd";
 import { buildBreadcrumbJsonLd } from "@/lib/breadcrumb-schema";
 import { hasCatalogFilterParams } from "@/lib/catalog-utils";
+import { buildCatalogItemListJsonLd } from "@/lib/item-list-schema";
 import { buildPageMetadata } from "@/lib/metadata";
 import { CATEGORIES, isValidCategory, type CategorySlug, type Product } from "@/lib/products";
 import { getCatalogProducts } from "@/lib/products-service";
+import { getSiteUrl } from "@/lib/site-url";
 
 type PageProps = {
   params: Promise<{ category: string }>;
@@ -94,11 +96,22 @@ export default async function CategoryPage({ params, searchParams }: PageProps) 
   return (
     <>
       <JsonLd
-        data={buildBreadcrumbJsonLd([
-          { name: "Главная", path: "/" },
-          { name: "Каталог", path: "/shop" },
-          { name: categoryTitle, path: `/shop/${categorySlug}` },
-        ])}
+        data={[
+          buildBreadcrumbJsonLd([
+            { name: "Главная", path: "/" },
+            { name: "Каталог", path: "/shop" },
+            { name: categoryTitle, path: `/shop/${categorySlug}` },
+          ]),
+          ...(initialProducts.length > 0
+            ? [
+                buildCatalogItemListJsonLd({
+                  name: `${categoryTitle} — каталог Синоним`,
+                  url: `${getSiteUrl()}/shop/${categorySlug}`,
+                  products: initialProducts,
+                }),
+              ]
+            : []),
+        ]}
       />
       <Header />
       <main>

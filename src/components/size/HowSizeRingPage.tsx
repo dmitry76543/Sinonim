@@ -1,9 +1,11 @@
 import Link from "next/link";
+import { FaqSection } from "@/components/seo/FaqSection";
 import {
   SHOWROOM,
   SITE_PHONE,
   SITE_PHONE_TEL,
 } from "@/lib/contacts";
+import { SIZE_FAQ_ITEMS } from "@/lib/size-faq";
 
 const METHODS = [
   {
@@ -187,6 +189,12 @@ export function HowSizeRingPage() {
           </div>
         </div>
       </section>
+
+      <FaqSection
+        title="Частые вопросы о размере"
+        subtitle="Как измерить кольцо и браслет дома или в шоуруме"
+        items={SIZE_FAQ_ITEMS}
+      />
 
       <section className="bg-white text-brand-text border-y border-brand-sand py-12 md:py-16">
         <div className="mx-auto max-w-3xl px-4 md:px-6 lg:px-10 text-center">

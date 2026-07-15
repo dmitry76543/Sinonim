@@ -1,7 +1,10 @@
 import { Footer } from "@/components/Footer";
 import { Header } from "@/components/Header";
 import { ShippingPage } from "@/components/shipping/ShippingPage";
+import { JsonLd } from "@/components/seo/JsonLd";
 import { buildPageMetadata } from "@/lib/metadata";
+import { SHIPPING_FAQ_ITEMS } from "@/lib/shipping-faq";
+import { buildFaqPageJsonLd } from "@/lib/warranty-faq";
 
 export const metadata = buildPageMetadata({
   title: "Доставка и оплата — Синоним",
@@ -12,6 +15,7 @@ export const metadata = buildPageMetadata({
 export default function ShippingRoute() {
   return (
     <>
+      <JsonLd data={buildFaqPageJsonLd(SHIPPING_FAQ_ITEMS)} />
       <Header />
       <main>
         <ShippingPage />

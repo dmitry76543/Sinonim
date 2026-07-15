@@ -1,7 +1,53 @@
 import { buildProductMetaDescription } from "@/lib/product-metadata";
+import { getProductCaratWeightLabel } from "@/lib/product-weight";
 import { CATEGORIES, type ProductDetails } from "@/lib/products";
 import { absoluteImageUrl } from "@/lib/seo-images";
 import { getSiteUrl } from "@/lib/site-url";
+
+function buildProductSchemaName(product: ProductDetails): string {
+  const carat = getProductCaratWeightLabel(product);
+  const metal = product.metal?.trim() || "Серебро 925";
+
+  return `${product.name} с лабораторным бриллиантом ${carat} карат — ${metal}`;
+}
+
+function buildProductAdditionalProperties(
+  product: ProductDetails,
+): Record<string, unknown>[] {
+  const carat = getProductCaratWeightLabel(product);
+  const properties: Record<string, unknown>[] = [
+    {
+      "@type": "PropertyValue",
+      name: "Каратность",
+      value: `${carat} карат`,
+    },
+    {
+      "@type": "PropertyValue",
+      name: "Цвет",
+      value: product.color,
+    },
+    {
+      "@type": "PropertyValue",
+      name: "Чистота",
+      value: product.clarity,
+    },
+    {
+      "@type": "PropertyValue",
+      name: "Огранка",
+      value: product.cut,
+    },
+  ];
+
+  if (product.weightGrams) {
+    properties.push({
+      "@type": "PropertyValue",
+      name: "Вес изделия",
+      value: `${product.weightGrams} г`,
+    });
+  }
+
+  return properties;
+}
 
 export function buildProductJsonLd(
   product: ProductDetails,
@@ -12,6 +58,8 @@ export function buildProductJsonLd(
   const categoryTitle = CATEGORIES[product.category].title;
   const categoryUrl = `${siteUrl}/shop/${product.category}`;
   const images = product.images.map(absoluteImageUrl);
+  const schemaName = buildProductSchemaName(product);
+  const material = product.metal?.trim() || "Серебро 925";
 
   return [
     {
@@ -39,7 +87,7 @@ export function buildProductJsonLd(
         {
           "@type": "ListItem",
           position: 4,
-          name: product.name,
+          name: schemaName,
           item: productUrl,
         },
       ],
@@ -47,10 +95,13 @@ export function buildProductJsonLd(
     {
       "@context": "https://schema.org",
       "@type": "Product",
-      name: product.name,
+      name: schemaName,
       description: buildProductMetaDescription(product),
       image: images,
       sku: product.artNo ?? product.id,
+      category: categoryTitle,
+      material,
+      additionalProperty: buildProductAdditionalProperties(product),
       brand: {
         "@type": "Brand",
         name: "Синоним",

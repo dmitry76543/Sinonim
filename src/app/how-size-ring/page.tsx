@@ -1,7 +1,10 @@
 import { Footer } from "@/components/Footer";
 import { Header } from "@/components/Header";
 import { HowSizeRingPage } from "@/components/size/HowSizeRingPage";
+import { JsonLd } from "@/components/seo/JsonLd";
 import { buildPageMetadata } from "@/lib/metadata";
+import { SIZE_FAQ_ITEMS } from "@/lib/size-faq";
+import { buildFaqPageJsonLd } from "@/lib/warranty-faq";
 
 export const metadata = buildPageMetadata({
   title: "Как определить размер — Синоним",
@@ -12,6 +15,7 @@ export const metadata = buildPageMetadata({
 export default function HowSizeRingRoute() {
   return (
     <>
+      <JsonLd data={buildFaqPageJsonLd(SIZE_FAQ_ITEMS)} />
       <Header />
       <main>
         <HowSizeRingPage />

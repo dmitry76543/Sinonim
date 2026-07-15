@@ -4,6 +4,7 @@ import {
   SHOWROOM_MAP_LINK,
   SITE_PHONE_TEL,
 } from "@/lib/contacts";
+import { getOrganizationId, getShowroomId } from "@/lib/schema-ids";
 import { absoluteImageUrl } from "@/lib/seo-images";
 import { getSiteUrl } from "@/lib/site-url";
 
@@ -14,7 +15,7 @@ export function buildShowroomJsonLd(): Record<string, unknown> {
   return {
     "@context": "https://schema.org",
     "@type": "JewelryStore",
-    "@id": `${siteUrl}/showroom#store`,
+    "@id": getShowroomId(),
     name: SHOWROOM.title,
     description:
       "Шоурум ювелирного бренда Синоним в Москве. Примерка украшений из серебра 925 с лабораторными бриллиантами.",
@@ -50,9 +51,7 @@ export function buildShowroomJsonLd(): Record<string, unknown> {
     ],
     hasMap: SHOWROOM_MAP_LINK,
     parentOrganization: {
-      "@type": "Organization",
-      name: "Синоним",
-      url: siteUrl,
+      "@id": getOrganizationId(),
     },
   };
 }

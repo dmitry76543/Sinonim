@@ -5,8 +5,10 @@ import { CatalogView } from "@/components/catalog/CatalogView";
 import { JsonLd } from "@/components/seo/JsonLd";
 import { buildBreadcrumbJsonLd } from "@/lib/breadcrumb-schema";
 import { hasCatalogFilterParams } from "@/lib/catalog-utils";
+import { buildCatalogItemListJsonLd } from "@/lib/item-list-schema";
 import { buildPageMetadata } from "@/lib/metadata";
 import { getCatalogProducts } from "@/lib/products-service";
+import { getSiteUrl } from "@/lib/site-url";
 import type { Product } from "@/lib/products";
 
 type PageProps = {
@@ -61,10 +63,21 @@ export default async function ShopPage({ searchParams }: PageProps) {
   return (
     <>
       <JsonLd
-        data={buildBreadcrumbJsonLd([
-          { name: "Главная", path: "/" },
-          { name: "Каталог", path: "/shop" },
-        ])}
+        data={[
+          buildBreadcrumbJsonLd([
+            { name: "Главная", path: "/" },
+            { name: "Каталог", path: "/shop" },
+          ]),
+          ...(initialProducts.length > 0
+            ? [
+                buildCatalogItemListJsonLd({
+                  name: "Каталог украшений Синоним",
+                  url: `${getSiteUrl()}/shop`,
+                  products: initialProducts,
+                }),
+              ]
+            : []),
+        ]}
       />
       <Header />
       <main>

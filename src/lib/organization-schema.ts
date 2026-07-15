@@ -1,6 +1,21 @@
-import { MESSENGERS, SHOWROOM, SITE_PHONE_TEL } from "@/lib/contacts";
+import {
+  MESSENGERS,
+  SHOWROOM_MAP_LINK,
+  SITE_PHONE_TEL,
+} from "@/lib/contacts";
+import { getOrganizationId, getShowroomId } from "@/lib/schema-ids";
 import { absoluteImageUrl } from "@/lib/seo-images";
 import { getSiteUrl } from "@/lib/site-url";
+
+export function buildOrganizationSameAs(): string[] {
+  const siteUrl = getSiteUrl();
+
+  return [
+    ...MESSENGERS.map((messenger) => messenger.href),
+    SHOWROOM_MAP_LINK,
+    `${siteUrl}/showroom`,
+  ];
+}
 
 export function buildOrganizationJsonLd(): Record<string, unknown> {
   const siteUrl = getSiteUrl();
@@ -8,7 +23,7 @@ export function buildOrganizationJsonLd(): Record<string, unknown> {
   return {
     "@context": "https://schema.org",
     "@type": "Organization",
-    "@id": `${siteUrl}/about#organization`,
+    "@id": getOrganizationId(),
     name: "Синоним",
     url: siteUrl,
     logo: absoluteImageUrl("/images/logo_20260527190756.png"),
@@ -22,10 +37,7 @@ export function buildOrganizationJsonLd(): Record<string, unknown> {
       postalCode: "129110",
       addressCountry: "RU",
     },
-    sameAs: [
-      MESSENGERS.find((m) => m.id === "telegram")!.href,
-      `${siteUrl}/showroom`,
-    ],
+    sameAs: buildOrganizationSameAs(),
     contactPoint: {
       "@type": "ContactPoint",
       telephone: SITE_PHONE_TEL.replace("tel:", ""),
@@ -34,9 +46,7 @@ export function buildOrganizationJsonLd(): Record<string, unknown> {
       availableLanguage: "Russian",
     },
     location: {
-      "@type": "Place",
-      name: SHOWROOM.title,
-      address: SHOWROOM.address,
+      "@id": getShowroomId(),
     },
   };
 }
