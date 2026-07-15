@@ -8,6 +8,7 @@ export const revalidate = 300;
 const STATIC_PAGES: { path: string; changeFrequency: MetadataRoute.Sitemap[number]["changeFrequency"]; priority: number }[] = [
   { path: "", changeFrequency: "weekly", priority: 1 },
   { path: "/shop", changeFrequency: "daily", priority: 0.9 },
+  { path: "/search", changeFrequency: "monthly", priority: 0.45 },
   ...CATALOG_CATEGORY_SLUGS.map((slug) => ({
     path: `/shop/${slug}`,
     changeFrequency: "daily" as const,

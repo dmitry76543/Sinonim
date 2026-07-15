@@ -1,4 +1,5 @@
 import type { GuideArticle } from "@/lib/guides";
+import { buildGuideAuthor } from "@/lib/guide-author";
 import { getOrganizationId } from "@/lib/schema-ids";
 import { absoluteImageUrl, DEFAULT_OG_IMAGE } from "@/lib/seo-images";
 import { getSiteUrl } from "@/lib/site-url";
@@ -47,11 +48,7 @@ export function buildGuideArticleJsonLd(
     url: `${siteUrl}/guide/${article.slug}`,
     datePublished: article.datePublished,
     dateModified: article.dateModified,
-    author: {
-      "@type": "Organization",
-      name: "Синоним",
-      url: siteUrl,
-    },
+    author: buildGuideAuthor(),
     publisher: {
       "@id": getOrganizationId(),
     },

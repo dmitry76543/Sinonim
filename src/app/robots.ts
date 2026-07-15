@@ -13,7 +13,6 @@ export default function robots(): MetadataRoute.Robots {
         "/checkout",
         "/favorites",
         "/compare",
-        "/search",
         "/api/",
         "/v2",
       ],

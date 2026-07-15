@@ -1,6 +1,8 @@
 ﻿import Link from "next/link";
 import { Footer } from "@/components/Footer";
 import { Header } from "@/components/Header";
+import { JsonLd } from "@/components/seo/JsonLd";
+import { buildGuideHubJsonLd } from "@/lib/guide-hub-schema";
 import { buildPageMetadata } from "@/lib/metadata";
 import { GUIDE_ARTICLES } from "@/lib/guides";
 
@@ -14,6 +16,7 @@ export const metadata = buildPageMetadata({
 export default function GuideHubPage() {
   return (
     <>
+      <JsonLd data={buildGuideHubJsonLd()} />
       <Header />
       <main>
         <section className="py-10 md:py-14">

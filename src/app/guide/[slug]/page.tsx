@@ -7,6 +7,10 @@ import {
   buildGuideArticleJsonLd,
   LAB_GROWN_DIAMONDS_FAQ,
 } from "@/lib/guide-schema";
+import {
+  buildHowToJsonLd,
+  SILVER_CARE_HOWTO_STEPS,
+} from "@/lib/howto-schema";
 import { buildPageMetadata } from "@/lib/metadata";
 import { getGuideArticle } from "@/lib/guides";
 import { buildFaqPageJsonLd } from "@/lib/warranty-faq";
@@ -37,6 +41,16 @@ export default async function GuideArticleRoute({ params }: PageProps) {
     buildGuideArticleJsonLd(article),
     ...(slug === "lab-grown-diamonds"
       ? [buildFaqPageJsonLd(LAB_GROWN_DIAMONDS_FAQ)]
+      : []),
+    ...(slug === "silver-care"
+      ? [
+          buildHowToJsonLd({
+            name: article.title,
+            description: article.description,
+            path: `/guide/${slug}`,
+            steps: SILVER_CARE_HOWTO_STEPS,
+          }),
+        ]
       : []),
   ];
 
