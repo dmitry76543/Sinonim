@@ -7,8 +7,7 @@ import { resolveProductImageUrl, resolveProductImages } from "./images";
 import {
   getAdvantShopDetailsStockInfo,
   getAdvantShopStockAmount,
-  getInStockOffers,
-  isOfferInStock,
+  getAvailableSizePickerSizes,
   parseAdvantShopAmount,
   type AdvantShopStockInfo,
 } from "./stock";
@@ -177,7 +176,11 @@ function buildSizeArtNos(
     if (!sizeKey) continue;
 
     const offer = item.offers.find((entry) => entry.sizeId === size.id);
-    if (offer && !isOfferInStock(offer)) continue;
+    // Пропускаем только явно нулевой остаток; без amount — оставляем
+    if (offer) {
+      const amount = parseAdvantShopAmount(offer.amount);
+      if (amount !== undefined && amount <= 0) continue;
+    }
 
     const artNo = offer?.artNo ?? fallbackArtNo;
     if (artNo) map[sizeKey] = artNo;
@@ -250,6 +253,10 @@ export function mapCatalogProduct(
   const inStock =
     stock?.inStock ??
     (stockAmount === undefined ? true : stockAmount > 0);
+  const listOfferArtNos = collectOfferArtNos(item);
+  const offerArtNos = stock?.offerArtNos?.length
+    ? [...new Set([...stock.offerArtNos, ...listOfferArtNos])]
+    : listOfferArtNos;
 
   return {
     id: String(item.productId),
@@ -272,7 +279,7 @@ export function mapCatalogProduct(
     images: resolveProductImages(collectImages(item.photos)),
     sizeOptions: resolveCatalogSizeOptions(sizeOptions, category),
     artNo,
-    offerArtNos: collectOfferArtNos(item),
+    offerArtNos,
     complectNumber,
     stockAmount,
     inStock,
@@ -311,35 +318,24 @@ export function mapProductDetails(
   }));
 
   const allSizes = item.sizeColorPicker?.sizes ?? [];
-  const inStockOffers = getInStockOffers(item);
-  const inStockSizeIds = new Set(
-    inStockOffers
-      .map((offer) => offer.sizeId)
-      .filter((id): id is number => typeof id === "number"),
-  );
-  const hasOfferStockData = (item.offers ?? []).some(
-    (offer) => typeof offer.amount === "number" && Number.isFinite(offer.amount),
-  );
-  const availableSizes = hasOfferStockData
-    ? allSizes.filter((size) => inStockSizeIds.has(size.id))
-    : allSizes;
+  const availableSizes = getAvailableSizePickerSizes(item);
 
   const sizeOptions = availableSizes.map((size) => {
     const label = size.name.trim();
     return { value: label, label };
   });
   const hasSizes =
-    category === "rings" || category === "bracelets" || sizeOptions.length > 0;
+    category === "rings" || category === "bracelets" || allSizes.length > 0;
   const artNo = pickDefaultArtNo(item);
   const sizeArtNos = buildSizeArtNos(item, availableSizes);
   // Остатки по всем размерам (включая 0) — для проверки на чекауте
   const sizeStockAmounts = buildSizeStockAmounts(item, allSizes);
   const legacySlug = item.urlPath;
   const complectNumber = resolveComplectNumber(properties);
-  const { stockAmount, inStock: detailsInStock } =
-    getAdvantShopDetailsStockInfo(item);
-  const inStock =
-    detailsInStock && (!hasSizes || sizeOptions.length > 0);
+  const { stockAmount, inStock } = getAdvantShopDetailsStockInfo(
+    item,
+    category,
+  );
 
   return {
     id: String(item.productId),

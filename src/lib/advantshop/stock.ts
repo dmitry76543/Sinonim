@@ -1,3 +1,4 @@
+import type { CategorySlug } from "@/lib/products";
 import type {
   AdvantShopCatalogProduct,
   AdvantShopOffer,
@@ -18,7 +19,7 @@ export function parseAdvantShopAmount(value: unknown): number | undefined {
  * Суммарный остаток товара.
  * Если у offers есть amount — суммируем их.
  * Иначе берём amount на уровне товара.
- * Если данных о остатке нет — `undefined` (не скрываем товар).
+ * Если данных о остатке нет — `undefined`.
  */
 export function getAdvantShopStockAmount(
   item: Pick<AdvantShopCatalogProduct, "amount" | "offers">,
@@ -44,13 +45,14 @@ export function isAdvantShopProductInStock(
   return amount > 0;
 }
 
+/** Оффер с явным amount > 0. */
 export function isOfferInStock(offer: Pick<AdvantShopOffer, "amount">): boolean {
   const amount = parseAdvantShopAmount(offer.amount);
-  if (amount === undefined) return true;
+  if (amount === undefined) return false;
   return amount > 0;
 }
 
-function hasOfferStockData(
+export function hasOfferStockData(
   item: Pick<AdvantShopProductDetails, "offers">,
 ): boolean {
   return (item.offers ?? []).some(
@@ -58,7 +60,7 @@ function hasOfferStockData(
   );
 }
 
-/** Размеры / офферы с остатком > 0 (или без данных об остатке). */
+/** Офферы с amount > 0. Если amount нигде нет — возвращаем все офферы. */
 export function getInStockOffers(
   item: Pick<AdvantShopProductDetails, "offers">,
 ): AdvantShopOffer[] {
@@ -70,44 +72,98 @@ export function getInStockOffers(
   return offers.filter(isOfferInStock);
 }
 
+function productNeedsSizes(
+  category: CategorySlug | undefined,
+  sizesCount: number,
+): boolean {
+  if (sizesCount > 0) return true;
+  return category === "rings" || category === "bracelets";
+}
+
 /**
- * Точный признак наличия по карточке товара (offers + размеры).
- * Список /api/catalog часто отдаёт завышенный product.amount без офферов.
+ * Размеры, которые реально можно купить:
+ * sizeColorPicker ∩ офферы с amount > 0 по sizeId.
+ * Без совпадения sizeId — пусто (товар нельзя оформить по размеру).
+ */
+export function getAvailableSizePickerSizes(
+  item: Pick<AdvantShopProductDetails, "offers" | "sizeColorPicker">,
+): { id: number; name: string }[] {
+  const allSizes = item.sizeColorPicker?.sizes ?? [];
+  if (!allSizes.length) return [];
+
+  if (!hasOfferStockData(item)) return allSizes;
+
+  const inStockOffers = getInStockOffers(item);
+  if (!inStockOffers.length) return [];
+
+  const inStockSizeIds = new Set(
+    inStockOffers
+      .map((offer) => offer.sizeId)
+      .filter((id): id is number => typeof id === "number"),
+  );
+
+  if (!inStockSizeIds.size) return [];
+
+  return allSizes.filter((size) => inStockSizeIds.has(size.id));
+}
+
+/**
+ * Единый признак «можно показать в каталоге / купить».
+ * Совпадает с логикой карточки товара (иначе каталог и страница расходятся).
  */
 export function isAdvantShopDetailsInStock(
   item: Pick<AdvantShopProductDetails, "amount" | "offers" | "sizeColorPicker">,
+  category?: CategorySlug,
 ): boolean {
   const sizes = item.sizeColorPicker?.sizes ?? [];
-  const offerStockKnown = hasOfferStockData(item);
+  const needsSizes = productNeedsSizes(category, sizes.length);
+  const availableSizes = getAvailableSizePickerSizes(item);
 
-  if (offerStockKnown && sizes.length > 0) {
-    const inStockSizeIds = new Set(
-      getInStockOffers(item)
-        .map((offer) => offer.sizeId)
-        .filter((id): id is number => typeof id === "number"),
-    );
-    return sizes.some((size) => inStockSizeIds.has(size.id));
-  }
-
-  if (offerStockKnown) {
-    return getInStockOffers(item).length > 0;
+  if (hasOfferStockData(item)) {
+    if (!getInStockOffers(item).length) return false;
+    // Кольца/браслеты и товары с размерами — только если есть размер с остатком
+    if (needsSizes) return availableSizes.length > 0;
+    return true;
   }
 
   const amount = getAdvantShopStockAmount(item);
-  if (amount === undefined) return true;
-  return amount > 0;
+  if (amount === undefined) {
+    // Нет данных об остатке: кольца без picker всё равно не продаём
+    if (needsSizes && sizes.length === 0) return false;
+    return true;
+  }
+  if (amount <= 0) return false;
+  if (needsSizes) return availableSizes.length > 0 || sizes.length > 0;
+  return true;
 }
 
 export type AdvantShopStockInfo = {
   stockAmount?: number;
   inStock: boolean;
+  /** Артикулы с карточки (включая модификации размеров) — для поиска. */
+  offerArtNos?: string[];
 };
 
 export function getAdvantShopDetailsStockInfo(
-  item: Pick<AdvantShopProductDetails, "amount" | "offers" | "sizeColorPicker">,
+  item: Pick<
+    AdvantShopProductDetails,
+    "amount" | "offers" | "sizeColorPicker" | "artNo"
+  >,
+  category?: CategorySlug,
 ): AdvantShopStockInfo {
+  const offerArtNos = new Set<string>();
+  const add = (value?: string | null) => {
+    const trimmed = value?.trim();
+    if (trimmed) offerArtNos.add(trimmed);
+  };
+  add(item.artNo);
+  for (const offer of item.offers ?? []) {
+    add(offer.artNo);
+  }
+
   return {
     stockAmount: getAdvantShopStockAmount(item),
-    inStock: isAdvantShopDetailsInStock(item),
+    inStock: isAdvantShopDetailsInStock(item, category),
+    offerArtNos: [...offerArtNos],
   };
 }

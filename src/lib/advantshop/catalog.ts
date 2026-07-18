@@ -144,12 +144,13 @@ const getCachedComplectMap = unstable_cache(
 
 async function fetchProductStockInfo(
   productId: number,
+  category: CategorySlug,
 ): Promise<AdvantShopStockInfo | undefined> {
   try {
     const details = await advantshopClientFetch<AdvantShopProductDetails>(
       `/api/products/${productId}`,
     );
-    return getAdvantShopDetailsStockInfo(details);
+    return getAdvantShopDetailsStockInfo(details, category);
   } catch (error) {
     console.warn(
       `AdvantShop stock for product ${productId} unavailable:`,
@@ -161,12 +162,13 @@ async function fetchProductStockInfo(
 
 async function loadStockInfoMap(
   items: AdvantShopCatalogProduct[],
+  category: CategorySlug,
 ): Promise<Map<number, AdvantShopStockInfo>> {
   const map = new Map<number, AdvantShopStockInfo>();
   const ids = [...new Set(items.map((item) => item.productId))];
 
   await mapPool(ids, 8, async (productId) => {
-    const stock = await fetchProductStockInfo(productId);
+    const stock = await fetchProductStockInfo(productId, category);
     if (stock) map.set(productId, stock);
   });
 
@@ -192,7 +194,7 @@ async function mapCatalogItems(
   complectMap: Record<string, string>,
   includeOutOfStock = false,
 ): Promise<Product[]> {
-  const stockMap = await loadStockInfoMap(items);
+  const stockMap = await loadStockInfoMap(items, category);
 
   const visible = includeOutOfStock
     ? items
