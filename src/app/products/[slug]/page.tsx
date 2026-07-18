@@ -22,7 +22,7 @@ type PageProps = {
 export async function generateMetadata({ params }: PageProps) {
   const { slug } = await params;
   const product = await getProductDetails(slug);
-  if (!product) return {};
+  if (!product || product.inStock === false) return {};
 
   const canonicalSlug = product.slug;
 
@@ -39,6 +39,10 @@ export default async function ProductRoute({ params }: PageProps) {
   const product = await getProductDetails(slug);
 
   if (!product) {
+    notFound();
+  }
+
+  if (product.inStock === false) {
     notFound();
   }
 

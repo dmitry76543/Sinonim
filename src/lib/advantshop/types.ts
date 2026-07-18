@@ -14,6 +14,8 @@ export type AdvantShopCatalogProduct = {
   artNo?: string;
   price: number;
   priceWithDiscount?: number;
+  /** Остаток на складе (если API отдаёт на уровне товара). */
+  amount?: number;
   newProduct?: boolean;
   bestseller?: boolean;
   sales?: boolean;
@@ -89,6 +91,7 @@ export type AdvantShopProductDetails = {
   urlPath: string;
   briefDescription?: string;
   description?: string;
+  amount?: number;
   newProduct?: boolean;
   bestseller?: boolean;
   sales?: boolean;

@@ -13,6 +13,7 @@ import { resolveProductImageUrl } from "./images";
 import { buildSeoProductSlug } from "@/lib/product-slug";
 import { parseCaratWeightFromDescription } from "@/lib/product-weight";
 import { mapCatalogProduct } from "./mapper";
+import { isAdvantShopProductInStock } from "./stock";
 import type {
   AdvantShopCatalogProduct,
   AdvantShopCategory,
@@ -171,6 +172,7 @@ export async function fetchAdvantShopSearchAutocomplete(
   const lookup = buildCategoryLookup(knownProducts);
 
   const products = rawProducts
+    .filter(isAdvantShopProductInStock)
     .slice(0, MAX_AUTOCOMPLETE_PRODUCTS)
     .map((item) =>
       mapAutocompleteProduct(item, resolveSearchProductCategory(item, lookup))
@@ -194,7 +196,9 @@ export async function fetchAdvantShopSearch(
   const knownProducts = await fetchAdvantShopProductsBySlugs(slugs);
   const lookup = buildCategoryLookup(knownProducts);
 
-  return items.map((item) =>
-    mapCatalogProduct(item, resolveSearchProductCategory(item, lookup))
-  );
+  return items
+    .filter(isAdvantShopProductInStock)
+    .map((item) =>
+      mapCatalogProduct(item, resolveSearchProductCategory(item, lookup))
+    );
 }

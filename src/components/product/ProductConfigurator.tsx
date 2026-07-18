@@ -30,8 +30,13 @@ export function ProductConfigurator({ product }: ProductConfiguratorProps) {
     useProductSelection();
   const [added, setAdded] = useState(false);
   const { addItem } = useCart();
+  const canBuy =
+    product.inStock !== false &&
+    (product.sizeOptions.length === 0 || selectedSize != null);
 
   const handleAddToCart = () => {
+    if (!canBuy) return;
+
     const variant = [
       defaultVariant.label,
       selectedSizeLabel != null ? `размер ${selectedSizeLabel}` : null,
@@ -74,6 +79,11 @@ export function ProductConfigurator({ product }: ProductConfiguratorProps) {
           )}
         </div>
         <p className="text-sm text-brand-muted">Лабораторный бриллиант</p>
+        {product.inStock === false ? (
+          <p className="mt-2 text-sm font-medium text-brand-terracotta">
+            Нет в наличии
+          </p>
+        ) : null}
         {product.weightGrams ? (
           <p className="mt-1 text-sm text-brand-muted">
             Вес изделия: {formatWeightGrams(product.weightGrams)}
@@ -129,9 +139,14 @@ export function ProductConfigurator({ product }: ProductConfiguratorProps) {
           type="button"
           data-add-to-cart
           onClick={handleAddToCart}
-          className="flex-1 px-6 py-3.5 bg-brand-terracotta hover:bg-brand-terracotta-logo text-white text-sm tracking-widest uppercase transition-colors"
+          disabled={!canBuy}
+          className="flex-1 px-6 py-3.5 bg-brand-terracotta hover:bg-brand-terracotta-logo disabled:cursor-not-allowed disabled:opacity-50 text-white text-sm tracking-widest uppercase transition-colors"
         >
-          {added ? "Добавлено ✓" : "В корзину"}
+          {product.inStock === false
+            ? "Нет в наличии"
+            : added
+              ? "Добавлено ✓"
+              : "В корзину"}
         </button>
         <button
           type="button"

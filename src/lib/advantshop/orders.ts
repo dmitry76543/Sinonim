@@ -125,7 +125,7 @@ function buildOrderPayload(
     ShippingName: isPickup ? "Самовывоз из шоурума" : "Доставка курьером",
     ShippingCost: input.deliveryFee,
     CheckOrderItemExist: true,
-    CheckOrderItemAvailable: false,
+    CheckOrderItemAvailable: true,
     OrderItems: orderItems,
   };
 }

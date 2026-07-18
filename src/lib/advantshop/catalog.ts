@@ -5,6 +5,7 @@ import { parseComplectNumberFromProperties } from "@/lib/product-complect";
 import { advantshopClientFetch, advantshopFetch } from "./client";
 import { getCategoryUrlMap, CATALOG_REVALIDATE_SECONDS } from "./config";
 import { mapCatalogProduct, mapProductDetails } from "./mapper";
+import { isAdvantShopProductInStock } from "./stock";
 import type {
   AdvantShopCatalogResponse,
   AdvantShopCategoriesResponse,
@@ -140,8 +141,13 @@ async function mapCatalogItems(
   items: NonNullable<AdvantShopCatalogResponse["products"]>,
   category: CategorySlug,
   complectMap: Record<string, string>,
+  includeOutOfStock = false,
 ): Promise<Product[]> {
-  return items.map((item) =>
+  const visible = includeOutOfStock
+    ? items
+    : items.filter(isAdvantShopProductInStock);
+
+  return visible.map((item) =>
     mapCatalogProduct(
       item,
       category,
@@ -159,10 +165,13 @@ export async function fetchAdvantShopCategories() {
 export async function fetchAdvantShopProducts(options?: {
   category?: CategorySlug;
   sort?: string;
+  /** Если true — не скрывать товары с нулевым остатком (для проверки на чекауте). */
+  includeOutOfStock?: boolean;
 }): Promise<Product[]> {
   const categoryMap = getCategoryUrlMap();
   const sort = SORT_MAP[options?.sort ?? "default"] ?? "NoSorting";
   const complectMap = await getCachedComplectMap();
+  const includeOutOfStock = Boolean(options?.includeOutOfStock);
 
   if (options?.category) {
     const categoryUrl = categoryMap[options.category];
@@ -173,7 +182,7 @@ export async function fetchAdvantShopProducts(options?: {
         url: categoryUrl,
         sorting: sort,
       });
-      return mapCatalogItems(items, options.category, complectMap);
+      return mapCatalogItems(items, options.category, complectMap, includeOutOfStock);
     } catch (error) {
       if (isMissingCategoryError(error)) {
         console.warn(
@@ -195,7 +204,7 @@ export async function fetchAdvantShopProducts(options?: {
 
       try {
         const items = await fetchAllCatalogProducts({ url, sorting: sort });
-        return mapCatalogItems(items, slug, complectMap);
+        return mapCatalogItems(items, slug, complectMap, includeOutOfStock);
       } catch (error) {
         if (isMissingCategoryError(error)) {
           console.warn(
@@ -246,6 +255,8 @@ export async function loadAdvantShopProductDetails(
     price: summary.price,
     stoneWeight:
       parseStoneWeightFromProperties(properties) || product.stoneWeight,
+    stockAmount: product.stockAmount ?? summary.stockAmount,
+    inStock: product.inStock !== false && summary.inStock !== false,
   };
 }
 

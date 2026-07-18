@@ -82,6 +82,7 @@ export function ProductPage({
               category={product.category}
               stoneWeight={product.stoneWeight}
               stoneLabel={cartStoneLabel}
+              inStock={product.inStock !== false}
             />
 
             <div>

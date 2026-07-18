@@ -4,6 +4,7 @@ import { parseCaratWeightFromDescription } from "@/lib/product-weight";
 import { resolveComplectNumber } from "@/lib/product-complect";
 import { buildSeoProductSlug } from "@/lib/product-slug";
 import { resolveProductImageUrl, resolveProductImages } from "./images";
+import { getAdvantShopStockAmount, getInStockOffers, isOfferInStock } from "./stock";
 import type {
   AdvantShopCatalogProduct,
   AdvantShopPhoto,
@@ -154,22 +155,45 @@ function pickDefaultArtNo(
 }
 
 function buildSizeArtNos(
-  item: AdvantShopProductDetails
+  item: AdvantShopProductDetails,
+  sizes: { id: number; name: string }[],
 ): Record<string, string> | undefined {
-  if (!item.sizeColorPicker?.sizes?.length || !item.offers?.length) {
+  if (!sizes.length || !item.offers?.length) {
     return undefined;
   }
 
   const map: Record<string, string> = {};
   const fallbackArtNo = pickDefaultArtNo(item);
 
-  for (const size of item.sizeColorPicker.sizes) {
+  for (const size of sizes) {
     const sizeKey = size.name.trim();
     if (!sizeKey) continue;
 
     const offer = item.offers.find((entry) => entry.sizeId === size.id);
+    if (offer && !isOfferInStock(offer)) continue;
+
     const artNo = offer?.artNo ?? fallbackArtNo;
     if (artNo) map[sizeKey] = artNo;
+  }
+
+  return Object.keys(map).length ? map : undefined;
+}
+
+function buildSizeStockAmounts(
+  item: AdvantShopProductDetails,
+  sizes: { id: number; name: string }[],
+): Record<string, number> | undefined {
+  if (!sizes.length || !item.offers?.length) return undefined;
+
+  const map: Record<string, number> = {};
+  for (const size of sizes) {
+    const sizeKey = size.name.trim();
+    if (!sizeKey) continue;
+    const offer = item.offers.find((entry) => entry.sizeId === size.id);
+    if (!offer || typeof offer.amount !== "number" || !Number.isFinite(offer.amount)) {
+      continue;
+    }
+    map[sizeKey] = offer.amount;
   }
 
   return Object.keys(map).length ? map : undefined;
@@ -215,6 +239,8 @@ export function mapCatalogProduct(
     item.artNo ??
     item.offers?.find((offer) => offer.isMain)?.artNo ??
     item.offers?.[0]?.artNo;
+  const stockAmount = getAdvantShopStockAmount(item);
+  const inStock = stockAmount === undefined ? true : stockAmount > 0;
 
   return {
     id: String(item.productId),
@@ -239,6 +265,8 @@ export function mapCatalogProduct(
     artNo,
     offerArtNos: collectOfferArtNos(item),
     complectNumber,
+    stockAmount,
+    inStock,
   };
 }
 export function mapProductDetails(
@@ -273,13 +301,37 @@ export function mapProductDetails(
         : Math.round(basePrice * (weight / Math.max(stoneWeight, 0.1))),
   }));
 
-  const sizeOptions = extractProductSizeOptions(item);
+  const allSizes = item.sizeColorPicker?.sizes ?? [];
+  const inStockOffers = getInStockOffers(item);
+  const inStockSizeIds = new Set(
+    inStockOffers
+      .map((offer) => offer.sizeId)
+      .filter((id): id is number => typeof id === "number"),
+  );
+  const hasOfferStockData = (item.offers ?? []).some(
+    (offer) => typeof offer.amount === "number" && Number.isFinite(offer.amount),
+  );
+  const availableSizes = hasOfferStockData
+    ? allSizes.filter((size) => inStockSizeIds.has(size.id))
+    : allSizes;
+
+  const sizeOptions = availableSizes.map((size) => {
+    const label = size.name.trim();
+    return { value: label, label };
+  });
   const hasSizes =
     category === "rings" || category === "bracelets" || sizeOptions.length > 0;
   const artNo = pickDefaultArtNo(item);
-  const sizeArtNos = buildSizeArtNos(item);
+  const sizeArtNos = buildSizeArtNos(item, availableSizes);
+  // Остатки по всем размерам (включая 0) — для проверки на чекауте
+  const sizeStockAmounts = buildSizeStockAmounts(item, allSizes);
   const legacySlug = item.urlPath;
   const complectNumber = resolveComplectNumber(properties);
+  const stockAmount = getAdvantShopStockAmount(item);
+  const inStock =
+    stockAmount === undefined
+      ? true
+      : stockAmount > 0 && (!hasSizes || sizeOptions.length > 0);
 
   return {
     id: String(item.productId),
@@ -312,8 +364,11 @@ export function mapProductDetails(
     stoneVariants,
     artNo: artNo || undefined,
     sizeArtNos,
+    sizeStockAmounts,
     offerArtNos: collectOfferArtNos(item),
     weightGrams: parseWeightGrams(properties),
     complectNumber,
+    stockAmount,
+    inStock,
   };
 }

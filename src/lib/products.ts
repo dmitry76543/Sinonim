@@ -30,6 +30,10 @@ export type Product = {
   urlPath?: string;
   /** Номер комплекта из AdvantShop (например «1» для «Комплект №1»). */
   complectNumber?: string;
+  /** Суммарный остаток; undefined — данных нет. */
+  stockAmount?: number;
+  /** Товар доступен к покупке (остаток > 0 или неизвестен). */
+  inStock?: boolean;
 };
 
 export type StoneVariant = {
@@ -48,6 +52,8 @@ export type ProductDetails = Product & {
   sizeOptions: ProductSizeOption[];
   stoneVariants: StoneVariant[];
   weightGrams?: string;
+  /** Остаток по ключу размера (value из sizeOptions). */
+  sizeStockAmounts?: Record<string, number>;
 };
 
 export const CATEGORIES: Record<

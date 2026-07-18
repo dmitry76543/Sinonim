@@ -1,4 +1,5 @@
 import { NextResponse } from "next/server";
+import { checkCartItemsStock } from "@/lib/advantshop/cart-stock";
 import { submitAdvantShopOrder } from "@/lib/advantshop/orders";
 import { isAdvantShopConfigured } from "@/lib/advantshop/config";
 import type { CartItem } from "@/lib/cart";
@@ -70,6 +71,18 @@ export async function POST(request: Request) {
   }
 
   try {
+    const stockCheck = await checkCartItemsStock(body.items);
+    if (!stockCheck.ok) {
+      return NextResponse.json(
+        {
+          error: stockCheck.message,
+          code: "OUT_OF_STOCK",
+          unavailable: stockCheck.unavailable,
+        },
+        { status: 409 },
+      );
+    }
+
     const advantshop = await submitAdvantShopOrder({
       orderId,
       customer,
@@ -107,8 +120,16 @@ export async function POST(request: Request) {
     return NextResponse.json(response);
   } catch (error) {
     console.error("Order/payment error:", error);
-    const message =
+    const raw =
       error instanceof Error ? error.message : "Не удалось оформить заказ";
-    return NextResponse.json({ error: message }, { status: 502 });
+    const looksLikeStock =
+      /нет в наличии|недоступ|остат|amount|available|quantity/i.test(raw);
+    const message = looksLikeStock
+      ? "К сожалению, эти изделия закончились. Пожалуйста, подберите вместо них другие. У нас ещё много чего есть."
+      : raw;
+    return NextResponse.json(
+      { error: message, code: looksLikeStock ? "OUT_OF_STOCK" : undefined },
+      { status: looksLikeStock ? 409 : 502 },
+    );
   }
 }

@@ -46,6 +46,9 @@ export function CheckoutForm() {
   const { items, total, isReady, clearCart } = useCart();
   const [form, setForm] = useState<CheckoutFormData>(initialForm);
   const [error, setError] = useState<string | null>(null);
+  const [outOfStockItems, setOutOfStockItems] = useState<
+    Array<{ name: string; size: string | null; productSlug: string }>
+  >([]);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [completedOrder, setCompletedOrder] = useState<Order | null>(null);
   const [previewItem, setPreviewItem] = useState<CartItem | null>(null);
@@ -90,6 +93,7 @@ export function CheckoutForm() {
   ) => {
     setForm((prev) => ({ ...prev, [key]: value }));
     setError(null);
+    setOutOfStockItems([]);
   };
 
   const handlePhoneChange = (value: string) => {
@@ -114,6 +118,7 @@ export function CheckoutForm() {
 
     setIsSubmitting(true);
     setError(null);
+    setOutOfStockItems([]);
 
     const customer = {
       ...form,
@@ -145,9 +150,23 @@ export function CheckoutForm() {
         paymentUrl?: string;
         paymentMethod?: PaymentMethod;
         error?: string;
+        code?: string;
+        unavailable?: Array<{
+          name: string;
+          size: string | null;
+          productSlug: string;
+        }>;
       };
 
       if (!response.ok) {
+        if (data.code === "OUT_OF_STOCK") {
+          setOutOfStockItems(data.unavailable ?? []);
+          setError(
+            data.error ??
+              "К сожалению, эти изделия закончились. Пожалуйста, подберите вместо них другие. У нас ещё много чего есть.",
+          );
+          return;
+        }
         throw new Error(data.error ?? "Не удалось оформить заказ");
       }
 
@@ -513,9 +532,30 @@ export function CheckoutForm() {
               </section>
 
               {error && (
-                <p className="text-sm text-brand-terracotta" role="alert">
-                  {error}
-                </p>
+                <div
+                  className="rounded-xl border border-brand-terracotta/30 bg-brand-terracotta/5 px-4 py-4 space-y-3"
+                  role="alert"
+                >
+                  <p className="text-sm text-brand-terracotta whitespace-pre-line">
+                    {error}
+                  </p>
+                  {outOfStockItems.length > 0 && (
+                    <ul className="text-sm text-brand-olive-dark list-disc pl-5 space-y-1">
+                      {outOfStockItems.map((item) => (
+                        <li key={`${item.productSlug}-${item.size ?? "none"}`}>
+                          {item.name}
+                          {item.size ? ` · размер ${item.size}` : ""}
+                        </li>
+                      ))}
+                    </ul>
+                  )}
+                  <Link
+                    href="/shop"
+                    className="inline-flex text-sm text-brand-terracotta hover:underline"
+                  >
+                    Перейти в каталог →
+                  </Link>
+                </div>
               )}
             </div>
 

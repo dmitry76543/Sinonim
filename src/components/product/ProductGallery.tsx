@@ -25,6 +25,7 @@ type ProductGalleryProps = {
   category: CategorySlug;
   stoneWeight: number;
   stoneLabel: string;
+  inStock?: boolean;
 };
 
 type GalleryVideoProps = {
@@ -717,6 +718,7 @@ type ProductGalleryModalFooterProps = {
   category: CategorySlug;
   stoneWeight: number;
   stoneLabel: string;
+  inStock?: boolean;
 };
 
 function ProductGalleryModalFooter({
@@ -728,12 +730,15 @@ function ProductGalleryModalFooter({
   category,
   stoneWeight,
   stoneLabel,
+  inStock = true,
 }: ProductGalleryModalFooterProps) {
   const [added, setAdded] = useState(false);
   const { addItem } = useCart();
   const { selectedSize, selectedSizeLabel, artNo } = useProductSelection();
 
   const handleBuy = () => {
+    if (!inStock) return;
+
     const variant = [
       stoneLabel,
       selectedSizeLabel != null ? `размер ${selectedSizeLabel}` : null,
@@ -775,9 +780,10 @@ function ProductGalleryModalFooter({
             type="button"
             data-add-to-cart
             onClick={handleBuy}
-            className="px-6 py-3.5 bg-brand-terracotta hover:bg-brand-terracotta-logo text-white text-sm tracking-widest uppercase transition-colors whitespace-nowrap"
+            disabled={!inStock}
+            className="px-6 py-3.5 bg-brand-terracotta hover:bg-brand-terracotta-logo disabled:cursor-not-allowed disabled:opacity-50 text-white text-sm tracking-widest uppercase transition-colors whitespace-nowrap"
           >
-            {added ? "Добавлено ✓" : "Купить"}
+            {!inStock ? "Нет в наличии" : added ? "Добавлено ✓" : "Купить"}
           </button>
           <FavoriteButton slug={slug} className={MODAL_ICON_BUTTON_CLASS} />
           <CompareButton slug={slug} className={MODAL_ICON_BUTTON_CLASS} />
@@ -800,6 +806,7 @@ type ProductGalleryModalProps = {
   category: CategorySlug;
   stoneWeight: number;
   stoneLabel: string;
+  inStock?: boolean;
 };
 
 function ProductGalleryModal({
@@ -815,6 +822,7 @@ function ProductGalleryModal({
   category,
   stoneWeight,
   stoneLabel,
+  inStock = true,
 }: ProductGalleryModalProps) {
   const closeButtonRef = useRef<HTMLButtonElement>(null);
 
@@ -920,6 +928,7 @@ function ProductGalleryModal({
             category={category}
             stoneWeight={stoneWeight}
             stoneLabel={stoneLabel}
+            inStock={inStock}
           />
         </div>
       </div>
@@ -938,6 +947,7 @@ export function ProductGallery({
   category,
   stoneWeight,
   stoneLabel,
+  inStock = true,
 }: ProductGalleryProps) {
   const slides = useMemo(() => {
     const uniqueImages = images.filter((img, i, arr) => arr.indexOf(img) === i);
@@ -997,6 +1007,7 @@ export function ProductGallery({
         category={category}
         stoneWeight={stoneWeight}
         stoneLabel={stoneLabel}
+        inStock={inStock}
       />
     </>
   );
