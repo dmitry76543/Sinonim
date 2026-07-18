@@ -51,13 +51,13 @@ export function AboutPage() {
               </p>
             </div>
 
-            <div className="relative aspect-[4/5] max-w-md mx-auto lg:max-w-none lg:ml-auto w-full">
+            <div className="relative aspect-square max-w-md mx-auto lg:max-w-none lg:ml-auto w-full">
               <div className="absolute -inset-3 rounded-2xl bg-brand-surface blur-xl" />
               <Image
                 src="/images/product-ring.webp"
-                alt="Украшение Синоним с лабораторным бриллиантом"
+                alt="Браслет Синоним с лабораторными бриллиантами"
                 fill
-                className="object-cover rounded-2xl shadow-lg"
+                className="object-contain rounded-2xl shadow-lg bg-white p-4 md:p-6"
                 sizes="(max-width: 1024px) 100vw, 40vw"
               />
             </div>
