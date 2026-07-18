@@ -1,7 +1,6 @@
-import type { CategorySlug, Product } from "@/lib/products";
+import type { Product } from "@/lib/products";
 import type {
   SearchAutocompleteCategory,
-  SearchAutocompleteProduct,
   SearchAutocompleteResult,
 } from "@/lib/search-types";
 import { advantshopClientFetch } from "./client";
@@ -9,11 +8,6 @@ import {
   fetchAdvantShopProductsBySlugs,
   resolveCategorySlugFromAdvantShopUrl,
 } from "./catalog";
-import { resolveProductImageUrl } from "./images";
-import { buildSeoProductSlug } from "@/lib/product-slug";
-import { parseCaratWeightFromDescription } from "@/lib/product-weight";
-import { mapCatalogProduct } from "./mapper";
-import { isAdvantShopProductInStock } from "./stock";
 import type {
   AdvantShopCatalogProduct,
   AdvantShopCategory,
@@ -21,7 +15,6 @@ import type {
   AdvantShopSearchResponse,
 } from "./types";
 
-const DEFAULT_IMAGE = "/images/product-ring.webp";
 const MAX_AUTOCOMPLETE_PRODUCTS = 6;
 const MAX_AUTOCOMPLETE_CATEGORIES = 4;
 
@@ -58,76 +51,6 @@ async function fetchAllSearchProducts(query: string, sorting: string) {
   } while (page <= totalPages);
 
   return products;
-}
-
-function buildCategoryLookup(products: Product[]) {
-  const bySlug = new Map<string, CategorySlug>();
-  const byId = new Map<string, CategorySlug>();
-
-  for (const product of products) {
-    bySlug.set(product.slug, product.category);
-    if (product.urlPath) bySlug.set(product.urlPath, product.category);
-    byId.set(product.id, product.category);
-  }
-
-  return { bySlug, byId };
-}
-
-function resolveSearchProductCategory(
-  item: AdvantShopCatalogProduct,
-  lookup: ReturnType<typeof buildCategoryLookup>
-): CategorySlug {
-  return (
-    lookup.bySlug.get(item.urlPath) ??
-    lookup.byId.get(String(item.productId)) ??
-    "rings"
-  );
-}
-
-function pickAutocompleteImage(item: AdvantShopCatalogProduct): string {
-  const raw =
-    item.photoSmall ??
-    item.photoMiddle ??
-    item.photos?.find((photo) => photo.main)?.smallSrc ??
-    item.photos?.[0]?.smallSrc ??
-    item.photos?.[0]?.middleSrc ??
-    DEFAULT_IMAGE;
-
-  return resolveProductImageUrl(raw);
-}
-
-function mapAutocompleteProduct(
-  item: AdvantShopCatalogProduct,
-  category: CategorySlug = "rings"
-): SearchAutocompleteProduct {
-  const price = Math.round(
-    item.priceWithDiscount && item.priceWithDiscount > 0
-      ? item.priceWithDiscount
-      : item.price ?? 0,
-  );
-  const description = item.briefDescription || undefined;
-  const stoneWeight = description
-    ? (parseCaratWeightFromDescription(description) ?? 0.2)
-    : 0.2;
-  const legacySlug = item.urlPath;
-  const slug = buildSeoProductSlug({
-    name: item.name,
-    category,
-    stoneWeight,
-    legacySlug,
-    productId: String(item.productId),
-  });
-
-  return {
-    type: "product",
-    id: String(item.productId),
-    slug,
-    name: item.name,
-    price,
-    image: pickAutocompleteImage(item),
-    artNo: item.artNo,
-    href: `/products/${slug}`,
-  };
 }
 
 function mapAutocompleteCategory(
@@ -169,14 +92,24 @@ export async function fetchAdvantShopSearchAutocomplete(
   const knownProducts = await fetchAdvantShopProductsBySlugs(
     rawProducts.map((item) => item.urlPath)
   );
-  const lookup = buildCategoryLookup(knownProducts);
+  const knownById = new Map(
+    knownProducts.map((product) => [product.id, product] as const),
+  );
 
   const products = rawProducts
-    .filter(isAdvantShopProductInStock)
+    .map((item) => knownById.get(String(item.productId)))
+    .filter((product): product is Product => Boolean(product))
     .slice(0, MAX_AUTOCOMPLETE_PRODUCTS)
-    .map((item) =>
-      mapAutocompleteProduct(item, resolveSearchProductCategory(item, lookup))
-    );
+    .map((product) => ({
+      type: "product" as const,
+      id: product.id,
+      slug: product.slug,
+      name: product.name,
+      price: product.price,
+      image: product.image,
+      artNo: product.artNo,
+      href: `/products/${product.slug}`,
+    }));
 
   return { products, categories };
 }
@@ -194,11 +127,11 @@ export async function fetchAdvantShopSearch(
 
   const slugs = items.map((item) => item.urlPath);
   const knownProducts = await fetchAdvantShopProductsBySlugs(slugs);
-  const lookup = buildCategoryLookup(knownProducts);
+  const knownById = new Map(
+    knownProducts.map((product) => [product.id, product] as const),
+  );
 
   return items
-    .filter(isAdvantShopProductInStock)
-    .map((item) =>
-      mapCatalogProduct(item, resolveSearchProductCategory(item, lookup))
-    );
+    .map((item) => knownById.get(String(item.productId)))
+    .filter((product): product is Product => Boolean(product));
 }

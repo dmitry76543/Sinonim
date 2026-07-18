@@ -5,8 +5,13 @@ import { parseComplectNumberFromProperties } from "@/lib/product-complect";
 import { advantshopClientFetch, advantshopFetch } from "./client";
 import { getCategoryUrlMap, CATALOG_REVALIDATE_SECONDS } from "./config";
 import { mapCatalogProduct, mapProductDetails } from "./mapper";
-import { isAdvantShopProductInStock } from "./stock";
+import {
+  getAdvantShopDetailsStockInfo,
+  isAdvantShopProductInStock,
+  type AdvantShopStockInfo,
+} from "./stock";
 import type {
+  AdvantShopCatalogProduct,
   AdvantShopCatalogResponse,
   AdvantShopCategoriesResponse,
   AdvantShopProductDetails,
@@ -137,21 +142,68 @@ const getCachedComplectMap = unstable_cache(
   { revalidate: CATALOG_REVALIDATE_SECONDS, tags: ["catalog"] },
 );
 
+async function fetchProductStockInfo(
+  productId: number,
+): Promise<AdvantShopStockInfo | undefined> {
+  try {
+    const details = await advantshopClientFetch<AdvantShopProductDetails>(
+      `/api/products/${productId}`,
+    );
+    return getAdvantShopDetailsStockInfo(details);
+  } catch (error) {
+    console.warn(
+      `AdvantShop stock for product ${productId} unavailable:`,
+      error,
+    );
+    return undefined;
+  }
+}
+
+async function loadStockInfoMap(
+  items: AdvantShopCatalogProduct[],
+): Promise<Map<number, AdvantShopStockInfo>> {
+  const map = new Map<number, AdvantShopStockInfo>();
+  const ids = [...new Set(items.map((item) => item.productId))];
+
+  await mapPool(ids, 8, async (productId) => {
+    const stock = await fetchProductStockInfo(productId);
+    if (stock) map.set(productId, stock);
+  });
+
+  return map;
+}
+
+function resolveListStockInfo(
+  item: AdvantShopCatalogProduct,
+  stockMap: Map<number, AdvantShopStockInfo>,
+): AdvantShopStockInfo {
+  const fromDetails = stockMap.get(item.productId);
+  if (fromDetails) return fromDetails;
+
+  return {
+    stockAmount: undefined,
+    inStock: isAdvantShopProductInStock(item),
+  };
+}
+
 async function mapCatalogItems(
   items: NonNullable<AdvantShopCatalogResponse["products"]>,
   category: CategorySlug,
   complectMap: Record<string, string>,
   includeOutOfStock = false,
 ): Promise<Product[]> {
+  const stockMap = await loadStockInfoMap(items);
+
   const visible = includeOutOfStock
     ? items
-    : items.filter(isAdvantShopProductInStock);
+    : items.filter((item) => resolveListStockInfo(item, stockMap).inStock);
 
   return visible.map((item) =>
     mapCatalogProduct(
       item,
       category,
       complectMap[String(item.productId)],
+      stockMap.get(item.productId),
     ),
   );
 }

@@ -4,7 +4,14 @@ import { parseCaratWeightFromDescription } from "@/lib/product-weight";
 import { resolveComplectNumber } from "@/lib/product-complect";
 import { buildSeoProductSlug } from "@/lib/product-slug";
 import { resolveProductImageUrl, resolveProductImages } from "./images";
-import { getAdvantShopStockAmount, getInStockOffers, isOfferInStock } from "./stock";
+import {
+  getAdvantShopDetailsStockInfo,
+  getAdvantShopStockAmount,
+  getInStockOffers,
+  isOfferInStock,
+  parseAdvantShopAmount,
+  type AdvantShopStockInfo,
+} from "./stock";
 import type {
   AdvantShopCatalogProduct,
   AdvantShopPhoto,
@@ -190,10 +197,9 @@ function buildSizeStockAmounts(
     const sizeKey = size.name.trim();
     if (!sizeKey) continue;
     const offer = item.offers.find((entry) => entry.sizeId === size.id);
-    if (!offer || typeof offer.amount !== "number" || !Number.isFinite(offer.amount)) {
-      continue;
-    }
-    map[sizeKey] = offer.amount;
+    const amount = offer ? parseAdvantShopAmount(offer.amount) : undefined;
+    if (amount === undefined) continue;
+    map[sizeKey] = amount;
   }
 
   return Object.keys(map).length ? map : undefined;
@@ -226,6 +232,7 @@ export function mapCatalogProduct(
   item: AdvantShopCatalogProduct,
   category: CategorySlug,
   complectNumber?: string,
+  stock?: AdvantShopStockInfo,
 ): Product {
   const price = Math.round(item.priceWithDiscount ?? item.price);
   const sizeOptions = extractProductSizeOptions(item);
@@ -239,8 +246,10 @@ export function mapCatalogProduct(
     item.artNo ??
     item.offers?.find((offer) => offer.isMain)?.artNo ??
     item.offers?.[0]?.artNo;
-  const stockAmount = getAdvantShopStockAmount(item);
-  const inStock = stockAmount === undefined ? true : stockAmount > 0;
+  const stockAmount = stock?.stockAmount ?? getAdvantShopStockAmount(item);
+  const inStock =
+    stock?.inStock ??
+    (stockAmount === undefined ? true : stockAmount > 0);
 
   return {
     id: String(item.productId),
@@ -327,11 +336,10 @@ export function mapProductDetails(
   const sizeStockAmounts = buildSizeStockAmounts(item, allSizes);
   const legacySlug = item.urlPath;
   const complectNumber = resolveComplectNumber(properties);
-  const stockAmount = getAdvantShopStockAmount(item);
+  const { stockAmount, inStock: detailsInStock } =
+    getAdvantShopDetailsStockInfo(item);
   const inStock =
-    stockAmount === undefined
-      ? true
-      : stockAmount > 0 && (!hasSizes || sizeOptions.length > 0);
+    detailsInStock && (!hasSizes || sizeOptions.length > 0);
 
   return {
     id: String(item.productId),

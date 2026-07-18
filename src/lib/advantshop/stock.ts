@@ -1,8 +1,17 @@
-import type { AdvantShopCatalogProduct, AdvantShopOffer, AdvantShopProductDetails } from "./types";
+import type {
+  AdvantShopCatalogProduct,
+  AdvantShopOffer,
+  AdvantShopProductDetails,
+} from "./types";
 
-/** Есть ли явное поле остатка (включая 0). */
-function hasDefinedAmount(value: unknown): value is number {
-  return typeof value === "number" && Number.isFinite(value);
+/** Нормализует amount из API (number или numeric string). */
+export function parseAdvantShopAmount(value: unknown): number | undefined {
+  if (typeof value === "number" && Number.isFinite(value)) return value;
+  if (typeof value === "string" && value.trim() !== "") {
+    const parsed = Number(value.replace(",", "."));
+    if (Number.isFinite(parsed)) return parsed;
+  }
+  return undefined;
 }
 
 /**
@@ -16,21 +25,17 @@ export function getAdvantShopStockAmount(
 ): number | undefined {
   const offers = item.offers ?? [];
   const offerAmounts = offers
-    .map((offer) => offer.amount)
-    .filter(hasDefinedAmount);
+    .map((offer) => parseAdvantShopAmount(offer.amount))
+    .filter((value): value is number => value !== undefined);
 
   if (offerAmounts.length > 0) {
     return offerAmounts.reduce((sum, value) => sum + value, 0);
   }
 
-  if (hasDefinedAmount(item.amount)) {
-    return item.amount;
-  }
-
-  return undefined;
+  return parseAdvantShopAmount(item.amount);
 }
 
-/** Товар в наличии: остаток > 0, либо остаток неизвестен. */
+/** Товар в наличии по данным списка каталога (часто неточные без offers). */
 export function isAdvantShopProductInStock(
   item: Pick<AdvantShopCatalogProduct, "amount" | "offers">,
 ): boolean {
@@ -40,8 +45,17 @@ export function isAdvantShopProductInStock(
 }
 
 export function isOfferInStock(offer: Pick<AdvantShopOffer, "amount">): boolean {
-  if (!hasDefinedAmount(offer.amount)) return true;
-  return offer.amount > 0;
+  const amount = parseAdvantShopAmount(offer.amount);
+  if (amount === undefined) return true;
+  return amount > 0;
+}
+
+function hasOfferStockData(
+  item: Pick<AdvantShopProductDetails, "offers">,
+): boolean {
+  return (item.offers ?? []).some(
+    (offer) => parseAdvantShopAmount(offer.amount) !== undefined,
+  );
 }
 
 /** Размеры / офферы с остатком > 0 (или без данных об остатке). */
@@ -51,8 +65,49 @@ export function getInStockOffers(
   const offers = item.offers ?? [];
   if (!offers.length) return [];
 
-  const withStockInfo = offers.filter((offer) => hasDefinedAmount(offer.amount));
-  if (!withStockInfo.length) return offers;
+  if (!hasOfferStockData(item)) return offers;
 
   return offers.filter(isOfferInStock);
+}
+
+/**
+ * Точный признак наличия по карточке товара (offers + размеры).
+ * Список /api/catalog часто отдаёт завышенный product.amount без офферов.
+ */
+export function isAdvantShopDetailsInStock(
+  item: Pick<AdvantShopProductDetails, "amount" | "offers" | "sizeColorPicker">,
+): boolean {
+  const sizes = item.sizeColorPicker?.sizes ?? [];
+  const offerStockKnown = hasOfferStockData(item);
+
+  if (offerStockKnown && sizes.length > 0) {
+    const inStockSizeIds = new Set(
+      getInStockOffers(item)
+        .map((offer) => offer.sizeId)
+        .filter((id): id is number => typeof id === "number"),
+    );
+    return sizes.some((size) => inStockSizeIds.has(size.id));
+  }
+
+  if (offerStockKnown) {
+    return getInStockOffers(item).length > 0;
+  }
+
+  const amount = getAdvantShopStockAmount(item);
+  if (amount === undefined) return true;
+  return amount > 0;
+}
+
+export type AdvantShopStockInfo = {
+  stockAmount?: number;
+  inStock: boolean;
+};
+
+export function getAdvantShopDetailsStockInfo(
+  item: Pick<AdvantShopProductDetails, "amount" | "offers" | "sizeColorPicker">,
+): AdvantShopStockInfo {
+  return {
+    stockAmount: getAdvantShopStockAmount(item),
+    inStock: isAdvantShopDetailsInStock(item),
+  };
 }
