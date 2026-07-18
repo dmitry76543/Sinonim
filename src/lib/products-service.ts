@@ -107,9 +107,14 @@ export async function getCatalogProducts(options?: {
   return products;
 }
 
-export async function getProductBySlug(slug: string): Promise<Product | undefined> {
+export async function getProductBySlug(
+  slug: string,
+  options?: { includeOutOfStock?: boolean },
+): Promise<Product | undefined> {
   if (isAdvantShopConfigured()) {
-    const products = await getCatalogProducts();
+    const products = options?.includeOutOfStock
+      ? await fetchAdvantShopProducts({ includeOutOfStock: true })
+      : await getCatalogProducts();
     const fromShop = findProductBySlug(products, slug);
     if (fromShop) return fromShop;
   }
@@ -118,10 +123,13 @@ export async function getProductBySlug(slug: string): Promise<Product | undefine
 }
 
 export async function getProductDetails(
-  slug: string
+  slug: string,
+  options?: { includeOutOfStock?: boolean },
 ): Promise<ProductDetails | undefined> {
   if (isAdvantShopConfigured()) {
-    const products = await getCatalogProducts();
+    const products = options?.includeOutOfStock
+      ? await fetchAdvantShopProducts({ includeOutOfStock: true })
+      : await getCatalogProducts();
     const summary = findProductBySlug(products, slug);
 
     if (summary) {
