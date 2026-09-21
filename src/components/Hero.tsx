@@ -1,4 +1,7 @@
+"use client";
+
 import Image from "next/image";
+import { trackHeroBannerClick } from "@/lib/analytics/metrika";
 
 const JUNWEX_TICKET_URL =
   "https://www.junwex-msk.ru/posetitelyam/e-ticket.html";
@@ -22,6 +25,7 @@ export function Hero() {
         rel="noopener noreferrer"
         aria-label="Получить пригласительный билет на JUNWEX Москва — стенд Синоним A-101, павильон 57"
         className="group relative block w-full cursor-pointer touch-manipulation [-webkit-tap-highlight-color:transparent]"
+        onClick={() => trackHeroBannerClick()}
       >
         {/* Mobile / tablet portrait: vertical 3:4 */}
         <div className="relative aspect-[3/4] w-full overflow-hidden bg-[#c8e6c9] md:hidden">

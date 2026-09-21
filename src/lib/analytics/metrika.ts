@@ -334,6 +334,14 @@ export function trackShowroomMapClick() {
 }
 
 /**
+ * Клик по баннеру в hero (сейчас — JUNWEX / пригласительный билет).
+ * В кабинете Метрики создайте JS-цель с идентификатором `hero_banner_click`.
+ */
+export function trackHeroBannerClick() {
+  reachGoal("hero_banner_click");
+}
+
+/**
  * Цели «посетил страницу» для Директа / Метрики.
  * В кабинете Метрики создайте JS-цели с этими идентификаторами:
  * page_rings, page_earrings, page_pendants, page_bracelets, page_gifts,
